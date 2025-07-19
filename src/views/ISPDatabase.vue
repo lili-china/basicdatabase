@@ -1,0 +1,1087 @@
+<template>
+  <div class="app-container">
+    <!-- 导航栏 -->
+    <NavigationBar />
+    
+    <!-- 波浪背景和内容 -->
+    <WaveBackground>
+      <div class="wave-demo-container">
+        <div class="page-header">
+          <h1>ISP Database</h1>
+          <p>Search and view internet service provider information</p>
+        </div>
+
+        <!-- 搜索和筛选区域 -->
+        <div class="search-section">
+          <div class="search-header">
+            <h3>Search & Filter</h3>
+            <p>Enter search criteria to find specific ISP records</p>
+          </div>
+          
+          <div class="search-filters">
+            <div class="filter-row">
+              <!-- 运营商下拉框 -->
+              <div class="filter-group">
+                <label class="filter-label">Operator</label>
+                <el-select v-model="selectedOperator" placeholder="Select Operator" class="filter-input">
+                  <el-option label="All Operators" value="" />
+                  <el-option label="Comcast" value="comcast" />
+                  <el-option label="Verizon" value="verizon" />
+                  <el-option label="AT&T" value="att" />
+                  <el-option label="Spectrum" value="spectrum" />
+                  <el-option label="CenturyLink" value="centurylink" />
+                  <el-option label="Cox" value="cox" />
+                  <el-option label="Frontier" value="frontier" />
+                  <el-option label="Windstream" value="windstream" />
+                </el-select>
+              </div>
+
+              <!-- 身份证号输入框 -->
+              <div class="filter-group">
+                <label class="filter-label">Identity Number</label>
+                <el-input
+                  v-model="identityNo"
+                  placeholder="Enter identity number"
+                  class="filter-input"
+                  clearable
+                />
+              </div>
+
+              <!-- 电话号码输入框 -->
+              <div class="filter-group">
+                <label class="filter-label">Phone Number</label>
+                <el-input
+                  v-model="phoneNum"
+                  placeholder="Enter phone number"
+                  class="filter-input"
+                  clearable
+                />
+              </div>
+            </div>
+
+            <div class="filter-row">
+              <!-- 真实姓名输入框 -->
+              <div class="filter-group">
+                <label class="filter-label">Real Name</label>
+                <el-input
+                  v-model="realName"
+                  placeholder="Enter real name"
+                  class="filter-input"
+                  clearable
+                />
+              </div>
+
+              <!-- 状态下拉框 -->
+              <div class="filter-group">
+                <label class="filter-label">Status</label>
+                <el-select v-model="selectedStatus" placeholder="Select Status" class="filter-input">
+                  <el-option label="All Status" value="" />
+                  <el-option label="Active" value="active" />
+                  <el-option label="Inactive" value="inactive" />
+                  <el-option label="Pending" value="pending" />
+                  <el-option label="Suspended" value="suspended" />
+                </el-select>
+              </div>
+
+              <!-- 操作按钮 -->
+              <div class="filter-actions">
+                <el-button type="primary" @click="performSearch" class="search-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="search-icon">
+                    <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  Search
+                </el-button>
+                <el-button @click="resetFilters" class="reset-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="reset-icon">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M3 3v5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  Reset
+                </el-button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ISP列表 -->
+        <div class="isp-list">
+          <div v-for="isp in filteredISPs" :key="isp.id" class="isp-item" @click="showISPDetails(isp)">
+            <div class="isp-header">
+              <div class="isp-photo">
+                <img 
+                  :src="isp.photo || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiM2QjcyODAiLz4KPGNpcmNsZSBjeD0iNDAiIGN5PSIzMCIgcj0iMTIiIGZpbGw9IiNGRkZGRkYiLz4KPHBhdGggZD0iTTE2IDYwQzE2IDUwIDI2IDQwIDQwIDQwQzU0IDQwIDY0IDUwIDY0IDYwIiBmaWxsPSIjRkZGRkZGIi8+Cjwvc3ZnPgo='" 
+                  :alt="isp.realName"
+                  @error="handleImageError"
+                />
+              </div>
+              <div class="isp-info">
+                <div class="isp-basic">
+                  <h3 class="isp-name">{{ isp.realName }}</h3>
+                  <p class="isp-id clickable" @click.stop="showUserDetailDialog(isp)">ID: {{ isp.identityNo }}</p>
+                </div>
+                <div class="isp-highlight">
+                  <div class="highlight-item operator">
+                    <span class="highlight-label">Operator</span>
+                    <span class="highlight-value">{{ isp.name }}</span>
+                  </div>
+                  <div class="highlight-item phone">
+                    <span class="highlight-label">Phone</span>
+                    <span class="highlight-value">{{ isp.phoneNum }}</span>
+                  </div>
+                </div>
+                <div class="isp-details">
+                  <div class="detail-row">
+                    <span class="detail-label">Nationality:</span>
+                    <span class="detail-value">{{ isp.nationality }}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Birth Date:</span>
+                    <span class="detail-value">{{ isp.birthDate }}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Address:</span>
+                    <span class="detail-value">{{ isp.address }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="isp-timeline">
+                <div class="timeline-item">
+                  <span class="timeline-label">Registration</span>
+                  <span class="timeline-date">{{ isp.registrationDate }}</span>
+                </div>
+                <div class="timeline-item">
+                  <span class="timeline-label">Expiry</span>
+                  <span class="timeline-date" :class="{ 'expired': isExpired(isp.expiryDate) }">{{ isp.expiryDate }}</span>
+                </div>
+              </div>
+              <div class="isp-status">
+                <span class="status-tag" :class="isp.status">{{ isp.status }}</span>
+              </div>
+              <div class="isp-actions">
+                <el-button size="small" @click.stop="showUserDetailDialog(isp)">View</el-button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 分页 -->
+        <div class="pagination-section">
+          <el-pagination
+            v-model:current-page="currentPage"
+            v-model:page-size="pageSize"
+            :page-sizes="[10, 20, 50, 100]"
+            :total="totalItems"
+            layout="total, sizes, prev, pager, next, jumper"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+          />
+        </div>
+      </div>
+    </WaveBackground>
+
+    <!-- UserDetailDialog组件 -->
+    <UserDetailDialog
+      v-model="userDetailDialogVisible"
+      :user="selectedUserForDialog"
+    />
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
+import { getSessionIdFromUrl } from '@/utils/sessionValidator'
+import WaveBackground from '../components/WaveBackground.vue'
+import NavigationBar from '../components/NavigationBar.vue'
+import UserDetailDialog from '../components/UserDetailDialog.vue'
+
+// 当前session ID
+const currentSessionId = ref<string | null>(null)
+
+// 搜索和筛选状态
+const selectedOperator = ref('')
+const identityNo = ref('')
+const phoneNum = ref('')
+const realName = ref('')
+const selectedStatus = ref('')
+
+// 分页状态
+const currentPage = ref(1)
+const pageSize = ref(20)
+const totalItems = ref(0)
+
+// 模拟ISP数据
+const ispData = ref([
+  {
+    id: 1,
+    name: 'Comcast',
+    location: 'Philadelphia, PA',
+    serviceType: 'Cable',
+    status: 'active',
+    maxSpeed: '1.2 Gbps',
+    coverage: '40 states',
+    logo: 'https://via.placeholder.com/60x30/3b82f6/ffffff?text=Comcast',
+    region: 'north-america',
+    description: 'Leading cable internet provider in the United States',
+    identityNo: 'COM001',
+    phoneNum: '+1-800-934-6489',
+    realName: 'John Smith',
+    nationality: 'American',
+    birthDate: '1990-01-15',
+    address: '123 Main St, Philadelphia, PA 19103',
+    registrationDate: '2020-01-01',
+    expiryDate: '2025-01-01',
+    photo: 'https://via.placeholder.com/100x100/3b82f6/ffffff?text=John',
+          avatars: [
+        'https://via.placeholder.com/100x100/3b82f6/ffffff?text=John',
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1524504388940-b57c6c6f2df5?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=150&h=150&fit=crop&crop=face'
+      ]
+  },
+  {
+    id: 2,
+    name: 'Verizon Fios',
+    location: 'New York, NY',
+    serviceType: 'Fiber',
+    status: 'active',
+    maxSpeed: '2 Gbps',
+    coverage: '9 states',
+    logo: 'https://via.placeholder.com/60x30/ef4444/ffffff?text=Verizon',
+    region: 'north-america',
+    description: 'High-speed fiber optic internet service',
+    identityNo: 'VER002',
+    phoneNum: '+1-800-922-0204',
+    realName: 'Sarah Johnson',
+    nationality: 'Canadian',
+    birthDate: '1985-05-20',
+    address: '456 Oak Ave, New York, NY 10001',
+    registrationDate: '2021-02-15',
+    expiryDate: '2026-02-15',
+    photo: 'https://via.placeholder.com/100x100/ef4444/ffffff?text=Sarah',
+          avatars: [
+        'https://via.placeholder.com/100x100/ef4444/ffffff?text=Sarah',
+        'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1524504388940-b57c6c6f2df5?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=150&h=150&fit=crop&crop=face'
+      ]
+  },
+  {
+    id: 3,
+    name: 'AT&T',
+    location: 'Dallas, TX',
+    serviceType: 'Fiber',
+    status: 'active',
+    maxSpeed: '5 Gbps',
+    coverage: '21 states',
+    logo: 'https://via.placeholder.com/60x30/10b981/ffffff?text=AT&T',
+    region: 'north-america',
+    description: 'Advanced fiber internet with high speeds',
+    identityNo: 'ATT003',
+    phoneNum: '+1-800-288-2020',
+    realName: 'Michael Brown',
+    nationality: 'British',
+    birthDate: '1978-11-10',
+    address: '789 Pine Ln, Dallas, TX 75201',
+    registrationDate: '2019-03-01',
+    expiryDate: '2024-03-01',
+    photo: 'https://via.placeholder.com/100x100/10b981/ffffff?text=Michael',
+          avatars: [
+        'https://via.placeholder.com/100x100/10b981/ffffff?text=Michael',
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1524504388940-b57c6c6f2df5?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=150&h=150&fit=crop&crop=face'
+      ]
+  },
+  {
+    id: 4,
+    name: 'Spectrum',
+    location: 'Stamford, CT',
+    serviceType: 'Cable',
+    status: 'active',
+    maxSpeed: '1 Gbps',
+    coverage: '41 states',
+    logo: 'https://via.placeholder.com/60x30/f59e0b/ffffff?text=Spectrum',
+    region: 'north-america',
+    description: 'Reliable cable internet service',
+    identityNo: 'SPE004',
+    phoneNum: '+1-855-757-7328',
+    realName: 'Emily Davis',
+    nationality: 'French',
+    birthDate: '1992-07-25',
+    address: '101 Cedar St, Stamford, CT 06902',
+    registrationDate: '2022-04-10',
+    expiryDate: '2027-04-10',
+    photo: 'https://via.placeholder.com/100x100/f59e0b/ffffff?text=Emily',
+          avatars: [
+        'https://via.placeholder.com/100x100/f59e0b/ffffff?text=Emily',
+        'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1524504388940-b57c6c6f2df5?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=150&h=150&fit=crop&crop=face'
+      ]
+  },
+  {
+    id: 5,
+    name: 'CenturyLink',
+    location: 'Monroe, LA',
+    serviceType: 'DSL',
+    status: 'active',
+    maxSpeed: '100 Mbps',
+    coverage: '37 states',
+    logo: 'https://via.placeholder.com/60x30/8b5cf6/ffffff?text=CenturyLink',
+    region: 'north-america',
+    description: 'DSL and fiber internet services',
+    identityNo: 'CEN005',
+    phoneNum: '+1-800-244-1111',
+    realName: 'David Wilson',
+    nationality: 'German',
+    birthDate: '1980-09-05',
+    address: '202 Maple Ave, Monroe, LA 71201',
+    registrationDate: '2020-05-20',
+    expiryDate: '2025-05-20',
+    photo: 'https://via.placeholder.com/100x100/8b5cf6/ffffff?text=David',
+          avatars: [
+        'https://via.placeholder.com/100x100/8b5cf6/ffffff?text=David',
+        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1524504388940-b57c6c6f2df5?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=150&h=150&fit=crop&crop=face'
+      ]
+  },
+  {
+    id: 6,
+    name: 'Cox Communications',
+    location: 'Atlanta, GA',
+    serviceType: 'Cable',
+    status: 'active',
+    maxSpeed: '1 Gbps',
+    coverage: '18 states',
+    logo: 'https://via.placeholder.com/60x30/06b6d4/ffffff?text=Cox',
+    region: 'north-america',
+    description: 'Cable internet and digital services',
+    identityNo: 'COX006',
+    phoneNum: '+1-800-234-3993',
+    realName: 'Lisa Anderson',
+    nationality: 'Italian',
+    birthDate: '1995-12-18',
+    address: '303 Birch St, Atlanta, GA 30303',
+    registrationDate: '2021-06-01',
+    expiryDate: '2026-06-01',
+    photo: 'https://via.placeholder.com/100x100/06b6d4/ffffff?text=Lisa',
+          avatars: [
+        'https://via.placeholder.com/100x100/06b6d4/ffffff?text=Lisa',
+        'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1524504388940-b57c6c6f2df5?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=150&h=150&fit=crop&crop=face'
+      ]
+  },
+  {
+    id: 7,
+    name: 'Frontier',
+    location: 'Norwalk, CT',
+    serviceType: 'Fiber',
+    status: 'active',
+    maxSpeed: '5 Gbps',
+    coverage: '25 states',
+    logo: 'https://via.placeholder.com/60x30/84cc16/ffffff?text=Frontier',
+    region: 'north-america',
+    description: 'Fiber internet and digital services',
+    identityNo: 'FRO007',
+    phoneNum: '+1-800-921-8101',
+    realName: 'Robert Taylor',
+    nationality: 'Spanish',
+    birthDate: '1988-03-10',
+    address: '404 Cedar Ave, Norwalk, CT 06854',
+    registrationDate: '2019-07-15',
+    expiryDate: '2024-07-15',
+    photo: 'https://via.placeholder.com/100x100/84cc16/ffffff?text=Robert',
+          avatars: [
+        'https://via.placeholder.com/100x100/84cc16/ffffff?text=Robert',
+        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1524504388940-b57c6c6f2df5?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=150&h=150&fit=crop&crop=face'
+      ]
+  },
+  {
+    id: 8,
+    name: 'Windstream',
+    location: 'Little Rock, AR',
+    serviceType: 'DSL',
+    status: 'active',
+    maxSpeed: '100 Mbps',
+    coverage: '18 states',
+    logo: 'https://via.placeholder.com/60x30/f97316/ffffff?text=Windstream',
+    region: 'north-america',
+    description: 'DSL and fiber internet services',
+    identityNo: 'WIN008',
+    phoneNum: '+1-800-347-1991',
+    realName: 'Jennifer Martinez',
+    nationality: 'Japanese',
+    birthDate: '1991-08-22',
+    address: '505 Oak Lane, Little Rock, AR 72201',
+    registrationDate: '2022-08-01',
+    expiryDate: '2027-08-01',
+    photo: 'https://via.placeholder.com/100x100/f97316/ffffff?text=Jennifer',
+          avatars: [
+        'https://via.placeholder.com/100x100/f97316/ffffff?text=Jennifer',
+        'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1524504388940-b57c6c6f2df5?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=150&h=150&fit=crop&crop=face'
+      ]
+  }
+])
+
+// 计算筛选后的ISP列表
+const filteredISPs = computed(() => {
+  let filtered = ispData.value
+
+  // 运营商筛选
+  if (selectedOperator.value) {
+    filtered = filtered.filter(isp => 
+      isp.name.toLowerCase().includes(selectedOperator.value.toLowerCase())
+    )
+  }
+
+  // 身份证号筛选
+  if (identityNo.value) {
+    filtered = filtered.filter(isp => 
+      isp.identityNo && isp.identityNo.toLowerCase().includes(identityNo.value.toLowerCase())
+    )
+  }
+
+  // 电话号码筛选
+  if (phoneNum.value) {
+    filtered = filtered.filter(isp => 
+      isp.phoneNum && isp.phoneNum.includes(phoneNum.value)
+    )
+  }
+
+  // 真实姓名筛选
+  if (realName.value) {
+    filtered = filtered.filter(isp => 
+      isp.realName && isp.realName.toLowerCase().includes(realName.value.toLowerCase())
+    )
+  }
+
+
+
+  // 状态筛选
+  if (selectedStatus.value) {
+    filtered = filtered.filter(isp => isp.status === selectedStatus.value)
+  }
+
+  totalItems.value = filtered.length
+  return filtered
+})
+
+// 搜索功能
+const performSearch = () => {
+  currentPage.value = 1
+  // 搜索逻辑已通过computed实现
+}
+
+// 重置筛选
+const resetFilters = () => {
+  selectedOperator.value = ''
+  identityNo.value = ''
+  phoneNum.value = ''
+  realName.value = ''
+  selectedStatus.value = ''
+  currentPage.value = 1
+}
+
+// 分页处理
+const handleSizeChange = (size: number) => {
+  pageSize.value = size
+  currentPage.value = 1
+}
+
+const handleCurrentChange = (page: number) => {
+  currentPage.value = page
+}
+
+// UserDetailDialog状态
+const userDetailDialogVisible = ref(false)
+const selectedUserForDialog = ref<any>(null)
+
+// ISP详情功能
+const showISPDetails = (isp: any) => {
+  console.log('Show ISP details:', isp)
+  // 这里可以打开详情弹窗
+}
+
+// 用户详情功能
+const showUserDetailDialog = (isp: any) => {
+  // 将ISP数据转换为UserDetailDialog需要的格式
+  const userData = {
+    id: isp.identityNo,
+    name: isp.realName,
+    position: isp.name, // 运营商作为职位
+    email: `${isp.realName.toLowerCase().replace(' ', '.')}@${isp.name.toLowerCase()}.com`,
+    phone: isp.phoneNum,
+    gender: 'Unknown',
+    age: calculateAge(isp.birthDate),
+    nationality: isp.nationality,
+    avatar: isp.photo,
+    avatars: isp.avatars || [isp.photo], // 使用avatars数组，如果没有则使用单张照片
+    birthDate: isp.birthDate,
+    idCardNumber: isp.identityNo,
+    emergencyContact: 'Emergency Contact',
+    emergencyPhone: isp.phoneNum,
+    address: isp.address,
+    department: isp.name,
+    status: isp.status,
+    hireDate: isp.registrationDate,
+    workYears: Math.floor((new Date().getTime() - new Date(isp.registrationDate).getTime()) / (1000 * 60 * 60 * 24 * 365)),
+    manager: 'Manager',
+    bloodType: 'Unknown',
+    maritalStatus: 'Unknown',
+    educationLevel: 'Unknown',
+    skills: 'ISP Management, Network Administration'
+  }
+  
+  selectedUserForDialog.value = userData
+  userDetailDialogVisible.value = true
+}
+
+// 计算年龄
+const calculateAge = (birthDate: string) => {
+  const birth = new Date(birthDate)
+  const today = new Date()
+  let age = today.getFullYear() - birth.getFullYear()
+  const monthDiff = today.getMonth() - birth.getMonth()
+  
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    age--
+  }
+  
+  return age
+}
+
+const viewISPDetails = (isp: any) => {
+  console.log('View ISP details:', isp)
+  // 这里可以打开查看弹窗
+}
+
+// 判断日期是否过期
+const isExpired = (dateString: string) => {
+  const expiryDate = new Date(dateString);
+  const today = new Date();
+  return expiryDate < today;
+};
+
+// 处理图片加载失败
+const handleImageError = (event: Event) => {
+  const target = event.target as HTMLImageElement;
+  // 使用SVG默认头像
+  target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiM2QjcyODAiLz4KPGNpcmNsZSBjeD0iNDAiIGN5PSIzMCIgcj0iMTIiIGZpbGw9IiNGRkZGRkYiLz4KPHBhdGggZD0iTTE2IDYwQzE2IDUwIDI2IDQwIDQwIDQwQzU0IDQwIDY0IDUwIDY0IDYwIiBmaWxsPSIjRkZGRkZGIi8+Cjwvc3ZnPgo=';
+};
+
+// 组件挂载时获取session ID
+onMounted(() => {
+  currentSessionId.value = getSessionIdFromUrl()
+})
+</script>
+
+<style scoped>
+.isp-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.isp-item {
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  padding: 0.75rem;
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-card);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.isp-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-secondary);
+}
+
+.isp-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.isp-photo {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--border-card);
+  box-shadow: var(--shadow-card);
+}
+
+.isp-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.isp-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.isp-basic {
+  margin-bottom: 0.125rem;
+}
+
+.isp-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.125rem 0;
+}
+
+.isp-id {
+  font-size: 0.625rem;
+  color: var(--text-secondary);
+  margin: 0 0 0.125rem 0;
+}
+
+.clickable {
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.clickable:hover {
+  color: var(--accent-primary);
+  text-decoration: underline;
+}
+
+.isp-operator {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0 0 0.5rem 0;
+}
+
+.isp-highlight {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0.375rem;
+  padding: 0.375rem;
+  background: linear-gradient(135deg, var(--accent-secondary) 0%, rgba(59, 130, 246, 0.1) 100%);
+  border-radius: 8px;
+  border: 1px solid var(--accent-primary);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+}
+
+.highlight-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  flex: 1;
+}
+
+.highlight-item.operator {
+  border-right: 1px solid var(--border-card);
+  padding-right: 0.75rem;
+}
+
+.highlight-label {
+  font-size: 0.5rem;
+  color: var(--accent-primary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.highlight-value {
+  font-size: 0.75rem;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.highlight-item.operator .highlight-value {
+  color: var(--accent-primary);
+  font-weight: 800;
+  font-size: 0.875rem;
+}
+
+.highlight-item.phone .highlight-value {
+  color: #22c55e;
+  font-weight: 800;
+  font-size: 0.875rem;
+}
+
+.isp-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  margin-bottom: 0.125rem;
+}
+
+.detail-row {
+  display: flex;
+  gap: 0.375rem;
+  align-items: center;
+}
+
+.detail-label {
+  font-size: 0.5rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.detail-value {
+  font-size: 0.625rem;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.isp-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  margin-bottom: 0.125rem;
+  min-width: 80px;
+}
+
+.timeline-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+.timeline-label {
+  font-size: 0.5rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.timeline-date {
+  font-size: 0.625rem;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.timeline-date.expired {
+  color: #ef4444;
+}
+
+.isp-status {
+  margin-bottom: 0.125rem;
+}
+
+.status-tag {
+  padding: 0.125rem 0.375rem;
+  border-radius: 8px;
+  font-size: 0.5rem;
+  font-weight: 500;
+}
+
+.status-tag.active {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+}
+
+.status-tag.inactive {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.status-tag.pending {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+.status-tag.suspended {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.isp-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* 搜索区域样式 */
+.search-section {
+  margin-bottom: 2rem;
+}
+
+.search-header {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.search-header h3 {
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.search-header p {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.search-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-card);
+}
+
+.filter-row {
+  display: flex;
+  gap: 1rem;
+  align-items: end;
+}
+
+.filter-group {
+  flex: 1;
+  min-width: 0;
+}
+
+.filter-label {
+  font-size: 0.625rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.filter-input {
+  width: 100%;
+}
+
+.filter-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.search-btn {
+  height: 40px;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.search-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.reset-btn {
+  height: 40px;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.reset-icon {
+  width: 16px;
+  height: 16px;
+}
+
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+  .filter-row {
+    flex-wrap: wrap;
+  }
+  
+  .filter-group {
+    min-width: 200px;
+  }
+  
+  .filter-actions {
+    flex: 1;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 768px) {
+  .search-section {
+    padding: 1rem;
+  }
+  
+  .search-header h3 {
+    font-size: 1.1rem;
+  }
+  
+  .search-header p {
+    font-size: 0.875rem;
+  }
+  
+  .filter-row {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .filter-group {
+    min-width: 100%;
+  }
+  
+  .filter-actions {
+    flex-direction: row;
+    justify-content: center;
+    gap: 1rem;
+  }
+  
+  .search-btn,
+  .reset-btn {
+    flex: 1;
+    max-width: 150px;
+  }
+  
+  .isp-list {
+    gap: 1rem;
+  }
+  
+  .isp-item {
+    padding: 1rem;
+  }
+  
+  .isp-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .isp-photo {
+    align-self: center;
+  }
+  
+  .isp-info {
+    text-align: center;
+  }
+  
+  .isp-highlight {
+    justify-content: center;
+  }
+  
+  .isp-timeline {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  
+  .isp-actions {
+    align-self: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .wave-demo-container {
+    padding: 1rem;
+  }
+  
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .page-header p {
+    font-size: 0.875rem;
+  }
+  
+  .search-section {
+    padding: 0.75rem;
+  }
+  
+  .filter-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .search-btn,
+  .reset-btn {
+    max-width: 100%;
+  }
+}
+</style> 

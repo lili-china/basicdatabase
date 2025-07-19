@@ -1,0 +1,373 @@
+/* Element Plus 主题兼容性样式 */
+
+/* 对话框样式适配 */
+.el-dialog {
+  background: var(--bg-dialog) !important;
+  border: 1px solid var(--border-card) !important;
+  box-shadow: var(--shadow-dialog) !important;
+}
+
+.el-dialog__header {
+  background: var(--bg-card) !important;
+  border-bottom: 1px solid var(--border-primary) !important;
+}
+
+.el-dialog__title {
+  color: var(--text-primary) !important;
+}
+
+.el-dialog__body {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+/* 表格样式适配 */
+.el-table {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+.el-table th.el-table__cell {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border-bottom: 1px solid var(--border-primary) !important;
+}
+
+.el-table td.el-table__cell {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border-bottom: 1px solid var(--border-secondary) !important;
+}
+
+.el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
+  background: var(--bg-tertiary) !important;
+}
+
+.el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell {
+  background: var(--accent-secondary) !important;
+}
+
+/* 分页组件样式适配 */
+.el-pagination {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+.el-pagination .el-pager li {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-primary) !important;
+}
+
+.el-pagination .el-pager li.is-active {
+  background: var(--accent-primary) !important;
+  color: white !important;
+}
+
+.el-pagination .btn-prev,
+.el-pagination .btn-next {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-primary) !important;
+}
+
+/* 选择器样式适配 */
+.el-select {
+  background: var(--bg-card) !important;
+}
+
+.el-select .el-input__wrapper {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-card) !important;
+  box-shadow: var(--shadow-dialog) !important;
+}
+
+.el-select .el-input__inner {
+  color: var(--text-primary) !important;
+}
+
+.el-select .el-input__inner::placeholder {
+  color: var(--text-tertiary) !important;
+}
+
+.el-select-dropdown {
+  background: var(--bg-dialog) !important;
+  border: 1px solid var(--border-card) !important;
+  box-shadow: var(--shadow-dialog) !important;
+}
+
+.el-select-dropdown .el-select-dropdown__item {
+  color: var(--text-primary) !important;
+}
+
+.el-select-dropdown .el-select-dropdown__item:hover {
+  background: var(--accent-secondary) !important;
+}
+
+.el-select-dropdown .el-select-dropdown__item.selected {
+  background: var(--accent-primary) !important;
+  color: white !important;
+}
+
+/* 按钮样式适配 */
+.el-button {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-card) !important;
+}
+
+.el-button--primary {
+  background: var(--accent-primary) !important;
+  color: white !important;
+  border-color: var(--accent-primary) !important;
+}
+
+.el-button--primary:hover {
+  background: var(--accent-hover) !important;
+}
+
+.el-button--text {
+  background: transparent !important;
+  color: var(--accent-primary) !important;
+  border: none !important;
+}
+
+.el-button--text:hover {
+  background: var(--accent-secondary) !important;
+}
+
+/* 卡片样式适配 */
+.el-card {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-card) !important;
+  box-shadow: var(--shadow-card) !important;
+}
+
+.el-card__header {
+  background: var(--bg-tertiary) !important;
+  border-bottom: 1px solid var(--border-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+.el-card__body {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+/* 输入框样式适配 */
+.el-input__wrapper {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-card) !important;
+  box-shadow: var(--shadow-dialog) !important;
+}
+
+.el-input__inner {
+  color: var(--text-primary) !important;
+}
+
+.el-input__inner::placeholder {
+  color: var(--text-tertiary) !important;
+}
+
+/* 日期选择器样式适配 */
+.el-date-picker {
+  background: var(--bg-dialog) !important;
+  border: 1px solid var(--border-card) !important;
+  box-shadow: var(--shadow-dialog) !important;
+}
+
+.el-date-picker .el-date-picker__header {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+}
+
+.el-date-picker .el-date-table th {
+  color: var(--text-primary) !important;
+}
+
+.el-date-picker .el-date-table td {
+  color: var(--text-primary) !important;
+}
+
+.el-date-picker .el-date-table td.available:hover {
+  background: var(--accent-secondary) !important;
+}
+
+.el-date-picker .el-date-table td.current {
+  background: var(--accent-primary) !important;
+  color: white !important;
+}
+
+/* 树形组件样式适配 */
+.el-tree {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+.el-tree-node__content {
+  color: var(--text-primary) !important;
+}
+
+.el-tree-node__content:hover {
+  background: var(--accent-secondary) !important;
+}
+
+.el-tree-node.is-current > .el-tree-node__content {
+  background: var(--accent-primary) !important;
+  color: white !important;
+}
+
+/* 图标样式适配 */
+.el-icon {
+  color: var(--text-primary) !important;
+}
+
+/* 滚动条样式适配 */
+.el-table__body-wrapper::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.el-table__body-wrapper::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+}
+
+.el-table__body-wrapper::-webkit-scrollbar-thumb {
+  background: var(--border-primary);
+  border-radius: 4px;
+}
+
+.el-table__body-wrapper::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-primary);
+}
+
+/* 加载状态样式适配 */
+.el-loading-mask {
+  background: var(--bg-dialog) !important;
+}
+
+.el-loading-spinner .el-loading-text {
+  color: var(--text-primary) !important;
+}
+
+/* 消息提示样式适配 */
+.el-message {
+  background: var(--bg-dialog) !important;
+  border: 1px solid var(--border-card) !important;
+  color: var(--text-primary) !important;
+}
+
+.el-message--success {
+  border-color: #10b981 !important;
+}
+
+.el-message--warning {
+  border-color: #f59e0b !important;
+}
+
+.el-message--error {
+  border-color: #ef4444 !important;
+}
+
+/* 工具提示样式适配 */
+.el-tooltip__popper {
+  background: var(--bg-dialog) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-card) !important;
+  box-shadow: var(--shadow-dialog) !important;
+}
+
+/* 下拉菜单样式适配 */
+.el-dropdown-menu {
+  background: var(--bg-dialog) !important;
+  border: 1px solid var(--border-card) !important;
+  box-shadow: var(--shadow-dialog) !important;
+}
+
+.el-dropdown-menu__item {
+  color: var(--text-primary) !important;
+}
+
+.el-dropdown-menu__item:hover {
+  background: var(--accent-secondary) !important;
+}
+
+/* 标签页样式适配 */
+.el-tabs__header {
+  background: var(--bg-tertiary) !important;
+  border-bottom: 1px solid var(--border-primary) !important;
+}
+
+.el-tabs__item {
+  color: var(--text-primary) !important;
+}
+
+.el-tabs__item.is-active {
+  color: var(--accent-primary) !important;
+}
+
+.el-tabs__active-bar {
+  background: var(--accent-primary) !important;
+}
+
+/* 表单样式适配 */
+.el-form-item__label {
+  color: var(--text-primary) !important;
+}
+
+.el-form-item__content {
+  color: var(--text-primary) !important;
+}
+
+/* 暗色模式特殊处理 */
+.dark .el-table {
+  --el-table-border-color: var(--border-primary);
+  --el-table-header-background-color: var(--bg-tertiary);
+  --el-table-row-hover-background-color: var(--accent-secondary);
+}
+
+.dark .el-dialog {
+  --el-dialog-background-color: var(--bg-dialog);
+  --el-dialog-border-color: var(--border-card);
+}
+
+.dark .el-select-dropdown {
+  --el-select-dropdown-background-color: var(--bg-dialog);
+  --el-select-dropdown-border-color: var(--border-card);
+}
+
+.dark .el-pagination {
+  --el-pagination-background-color: var(--bg-card);
+  --el-pagination-text-color: var(--text-primary);
+}
+
+/* 弹窗滚动条控制 */
+body.dialog-open {
+  overflow: hidden !important;
+}
+
+/* 确保弹窗打开时页面滚动条被隐藏 */
+.el-dialog__wrapper {
+  overflow: visible !important;
+}
+
+/* 防止双滚动条 */
+html.dialog-open {
+  overflow: hidden !important;
+}
+
+/* 响应式适配 */
+@media (max-width: 768px) {
+  .el-dialog {
+    margin: 10px !important;
+    width: calc(100% - 20px) !important;
+  }
+  
+  .el-table {
+    font-size: 0.875rem;
+  }
+  
+  .el-pagination {
+    justify-content: center;
+  }
+} 
