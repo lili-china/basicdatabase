@@ -9,6 +9,7 @@ import LoginPage from '../views/LoginPage.vue'
 import UserConfirmPage from '../views/UserConfirmPage.vue'
 import ISPDatabase from '../views/ISPDatabase.vue'
 import RelationGraphDemo from '../views/RelationGraphDemo.vue'
+import SessionTest from '../views/SessionTest.vue'
 
 
 const router = createRouter({
@@ -72,6 +73,11 @@ const router = createRouter({
       path: '/relation-graph',
       name: 'RelationGraph',
       component: RelationGraphDemo
+    },
+    {
+      path: '/sessionTest',
+      name: 'SessionTest',
+      component: SessionTest
     },
 
   ]

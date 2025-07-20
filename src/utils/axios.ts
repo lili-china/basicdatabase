@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { getApiBaseUrl, isDev } from './envLoader'
+import { getCurrentSessionId, shouldRefreshCache, refreshCache } from './sessionValidator'
 
 // 环境配置
 const isDevelopment = isDev()
@@ -46,18 +47,16 @@ apiClient.interceptors.request.use(
       return config
     }
     
-    // 优先从localStorage获取sessionId，如果没有则从URL获取
-    let sessionId = localStorage.getItem('sessionId')
+    // 获取当前sessionId（支持缓存刷新）
+    const sessionId = getCurrentSessionId()
     
-    // 如果localStorage中没有，尝试从URL获取（仅第一次）
-    if (!sessionId) {
-      sessionId = new URLSearchParams(window.location.search).get('sessionId') || 
-                  new URLSearchParams(window.location.search).get('sessionid')
-      
-      // 如果从URL获取到有效的sessionId，保存到localStorage
-      if (sessionId && sessionId === 'a123456789') {
-        localStorage.setItem('sessionId', sessionId)
-      }
+    // 检查是否需要刷新缓存
+    const urlSessionId = new URLSearchParams(window.location.search).get('sessionId') || 
+                        new URLSearchParams(window.location.search).get('sessionid')
+    
+    if (shouldRefreshCache(urlSessionId)) {
+      console.log('检测到sessionId变化，刷新缓存')
+      refreshCache(urlSessionId!)
     }
     
     // 验证sessionId
@@ -82,7 +81,7 @@ apiClient.interceptors.request.use(
     // 添加session ID到请求头
     config.headers['X-Session-ID'] = sessionId
     
-    console.log('Request:', config.method?.toUpperCase(), config.url)
+    console.log('Request:', config.method?.toUpperCase(), config.url, 'SessionId:', sessionId)
     return config
   },
   (error) => {
