@@ -22,16 +22,6 @@
 
 ## 新增函数
 
-### `shouldRefreshCache(urlSessionId: string | null): boolean`
-检查是否需要刷新缓存
-```typescript
-// 示例
-const urlSessionId = getSessionIdFromUrl()
-if (shouldRefreshCache(urlSessionId)) {
-  console.log('需要刷新缓存')
-}
-```
-
 ### `refreshCache(newSessionId: string): void`
 刷新缓存
 ```typescript
@@ -91,7 +81,7 @@ if (isSessionExpired()) {
 访问 `/sessionTest` 页面可以测试缓存刷新功能：
 
 ### 测试功能
-1. **状态显示** - 显示当前 URL sessionId、缓存 sessionId、是否需要刷新等
+1. **状态显示** - 显示当前 URL sessionId、缓存 sessionId、当前使用的 sessionId 等
 2. **功能测试** - 测试有效/无效 sessionId、清除缓存、刷新页面
 3. **操作日志** - 记录所有操作和状态变化
 4. **测试 URL** - 提供各种测试场景的 URL
@@ -110,17 +100,18 @@ if (isSessionExpired()) {
 // 1. 获取 URL 中的 sessionId
 const urlSessionId = getSessionIdFromUrl()
 
-// 2. 检查是否需要刷新缓存
-if (shouldRefreshCache(urlSessionId)) {
-  // 3. 刷新缓存
-  refreshCache(urlSessionId!)
+// 2. 简化逻辑：URL有sessionId就刷新缓存，没有就用缓存
+if (urlSessionId) {
+  // URL中有sessionId，刷新缓存
+  refreshCache(urlSessionId)
+  sessionId = urlSessionId
+} else {
+  // URL中没有sessionId，使用缓存
+  sessionId = localStorage.getItem('sessionId')
 }
 
-// 4. 获取当前 sessionId
-const currentSessionId = getCurrentSessionId()
-
-// 5. 验证 sessionId
-if (!currentSessionId || currentSessionId !== 'a123456789') {
+// 3. 验证 sessionId
+if (!sessionId || sessionId !== 'a123456789') {
   // 跳转到错误页面
   window.location.href = '/errorPage?reason=invalid-sessionid'
 }
@@ -130,12 +121,6 @@ if (!currentSessionId || currentSessionId !== 'a123456789') {
 ```typescript
 // axios 拦截器中的逻辑
 const sessionId = getCurrentSessionId()
-
-// 检查是否需要刷新缓存
-const urlSessionId = new URLSearchParams(window.location.search).get('sessionId')
-if (shouldRefreshCache(urlSessionId)) {
-  refreshCache(urlSessionId!)
-}
 
 // 添加 sessionId 到请求头
 config.headers['X-Session-ID'] = sessionId

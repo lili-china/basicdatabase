@@ -28,54 +28,23 @@ const needsSessionValidation = (path: string) => {
   return !path.startsWith('/error') && !path.startsWith('/errorPage') && !path.startsWith('/login') && !path.startsWith('/user-confirm')
 }
 
-// 检查登录状态
-const checkLoginStatus = () => {
-  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'
-  const sessionId = localStorage.getItem('sessionId')
-  
-  if (!isLoggedIn || !sessionId) {
-    console.log('SessionGuard: User not logged in, redirecting to login')
-    router.push('/login')
-    return false
-  }
-  
-  return true
-}
-
-// 执行session验证（新版：用localStorage和URL参数校验）
+// 执行session验证（使用新的validateCurrentSession函数）
 const performSessionValidation = async () => {
   try {
     console.log('SessionGuard: Starting session validation...')
 
-    // 优先从localStorage获取sessionId
-    let sessionId = localStorage.getItem('sessionId')
+    // 使用新的验证函数
+    const result = validateCurrentSession()
     
-    // 如果localStorage中没有，尝试从URL获取（仅第一次）
-    if (!sessionId) {
-      sessionId = new URLSearchParams(window.location.search).get('sessionId') || 
-                  new URLSearchParams(window.location.search).get('sessionid')
-      
-      // 如果从URL获取到有效的sessionId，保存到localStorage
-      if (sessionId && sessionId === 'a123456789') {
-        localStorage.setItem('sessionId', sessionId)
-      }
+    console.log('SessionGuard: Validation result:', result)
+    
+    if (result.isValid) {
+      console.log('SessionGuard: Session validation successful')
+      isLoading.value = false
+    } else {
+      console.log('SessionGuard: Session validation failed:', result.error)
+      // 验证失败时，validateCurrentSession 会自动跳转到错误页面
     }
-    
-    // 验证sessionId
-    if (sessionId && sessionId !== 'a123456789') {
-      // sessionId不正确，跳转到错误页面
-      window.location.href = '/errorPage?reason=invalid-sessionid'
-      return
-    }
-    
-    // 如果没有sessionId，跳转到错误页面
-    if (!sessionId) {
-      window.location.href = '/errorPage?reason=no-sessionid'
-      return
-    }
-    
-    // 校验通过，显示内容
-    isLoading.value = false
   } catch (error) {
     console.error('SessionGuard: Session validation error:', error)
     // 万一异常，跳转到错误页

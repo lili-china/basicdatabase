@@ -19,24 +19,6 @@ export function getSessionIdFromUrl(): string | null {
   return urlParams.get('sessionid') || urlParams.get('sessionId')
 }
 
-// 检查是否需要刷新缓存
-export function shouldRefreshCache(urlSessionId: string | null): boolean {
-  if (!urlSessionId) return false
-  
-  const cachedSessionId = localStorage.getItem('sessionId')
-  
-  // 如果缓存中的sessionId与URL中的不同，需要刷新
-  if (cachedSessionId !== urlSessionId) {
-    console.log('检测到sessionId变化，需要刷新缓存:', {
-      cached: cachedSessionId,
-      url: urlSessionId
-    })
-    return true
-  }
-  
-  return false
-}
-
 // 刷新缓存
 export function refreshCache(newSessionId: string): void {
   console.log('刷新sessionId缓存:', newSessionId)
@@ -48,11 +30,9 @@ export function refreshCache(newSessionId: string): void {
   localStorage.removeItem('lastLoginTime')
   
   // 设置新的sessionId
-  if (newSessionId && newSessionId === 'a123456789') {
-    localStorage.setItem('sessionId', newSessionId)
-    localStorage.setItem('lastLoginTime', new Date().toISOString())
-    console.log('缓存刷新完成')
-  }
+  localStorage.setItem('sessionId', newSessionId)
+  localStorage.setItem('lastLoginTime', new Date().toISOString())
+  console.log('缓存刷新完成，新的sessionId:', newSessionId)
 }
 
 // 验证当前页面的session
@@ -66,16 +46,20 @@ export function validateCurrentSession(): SessionValidationResult {
   }
   
   const urlSessionId = getSessionIdFromUrl()
+  const cachedSessionId = localStorage.getItem('sessionId')
   let cacheRefreshed = false
+  let sessionId: string | null = null
   
-  // 检查是否需要刷新缓存
-  if (shouldRefreshCache(urlSessionId)) {
-    refreshCache(urlSessionId!)
+  // 简化逻辑：URL有sessionId就刷新缓存，没有就用缓存
+  if (urlSessionId) {
+    // URL中有sessionId，刷新缓存
+    refreshCache(urlSessionId)
+    sessionId = urlSessionId
     cacheRefreshed = true
+  } else {
+    // URL中没有sessionId，使用缓存
+    sessionId = cachedSessionId
   }
-  
-  // 优先使用URL中的sessionId，如果没有则使用缓存的
-  const sessionId = urlSessionId || localStorage.getItem('sessionId')
   
   if (!sessionId) {
     // 没有sessionid，跳转错误页
@@ -124,15 +108,15 @@ export async function validateSessionWithServer(sessionId: string): Promise<bool
 // 获取当前sessionId（优先从URL获取）
 export function getCurrentSessionId(): string | null {
   const urlSessionId = getSessionIdFromUrl()
-  const cachedSessionId = localStorage.getItem('sessionId')
   
-  // 如果URL中有sessionId且与缓存不同，刷新缓存
-  if (urlSessionId && urlSessionId !== cachedSessionId) {
+  if (urlSessionId) {
+    // URL中有sessionId，刷新缓存并返回
     refreshCache(urlSessionId)
     return urlSessionId
   }
   
-  return urlSessionId || cachedSessionId
+  // URL中没有sessionId，返回缓存中的
+  return localStorage.getItem('sessionId')
 }
 
 // 清除所有session相关缓存

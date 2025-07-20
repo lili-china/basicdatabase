@@ -49,9 +49,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import LoginWaveBackground from '../components/LoginWaveBackground.vue'
+import { getSessionIdFromUrl, refreshCache } from '@/utils/sessionValidator'
 
 interface Props {
   errorType?: 'session' | 'network' | 'permission' | 'general'
@@ -66,6 +67,24 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const router = useRouter()
+
+// 检查URL中的sessionId并自动跳转
+const checkSessionIdAndRedirect = () => {
+  const urlSessionId = getSessionIdFromUrl()
+  
+  if (urlSessionId && urlSessionId === 'a123456789') {
+    console.log('ErrorPage: 检测到有效的sessionId，自动跳转到dashboard')
+    
+    // 刷新缓存
+    refreshCache(urlSessionId)
+    
+    // 跳转到dashboard
+    router.push('/dashboard')
+    return true
+  }
+  
+  return false
+}
 
 const errorTitle = computed(() => {
   switch (props.errorType) {
@@ -104,6 +123,12 @@ const goBack = () => {
 const refreshPage = () => {
   window.location.reload()
 }
+
+// 组件挂载时检查sessionId
+onMounted(() => {
+  console.log('ErrorPage: 页面加载，检查URL中的sessionId')
+  checkSessionIdAndRedirect()
+})
 </script>
 
 <style scoped>

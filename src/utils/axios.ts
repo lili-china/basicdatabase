@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { getApiBaseUrl, isDev } from './envLoader'
-import { getCurrentSessionId, shouldRefreshCache, refreshCache } from './sessionValidator'
+import { getCurrentSessionId } from './sessionValidator'
 
 // 环境配置
 const isDevelopment = isDev()
@@ -47,17 +47,8 @@ apiClient.interceptors.request.use(
       return config
     }
     
-    // 获取当前sessionId（支持缓存刷新）
+    // 获取当前sessionId（简化逻辑：URL有就刷新缓存，没有就用缓存）
     const sessionId = getCurrentSessionId()
-    
-    // 检查是否需要刷新缓存
-    const urlSessionId = new URLSearchParams(window.location.search).get('sessionId') || 
-                        new URLSearchParams(window.location.search).get('sessionid')
-    
-    if (shouldRefreshCache(urlSessionId)) {
-      console.log('检测到sessionId变化，刷新缓存')
-      refreshCache(urlSessionId!)
-    }
     
     // 验证sessionId
     if (sessionId && sessionId !== 'a123456789') {

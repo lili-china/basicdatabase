@@ -19,9 +19,9 @@
             </span>
           </div>
           <div class="status-item">
-            <label>需要刷新缓存:</label>
-            <span :class="{ 'warning': shouldRefresh, 'normal': !shouldRefresh }">
-              {{ shouldRefresh ? '是' : '否' }}
+            <label>当前使用 SessionId:</label>
+            <span :class="{ 'valid': currentSessionId === 'a123456789', 'invalid': currentSessionId !== 'a123456789' }">
+              {{ currentSessionId || '无' }}
             </span>
           </div>
           <div class="status-item">
@@ -40,10 +40,16 @@
           <button @click="testInvalidSession" class="btn btn-warning">
             测试无效 SessionId
           </button>
+          <button @click="testValidation" class="btn btn-success">
+            测试校验功能
+          </button>
+          <button @click="testErrorPageRedirect" class="btn btn-info">
+            测试错误页面自动跳转
+          </button>
           <button @click="clearCache" class="btn btn-danger">
             清除缓存
           </button>
-          <button @click="refreshPage" class="btn btn-info">
+          <button @click="refreshPage" class="btn btn-secondary">
             刷新页面
           </button>
         </div>
@@ -85,20 +91,20 @@
 import { ref, onMounted, computed } from 'vue'
 import { 
   getSessionIdFromUrl, 
-  shouldRefreshCache, 
   refreshCache, 
   clearSessionCache,
-  getCurrentSessionId 
+  getCurrentSessionId,
+  validateCurrentSession
 } from '@/utils/sessionValidator'
 
 // 响应式数据
 const logs = ref<Array<{ time: string; message: string }>>([])
 const urlSessionId = ref<string | null>(null)
 const cachedSessionId = ref<string | null>(null)
+const currentSessionId = ref<string | null>(null)
 const lastLoginTime = ref<string | null>(null)
 
 // 计算属性
-const shouldRefresh = computed(() => shouldRefreshCache(urlSessionId.value))
 const validUrl = computed(() => `${window.location.origin}/sessionTest?sessionId=a123456789`)
 const invalidUrl = computed(() => `${window.location.origin}/sessionTest?sessionId=invalid123`)
 const noSessionUrl = computed(() => `${window.location.origin}/sessionTest`)
@@ -114,9 +120,10 @@ const addLog = (message: string) => {
 const updateStatus = () => {
   urlSessionId.value = getSessionIdFromUrl()
   cachedSessionId.value = localStorage.getItem('sessionId')
+  currentSessionId.value = getCurrentSessionId()
   lastLoginTime.value = localStorage.getItem('lastLoginTime')
   
-  addLog(`状态更新 - URL: ${urlSessionId.value || '无'}, 缓存: ${cachedSessionId.value || '无'}`)
+  addLog(`状态更新 - URL: ${urlSessionId.value || '无'}, 缓存: ${cachedSessionId.value || '无'}, 当前: ${currentSessionId.value || '无'}`)
 }
 
 // 测试有效 SessionId
@@ -124,12 +131,9 @@ const testValidSession = () => {
   addLog('测试有效 SessionId')
   const testSessionId = 'a123456789'
   
-  if (shouldRefreshCache(testSessionId)) {
-    addLog('检测到 SessionId 变化，刷新缓存')
-    refreshCache(testSessionId)
-  } else {
-    addLog('SessionId 未变化，无需刷新缓存')
-  }
+  // 模拟URL中有sessionId的情况
+  addLog('模拟URL中有sessionId，刷新缓存')
+  refreshCache(testSessionId)
   
   updateStatus()
 }
@@ -139,13 +143,43 @@ const testInvalidSession = () => {
   addLog('测试无效 SessionId')
   const testSessionId = 'invalid123'
   
-  if (shouldRefreshCache(testSessionId)) {
-    addLog('检测到 SessionId 变化，但为无效值')
-  } else {
-    addLog('SessionId 未变化')
-  }
+  // 模拟URL中有无效sessionId的情况
+  addLog('模拟URL中有无效sessionId，仍然刷新缓存')
+  refreshCache(testSessionId)
   
   updateStatus()
+}
+
+// 测试校验功能
+const testValidation = () => {
+  addLog('测试校验功能')
+  
+  try {
+    const result = validateCurrentSession()
+    addLog(`校验结果: ${result.isValid ? '通过' : '失败'} - ${result.error || ''}`)
+    
+    if (result.isValid) {
+      addLog('✅ 校验通过，sessionId有效')
+    } else {
+      addLog('❌ 校验失败，sessionId无效')
+    }
+  } catch (error) {
+    addLog(`❌ 校验异常: ${error}`)
+  }
+}
+
+// 测试错误页面自动跳转功能
+const testErrorPageRedirect = () => {
+  addLog('测试错误页面自动跳转功能')
+  
+  // 模拟访问错误页面但带有有效sessionId
+  const errorPageWithValidSession = '/errorPage?sessionId=a123456789'
+  addLog(`模拟访问: ${errorPageWithValidSession}`)
+  
+  // 在新窗口打开错误页面
+  window.open(errorPageWithValidSession, '_blank')
+  
+  addLog('✅ 已在新窗口打开错误页面，应该会自动跳转到dashboard')
 }
 
 // 清除缓存
@@ -287,6 +321,11 @@ h2 {
 .btn-warning {
   background: #ffc107;
   color: #212529;
+}
+
+.btn-success {
+  background: #28a745;
+  color: white;
 }
 
 .btn-danger {
