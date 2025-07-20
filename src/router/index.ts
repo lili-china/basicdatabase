@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Dashboard from '../views/Dashboard.vue'
-import EmployeeDatabase from '../views/EmployeeDatabase.vue'
+import PersonalDatabase from '../views/PersonalDatabase.vue'
 import VehicleDatabase from '../views/VehicleDatabase.vue'
 import Analytics from '../views/Analytics.vue'
 import Settings from '../views/Settings.vue'
@@ -32,7 +32,7 @@ const router = createRouter({
     {
       path: '/personal-database',
       name: 'PersonalDatabase',
-      component: EmployeeDatabase
+      component: PersonalDatabase
     },
     {
       path: '/vehicle-database',

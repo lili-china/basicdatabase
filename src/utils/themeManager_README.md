@@ -115,7 +115,7 @@ import { currentTheme } from './utils/themeManager'
 ### 已适配的组件
 - ✅ NavigationBar - 导航栏
 - ✅ WaveBackground - 波浪背景
-- ✅ EmployeeDatabase - 员工数据库页面
+- ✅ PersonalDatabase - 个人数据库页面
 - ✅ VehicleDatabase - 车辆数据库页面
 - ✅ Dashboard - 仪表板页面
 - ✅ Analytics - 分析页面

@@ -109,7 +109,7 @@ interface User {
 
 参考以下页面了解完整的使用示例：
 
-- `EmployeeDatabase.vue` - 人员数据库页面
+- `PersonalDatabase.vue` - 个人数据库页面
 - `VehicleDatabase.vue` - 车辆数据库页面
 
 ## 注意事项

@@ -47,20 +47,6 @@
                 </el-select>
               </div>
 
-               <div class="filter-group">
-                <label class="filter-label">Nationality</label>
-                <el-select v-model="pageQuery.selectedNationality" placeholder="Select Nationality" class="filter-input">
-                  <el-option label="All Nationalities" value="" />
-                  <el-option label="American" value="American" />
-                  <el-option label="Canadian" value="Canadian" />
-                  <el-option label="British" value="British" />
-                  <el-option label="German" value="German" />
-                  <el-option label="French" value="French" />
-                  <el-option label="Italian" value="Italian" />
-                  <el-option label="Spanish" value="Spanish" />
-                </el-select>
-              </div>
-
               <!-- 职位下拉框 -->
               <div class="filter-group">
                 <label class="filter-label">Position</label>
