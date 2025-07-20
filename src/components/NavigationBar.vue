@@ -13,6 +13,7 @@
         <span class="logo-text">Basic Database</span>
       </router-link>
 
+    
       <!-- 导航菜单 -->
       <div class="nav-menu">
         <router-link :to="{ path: '/dashboard', query: { sessionId: currentSessionId } }" class="nav-item" :class="{ active: $route.path === '/dashboard' }">
@@ -22,6 +23,16 @@
           </svg>
           <span>Dashboard</span>
         </router-link>
+
+        <router-link :to="{ path: '/isp-database', query: { sessionId: currentSessionId } }" class="nav-item" :class="{ active: $route.path === '/isp-database' }">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>ISP Database</span>
+        </router-link>
+
         
         <router-link :to="{ path: '/personal-database', query: { sessionId: currentSessionId } }" class="nav-item" :class="{ active: $route.path === '/personal-database' }">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -40,14 +51,7 @@
           <span>Vehicle Database</span>
         </router-link>
         
-        <router-link :to="{ path: '/isp-database', query: { sessionId: currentSessionId } }" class="nav-item" :class="{ active: $route.path === '/isp-database' }">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span>ISP Database</span>
-        </router-link>
+      
         
         <router-link :to="{ path: '/analytics', query: { sessionId: currentSessionId } }" class="nav-item" :class="{ active: $route.path === '/analytics' }">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -58,14 +62,14 @@
           <span>Analytics</span>
         </router-link>
         
-        <router-link :to="{ path: '/settings', query: { sessionId: currentSessionId } }" class="nav-item" :class="{ active: $route.path === '/settings' }">
+        <!-- <router-link :to="{ path: '/settings', query: { sessionId: currentSessionId } }" class="nav-item" :class="{ active: $route.path === '/settings' }">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M12 16V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
           <span>Settings</span>
-        </router-link>
+        </router-link> -->
       </div>
 
       <!-- 用户区域 -->
