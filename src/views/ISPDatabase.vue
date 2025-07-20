@@ -834,10 +834,7 @@ const calculateAge = (birthDate: string) => {
   return age
 }
 
-const viewISPDetails = (isp: any) => {
-  console.log('View ISP details:', isp)
-  // 这里可以打开查看弹窗
-}
+
 
 // 判断日期是否过期
 const isExpired = (dateString: string) => {
@@ -942,11 +939,7 @@ onMounted(() => {
   text-decoration: underline;
 }
 
-.isp-operator {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  margin: 0 0 0.5rem 0;
-}
+
 
 .isp-highlight {
   display: flex;
@@ -1106,11 +1099,7 @@ onMounted(() => {
   margin-bottom: 0.5rem;
 }
 
-.search-header p {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  margin-bottom: 1.5rem;
-}
+
 
 .search-filters {
   display: flex;
@@ -1263,9 +1252,7 @@ onMounted(() => {
     font-size: 1.1rem;
   }
   
-  .search-header p {
-    font-size: 0.875rem;
-  }
+
   
   .filter-row {
     flex-direction: column;
