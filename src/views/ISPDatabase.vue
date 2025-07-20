@@ -13,17 +13,90 @@
 
         <!-- 搜索和筛选区域 -->
         <div class="search-section">
-          <div class="search-header">
-            <h3>Search & Filter</h3>
-            <p>Enter search criteria to find specific ISP records</p>
-          </div>
+         
           
           <div class="search-filters">
+            <!-- 运营商筛选行 -->
+            <div class="letter-filter-row">
+              <label class="filter-label">Operator Filter</label>
+              <div class="letter-filters">
+                <button 
+                  class="letter-btn" 
+                  :class="{ active: pageQuery.selectedLetter === '' }"
+                  @click="selectLetter('')"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 16H28M12 20H28M12 24H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="28" cy="24" r="3" fill="currentColor"/>
+                  </svg>
+                  <span>All</span>
+                </button>
+                <button 
+                  class="letter-btn" 
+                  :class="{ active: pageQuery.selectedLetter === 'A' }"
+                  @click="selectLetter('A')"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span>A</span>
+                </button>
+                <button 
+                  class="letter-btn" 
+                  :class="{ active: pageQuery.selectedLetter === 'B' }"
+                  @click="selectLetter('B')"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M4 19V5C4 4.44772 4.44772 4 5 4H12C13.1046 4 14 4.89543 14 6C14 7.10457 13.1046 8 12 8H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M6 8H12C13.1046 8 14 8.89543 14 10C14 11.1046 13.1046 12 12 12H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M6 12H12C13.1046 12 14 12.8954 14 14C14 15.1046 13.1046 16 12 16H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span>B</span>
+                </button>
+                <button 
+                  class="letter-btn" 
+                  :class="{ active: pageQuery.selectedLetter === 'C' }"
+                  @click="selectLetter('C')"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M8 12C8 9.79 9.79 8 12 8C14.21 8 16 9.79 16 12C16 14.21 14.21 16 12 16C9.79 16 8 14.21 8 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span>C</span>
+                </button>
+                <button 
+                  class="letter-btn" 
+                  :class="{ active: pageQuery.selectedLetter === 'D' }"
+                  @click="selectLetter('D')"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M4 6H20V18H4V6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M4 6L12 12L20 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span>D</span>
+                </button>
+                <button 
+                  class="letter-btn" 
+                  :class="{ active: pageQuery.selectedLetter === 'E' }"
+                  @click="selectLetter('E')"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M4 6H20V8H4V6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M4 12H20V14H4V12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M4 18H20V20H4V18Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span>E</span>
+                </button>
+              </div>
+            </div>
+
             <div class="filter-row">
               <!-- 运营商下拉框 -->
               <div class="filter-group">
                 <label class="filter-label">Operator</label>
-                <el-select v-model="selectedOperator" placeholder="Select Operator" class="filter-input">
+                <el-select v-model="pageQuery.selectedOperator" placeholder="Select Operator" class="filter-input">
                   <el-option label="All Operators" value="" />
                   <el-option label="Comcast" value="comcast" />
                   <el-option label="Verizon" value="verizon" />
@@ -40,7 +113,7 @@
               <div class="filter-group">
                 <label class="filter-label">Identity Number</label>
                 <el-input
-                  v-model="identityNo"
+                  v-model="pageQuery.identityNo"
                   placeholder="Enter identity number"
                   class="filter-input"
                   clearable
@@ -51,20 +124,18 @@
               <div class="filter-group">
                 <label class="filter-label">Phone Number</label>
                 <el-input
-                  v-model="phoneNum"
+                  v-model="pageQuery.phoneNum"
                   placeholder="Enter phone number"
                   class="filter-input"
                   clearable
                 />
               </div>
-            </div>
 
-            <div class="filter-row">
               <!-- 真实姓名输入框 -->
               <div class="filter-group">
                 <label class="filter-label">Real Name</label>
                 <el-input
-                  v-model="realName"
+                  v-model="pageQuery.realName"
                   placeholder="Enter real name"
                   class="filter-input"
                   clearable
@@ -74,12 +145,28 @@
               <!-- 状态下拉框 -->
               <div class="filter-group">
                 <label class="filter-label">Status</label>
-                <el-select v-model="selectedStatus" placeholder="Select Status" class="filter-input">
+                <el-select v-model="pageQuery.selectedStatus" placeholder="Select Status" class="filter-input">
                   <el-option label="All Status" value="" />
                   <el-option label="Active" value="active" />
                   <el-option label="Inactive" value="inactive" />
                   <el-option label="Pending" value="pending" />
                   <el-option label="Suspended" value="suspended" />
+                </el-select>
+              </div>
+
+              <!-- 运行商筛选 -->
+              <div class="filter-group">
+                <label class="filter-label">Service Provider</label>
+                <el-select v-model="pageQuery.selectedServiceProvider" placeholder="Select Service Provider" class="filter-input">
+                  <el-option label="All Providers" value="" />
+                  <el-option label="Comcast" value="comcast" />
+                  <el-option label="Verizon Fios" value="verizon" />
+                  <el-option label="AT&T" value="att" />
+                  <el-option label="Spectrum" value="spectrum" />
+                  <el-option label="CenturyLink" value="centurylink" />
+                  <el-option label="Cox Communications" value="cox" />
+                  <el-option label="Frontier" value="frontier" />
+                  <el-option label="Windstream" value="windstream" />
                 </el-select>
               </div>
 
@@ -158,7 +245,7 @@
                 <span class="status-tag" :class="isp.status">{{ isp.status }}</span>
               </div>
               <div class="isp-actions">
-                <el-button size="small" @click.stop="showUserDetailDialog(isp)">View</el-button>
+                <el-button size="small" @click.stop="showISPDetails(isp)">View</el-button>
               </div>
             </div>
           </div>
@@ -184,6 +271,98 @@
       v-model="userDetailDialogVisible"
       :user="selectedUserForDialog"
     />
+
+    <!-- ISP详情弹窗 -->
+    <el-dialog
+      v-model="ispDetailDialogVisible"
+      :title="`ISP Details - ${selectedISP?.realName || ''}`"
+      width="800px"
+      class="isp-detail-dialog"
+    >
+      <div v-if="selectedISP" class="isp-detail-content">
+        <div class="detail-section">
+          <h4>Basic Information</h4>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="detail-label">Real Name:</span>
+              <span class="detail-value">{{ selectedISP.realName }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Identity Number:</span>
+              <span class="detail-value">{{ selectedISP.identityNo }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Phone Number:</span>
+              <span class="detail-value">{{ selectedISP.phoneNum }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Nationality:</span>
+              <span class="detail-value">{{ selectedISP.nationality }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Birth Date:</span>
+              <span class="detail-value">{{ selectedISP.birthDate }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Address:</span>
+              <span class="detail-value">{{ selectedISP.address }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h4>ISP Information</h4>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="detail-label">Operator:</span>
+              <span class="detail-value">{{ selectedISP.name }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Service Type:</span>
+              <span class="detail-value">{{ selectedISP.serviceType }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Max Speed:</span>
+              <span class="detail-value">{{ selectedISP.maxSpeed }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Coverage:</span>
+              <span class="detail-value">{{ selectedISP.coverage }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Location:</span>
+              <span class="detail-value">{{ selectedISP.location }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Description:</span>
+              <span class="detail-value">{{ selectedISP.description }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h4>Timeline Information</h4>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="detail-label">Registration Date:</span>
+              <span class="detail-value">{{ selectedISP.registrationDate }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Expiry Date:</span>
+              <span class="detail-value" :class="{ 'expired': isExpired(selectedISP.expiryDate) }">
+                {{ selectedISP.expiryDate }}
+              </span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Status:</span>
+              <span class="detail-value">
+                <span class="status-tag" :class="selectedISP.status">{{ selectedISP.status }}</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -197,12 +376,16 @@ import UserDetailDialog from '../components/UserDetailDialog.vue'
 // 当前session ID
 const currentSessionId = ref<string | null>(null)
 
-// 搜索和筛选状态
-const selectedOperator = ref('')
-const identityNo = ref('')
-const phoneNum = ref('')
-const realName = ref('')
-const selectedStatus = ref('')
+// 页面查询对象
+const pageQuery = ref({
+  selectedOperator: '',
+  identityNo: '',
+  phoneNum: '',
+  realName: '',
+  selectedStatus: '',
+  selectedServiceProvider: '',
+  selectedLetter: ''
+})
 
 // 分页状态
 const currentPage = ref(1)
@@ -505,38 +688,50 @@ const filteredISPs = computed(() => {
   let filtered = ispData.value
 
   // 运营商筛选
-  if (selectedOperator.value) {
+  if (pageQuery.value.selectedOperator) {
     filtered = filtered.filter(isp => 
-      isp.name.toLowerCase().includes(selectedOperator.value.toLowerCase())
+      isp.name.toLowerCase().includes(pageQuery.value.selectedOperator.toLowerCase())
     )
   }
 
   // 身份证号筛选
-  if (identityNo.value) {
+  if (pageQuery.value.identityNo) {
     filtered = filtered.filter(isp => 
-      isp.identityNo && isp.identityNo.toLowerCase().includes(identityNo.value.toLowerCase())
+      isp.identityNo && isp.identityNo.toLowerCase().includes(pageQuery.value.identityNo.toLowerCase())
     )
   }
 
   // 电话号码筛选
-  if (phoneNum.value) {
+  if (pageQuery.value.phoneNum) {
     filtered = filtered.filter(isp => 
-      isp.phoneNum && isp.phoneNum.includes(phoneNum.value)
+      isp.phoneNum && isp.phoneNum.includes(pageQuery.value.phoneNum)
     )
   }
 
   // 真实姓名筛选
-  if (realName.value) {
+  if (pageQuery.value.realName) {
     filtered = filtered.filter(isp => 
-      isp.realName && isp.realName.toLowerCase().includes(realName.value.toLowerCase())
+      isp.realName && isp.realName.toLowerCase().includes(pageQuery.value.realName.toLowerCase())
     )
   }
 
-
-
   // 状态筛选
-  if (selectedStatus.value) {
-    filtered = filtered.filter(isp => isp.status === selectedStatus.value)
+  if (pageQuery.value.selectedStatus) {
+    filtered = filtered.filter(isp => isp.status === pageQuery.value.selectedStatus)
+  }
+
+  // 运行商筛选
+  if (pageQuery.value.selectedServiceProvider) {
+    filtered = filtered.filter(isp => 
+      isp.name.toLowerCase().includes(pageQuery.value.selectedServiceProvider.toLowerCase())
+    )
+  }
+
+  // 字母筛选
+  if (pageQuery.value.selectedLetter) {
+    filtered = filtered.filter(isp => 
+      isp.realName && isp.realName.toUpperCase().startsWith(pageQuery.value.selectedLetter)
+    )
   }
 
   totalItems.value = filtered.length
@@ -549,13 +744,21 @@ const performSearch = () => {
   // 搜索逻辑已通过computed实现
 }
 
+// 字母筛选方法
+const selectLetter = (letter: string) => {
+  pageQuery.value.selectedLetter = letter
+  currentPage.value = 1
+}
+
 // 重置筛选
 const resetFilters = () => {
-  selectedOperator.value = ''
-  identityNo.value = ''
-  phoneNum.value = ''
-  realName.value = ''
-  selectedStatus.value = ''
+  pageQuery.value.selectedOperator = ''
+  pageQuery.value.identityNo = ''
+  pageQuery.value.phoneNum = ''
+  pageQuery.value.realName = ''
+  pageQuery.value.selectedStatus = ''
+  pageQuery.value.selectedServiceProvider = ''
+  pageQuery.value.selectedLetter = ''
   currentPage.value = 1
 }
 
@@ -573,10 +776,14 @@ const handleCurrentChange = (page: number) => {
 const userDetailDialogVisible = ref(false)
 const selectedUserForDialog = ref<any>(null)
 
+// ISP详情弹窗状态
+const ispDetailDialogVisible = ref(false)
+const selectedISP = ref<any>(null)
+
 // ISP详情功能
 const showISPDetails = (isp: any) => {
-  console.log('Show ISP details:', isp)
-  // 这里可以打开详情弹窗
+  selectedISP.value = isp
+  ispDetailDialogVisible.value = true
 }
 
 // 用户详情功能
@@ -921,11 +1128,13 @@ onMounted(() => {
   display: flex;
   gap: 1rem;
   align-items: end;
+  flex-wrap: wrap;
 }
 
 .filter-group {
   flex: 1;
-  min-width: 0;
+  min-width: 180px;
+  max-width: 200px;
 }
 
 .filter-label {
@@ -943,6 +1152,61 @@ onMounted(() => {
   display: flex;
   gap: 0.75rem;
   flex-shrink: 0;
+  min-width: 200px;
+}
+
+/* 字母筛选样式 */
+.letter-filter-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.letter-filters {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.letter-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-card);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 60px;
+  color: var(--text-secondary);
+}
+
+.letter-btn:hover {
+  background: var(--accent-secondary);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
+}
+
+.letter-btn.active {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.letter-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.letter-btn span {
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 .search-btn {
@@ -979,12 +1243,14 @@ onMounted(() => {
   }
   
   .filter-group {
-    min-width: 200px;
+    min-width: 160px;
+    max-width: 180px;
   }
   
   .filter-actions {
     flex: 1;
     justify-content: flex-end;
+    min-width: 180px;
   }
 }
 
@@ -1081,6 +1347,117 @@ onMounted(() => {
   
   .search-btn,
   .reset-btn {
+    max-width: 100%;
+  }
+}
+
+/* ISP详情弹窗样式 */
+.isp-detail-dialog {
+  .el-dialog__body {
+    padding: 1.5rem;
+  }
+}
+
+.isp-detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.detail-section {
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid var(--border-card);
+}
+
+.detail-section h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--accent-primary);
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--bg-primary);
+  border-radius: 8px;
+  border: 1px solid var(--border-card);
+}
+
+.detail-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.detail-value {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  font-weight: 600;
+  text-align: right;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.detail-value.expired {
+  color: #ef4444;
+}
+
+.detail-value .status-tag {
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.detail-value .status-tag.active {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+}
+
+.detail-value .status-tag.inactive {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.detail-value .status-tag.pending {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+.detail-value .status-tag.suspended {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .detail-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .detail-value {
+    text-align: left;
     max-width: 100%;
   }
 }

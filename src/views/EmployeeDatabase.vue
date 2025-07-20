@@ -13,78 +13,108 @@
           <p>Search and view personal information and records</p>
         </div>
         
-        <!-- 搜索和过滤区域 -->
+        <!-- 搜索和筛选区域 -->
         <div class="search-section">
-          <div class="search-box">
-            <input 
-              type="text" 
-              placeholder="Search by name, ID, position, or phone..."
-              v-model="searchQuery"
-              class="search-input"
-            />
-            <button class="search-btn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
+          <div class="search-header">
+            <h3>Search & Filter</h3>
           </div>
           
-          <div class="filter-controls">
-            <el-select 
-              v-model="selectedNationality" 
-              placeholder="All Nationalities"
-              clearable
-              style="width: 200px;"
-            >
-              <el-option label="All Nationalities" value="" />
-              <el-option label="American" value="American" />
-              <el-option label="Canadian" value="Canadian" />
-              <el-option label="British" value="British" />
-              <el-option label="German" value="German" />
-              <el-option label="French" value="French" />
-              <el-option label="Italian" value="Italian" />
-              <el-option label="Spanish" value="Spanish" />
-            </el-select>
-            
-            <el-select 
-              v-model="selectedPosition" 
-              placeholder="All Positions"
-              clearable
-              style="width: 200px;"
-            >
-              <el-option label="All Positions" value="" />
-              <el-option label="Software Engineer" value="Software Engineer" />
-              <el-option label="UI/UX Designer" value="UI/UX Designer" />
-              <el-option label="Product Manager" value="Product Manager" />
-              <el-option label="Data Scientist" value="Data Scientist" />
-              <el-option label="DevOps Engineer" value="DevOps Engineer" />
-              <el-option label="Frontend Developer" value="Frontend Developer" />
-              <el-option label="Backend Developer" value="Backend Developer" />
-            </el-select>
-            
-            <el-select 
-              v-model="selectedGender" 
-              placeholder="All Genders"
-              clearable
-              style="width: 150px;"
-            >
-              <el-option label="All Genders" value="" />
-              <el-option label="Male" value="Male" />
-              <el-option label="Female" value="Female" />
-            </el-select>
-            
-            <el-select 
-              v-model="selectedAgeRange" 
-              placeholder="All Ages"
-              clearable
-              style="width: 150px;"
-            >
-              <el-option label="All Ages" value="" />
-              <el-option label="22-30" value="22-30" />
-              <el-option label="31-35" value="31-35" />
-              <el-option label="36-40" value="36-40" />
-              <el-option label="41-46" value="41-46" />
-            </el-select>
+          <div class="search-filters">
+            <div class="filter-row">
+              <!-- 搜索输入框 -->
+              <div class="filter-group">
+                <label class="filter-label">Search</label>
+                <el-input
+                  v-model="pageQuery.searchQuery"
+                  placeholder="Search by name, ID, position, or phone..."
+                  class="filter-input"
+                  clearable
+                />
+              </div>
+
+              <!-- 国籍下拉框 -->
+              <div class="filter-group">
+                <label class="filter-label">Nationality</label>
+                <el-select v-model="pageQuery.selectedNationality" placeholder="Select Nationality" class="filter-input">
+                  <el-option label="All Nationalities" value="" />
+                  <el-option label="American" value="American" />
+                  <el-option label="Canadian" value="Canadian" />
+                  <el-option label="British" value="British" />
+                  <el-option label="German" value="German" />
+                  <el-option label="French" value="French" />
+                  <el-option label="Italian" value="Italian" />
+                  <el-option label="Spanish" value="Spanish" />
+                </el-select>
+              </div>
+
+               <div class="filter-group">
+                <label class="filter-label">Nationality</label>
+                <el-select v-model="pageQuery.selectedNationality" placeholder="Select Nationality" class="filter-input">
+                  <el-option label="All Nationalities" value="" />
+                  <el-option label="American" value="American" />
+                  <el-option label="Canadian" value="Canadian" />
+                  <el-option label="British" value="British" />
+                  <el-option label="German" value="German" />
+                  <el-option label="French" value="French" />
+                  <el-option label="Italian" value="Italian" />
+                  <el-option label="Spanish" value="Spanish" />
+                </el-select>
+              </div>
+
+              <!-- 职位下拉框 -->
+              <div class="filter-group">
+                <label class="filter-label">Position</label>
+                <el-select v-model="pageQuery.selectedPosition" placeholder="Select Position" class="filter-input">
+                  <el-option label="All Positions" value="" />
+                  <el-option label="Software Engineer" value="Software Engineer" />
+                  <el-option label="UI/UX Designer" value="UI/UX Designer" />
+                  <el-option label="Product Manager" value="Product Manager" />
+                  <el-option label="Data Scientist" value="Data Scientist" />
+                  <el-option label="DevOps Engineer" value="DevOps Engineer" />
+                  <el-option label="Frontend Developer" value="Frontend Developer" />
+                  <el-option label="Backend Developer" value="Backend Developer" />
+                </el-select>
+              </div>
+
+              <!-- 性别下拉框 -->
+              <div class="filter-group">
+                <label class="filter-label">Gender</label>
+                <el-select v-model="pageQuery.selectedGender" placeholder="Select Gender" class="filter-input">
+                  <el-option label="All Genders" value="" />
+                  <el-option label="Male" value="Male" />
+                  <el-option label="Female" value="Female" />
+                </el-select>
+              </div>
+
+              <!-- 年龄范围下拉框 -->
+              <div class="filter-group">
+                <label class="filter-label">Age Range</label>
+                <el-select v-model="pageQuery.selectedAgeRange" placeholder="Select Age Range" class="filter-input">
+                  <el-option label="All Ages" value="" />
+                  <el-option label="22-30" value="22-30" />
+                  <el-option label="31-35" value="31-35" />
+                  <el-option label="36-40" value="36-40" />
+                  <el-option label="41-46" value="41-46" />
+                </el-select>
+              </div>
+
+              <!-- 操作按钮 -->
+              <div class="filter-actions">
+                <el-button type="primary" @click="performSearch" class="search-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="search-icon">
+                    <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  Search
+                </el-button>
+                <el-button @click="resetFilters" class="reset-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="reset-icon">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M3 3v5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  Reset
+                </el-button>
+              </div>
+            </div>
           </div>
         </div>
         
@@ -251,12 +281,14 @@ const generateUsers = () => {
 
 const allUsers = ref(generateUsers())
 
-// 搜索和过滤状态
-const searchQuery = ref('')
-const selectedNationality = ref('')
-const selectedPosition = ref('')
-const selectedGender = ref('')
-const selectedAgeRange = ref('')
+// 页面查询对象
+const pageQuery = ref({
+  searchQuery: '',
+  selectedNationality: '',
+  selectedPosition: '',
+  selectedGender: '',
+  selectedAgeRange: ''
+})
 const currentPage = ref(1)
 const itemsPerPage = 12
 
@@ -271,8 +303,8 @@ const filteredUsers = computed(() => {
   let filtered = allUsers.value
   
   // 搜索过滤
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
+  if (pageQuery.value.searchQuery) {
+    const query = pageQuery.value.searchQuery.toLowerCase()
     filtered = filtered.filter(user => 
       user.name.toLowerCase().includes(query) ||
       user.id.toLowerCase().includes(query) ||
@@ -282,23 +314,23 @@ const filteredUsers = computed(() => {
   }
   
   // 国籍过滤
-  if (selectedNationality.value) {
-    filtered = filtered.filter(user => user.nationality === selectedNationality.value)
+  if (pageQuery.value.selectedNationality) {
+    filtered = filtered.filter(user => user.nationality === pageQuery.value.selectedNationality)
   }
   
   // 职位过滤
-  if (selectedPosition.value) {
-    filtered = filtered.filter(user => user.position === selectedPosition.value)
+  if (pageQuery.value.selectedPosition) {
+    filtered = filtered.filter(user => user.position === pageQuery.value.selectedPosition)
   }
   
   // 性别过滤
-  if (selectedGender.value) {
-    filtered = filtered.filter(user => user.gender === selectedGender.value)
+  if (pageQuery.value.selectedGender) {
+    filtered = filtered.filter(user => user.gender === pageQuery.value.selectedGender)
   }
   
   // 年龄范围过滤
-  if (selectedAgeRange.value) {
-    const [minAge, maxAge] = selectedAgeRange.value.split('-').map(Number)
+  if (pageQuery.value.selectedAgeRange) {
+    const [minAge, maxAge] = pageQuery.value.selectedAgeRange.split('-').map(Number)
     filtered = filtered.filter(user => user.age >= minAge && user.age <= maxAge)
   }
   
@@ -311,6 +343,22 @@ const paginatedUsers = computed(() => {
   const end = start + itemsPerPage
   return filteredUsers.value.slice(start, end)
 })
+
+// 搜索功能
+const performSearch = () => {
+  currentPage.value = 1
+  // 搜索逻辑已通过computed实现
+}
+
+// 重置筛选
+const resetFilters = () => {
+  pageQuery.value.searchQuery = ''
+  pageQuery.value.selectedNationality = ''
+  pageQuery.value.selectedPosition = ''
+  pageQuery.value.selectedGender = ''
+  pageQuery.value.selectedAgeRange = ''
+  currentPage.value = 1
+}
 
 // 分页方法
 const handleCurrentChange = (page: number) => {
@@ -367,6 +415,140 @@ const showUserDetail = (user: any) => {
   color: var(--text-tertiary);
   font-size: 0.8rem;
   margin: 0;
+}
+
+/* 搜索区域样式 */
+.search-section {
+  margin-bottom: 2rem;
+}
+
+.search-header {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.search-header h3 {
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.search-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-card);
+}
+
+.filter-row {
+  display: flex;
+  gap: 1rem;
+  align-items: end;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  flex: 1;
+  min-width: 180px;
+  max-width: 200px;
+}
+
+.filter-label {
+  font-size: 0.625rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.filter-input {
+  width: 100%;
+}
+
+.filter-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-shrink: 0;
+  min-width: 200px;
+}
+
+.search-btn {
+  height: 40px;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.search-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.reset-btn {
+  height: 40px;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.reset-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+  .filter-row {
+    flex-wrap: wrap;
+  }
+  
+  .filter-group {
+    min-width: 160px;
+    max-width: 180px;
+  }
+  
+  .filter-actions {
+    flex: 1;
+    justify-content: flex-end;
+    min-width: 180px;
+  }
+}
+
+@media (max-width: 768px) {
+  .search-section {
+    padding: 1rem;
+  }
+  
+  .search-header h3 {
+    font-size: 1.1rem;
+  }
+  
+  .filter-row {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .filter-group {
+    min-width: 100%;
+  }
+  
+  .filter-actions {
+    flex-direction: row;
+    justify-content: center;
+    gap: 1rem;
+  }
+  
+  .search-btn,
+  .reset-btn {
+    flex: 1;
+    max-width: 150px;
+  }
 }
 
 /* 响应式设计 - 页面特有 */

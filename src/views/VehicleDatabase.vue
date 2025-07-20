@@ -11,47 +11,63 @@
           <p>Search and view vehicle information and records</p>
         </div>
         
-        <!-- 搜索和过滤区域 -->
+        <!-- 搜索和筛选区域 -->
         <div class="search-section">
-          <div class="search-box">
-            <input 
-              type="text" 
-              placeholder="Search by vehicle type, license plate, or owner..."
-              v-model="searchQuery"
-              class="search-input"
-            />
-            <button class="search-btn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
-          </div>
+   
           
-          <div class="filter-controls">
-            <el-select 
-              v-model="selectedType" 
-              placeholder="All Vehicle Types"
-              clearable
-              style="width: 200px;"
-            >
-              <el-option label="All Vehicle Types" value="" />
-              <el-option label="Company Car" value="Company Car" />
-              <el-option label="Personal Vehicle" value="Personal Vehicle" />
-              <el-option label="Motorcycle" value="Motorcycle" />
-              <el-option label="Truck" value="Truck" />
-            </el-select>
-            
-            <el-select 
-              v-model="selectedStatus" 
-              placeholder="All Status"
-              clearable
-              style="width: 150px;"
-            >
-              <el-option label="All Status" value="" />
-              <el-option label="Active" value="Active" />
-              <el-option label="Maintenance" value="Maintenance" />
-              <el-option label="Retired" value="Retired" />
-            </el-select>
+          <div class="search-filters">
+            <div class="filter-row">
+              <!-- 车辆类型下拉框 -->
+              <div class="filter-group">
+                <label class="filter-label">Vehicle Type</label>
+                <el-select v-model="pageQuery.selectedType" placeholder="Select Vehicle Type" class="filter-input">
+                  <el-option label="All Vehicle Types" value="" />
+                  <el-option label="Company Car" value="Company Car" />
+                  <el-option label="Personal Vehicle" value="Personal Vehicle" />
+                  <el-option label="Motorcycle" value="Motorcycle" />
+                  <el-option label="Truck" value="Truck" />
+                </el-select>
+              </div>
+
+              <!-- 状态下拉框 -->
+              <div class="filter-group">
+                <label class="filter-label">Status</label>
+                <el-select v-model="pageQuery.selectedStatus" placeholder="Select Status" class="filter-input">
+                  <el-option label="All Status" value="" />
+                  <el-option label="Active" value="Active" />
+                  <el-option label="Maintenance" value="Maintenance" />
+                  <el-option label="Retired" value="Retired" />
+                </el-select>
+              </div>
+
+              <!-- 搜索输入框 -->
+              <div class="filter-group">
+                <label class="filter-label">Search</label>
+                <el-input
+                  v-model="pageQuery.searchQuery"
+                  placeholder="Search by type, license plate, or owner..."
+                  class="filter-input"
+                  clearable
+                />
+              </div>
+
+              <!-- 操作按钮 -->
+              <div class="filter-actions">
+                <el-button type="primary" @click="performSearch" class="search-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="search-icon">
+                    <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  Search
+                </el-button>
+                <el-button @click="resetFilters" class="reset-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="reset-icon">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M3 3v5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  Reset
+                </el-button>
+              </div>
+            </div>
           </div>
         </div>
         
@@ -180,10 +196,12 @@ const generateVehicles = () => {
 
 const allVehicles = ref(generateVehicles())
 
-// 搜索和过滤状态
-const searchQuery = ref('')
-const selectedType = ref('')
-const selectedStatus = ref('')
+// 页面查询对象
+const pageQuery = ref({
+  searchQuery: '',
+  selectedType: '',
+  selectedStatus: ''
+})
 const currentPage = ref(1)
 const itemsPerPage = 12
 
@@ -196,8 +214,8 @@ const filteredVehicles = computed(() => {
   let filtered = allVehicles.value
   
   // 搜索过滤
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
+  if (pageQuery.value.searchQuery) {
+    const query = pageQuery.value.searchQuery.toLowerCase()
     filtered = filtered.filter(vehicle => 
       vehicle.type.toLowerCase().includes(query) ||
       vehicle.licensePlate.toLowerCase().includes(query) ||
@@ -209,13 +227,13 @@ const filteredVehicles = computed(() => {
   }
   
   // 类型过滤
-  if (selectedType.value) {
-    filtered = filtered.filter(vehicle => vehicle.type === selectedType.value)
+  if (pageQuery.value.selectedType) {
+    filtered = filtered.filter(vehicle => vehicle.type === pageQuery.value.selectedType)
   }
   
   // 状态过滤
-  if (selectedStatus.value) {
-    filtered = filtered.filter(vehicle => vehicle.status === selectedStatus.value)
+  if (pageQuery.value.selectedStatus) {
+    filtered = filtered.filter(vehicle => vehicle.status === pageQuery.value.selectedStatus)
   }
   
   return filtered
@@ -227,6 +245,20 @@ const paginatedVehicles = computed(() => {
   const end = start + itemsPerPage
   return filteredVehicles.value.slice(start, end)
 })
+
+// 搜索功能
+const performSearch = () => {
+  currentPage.value = 1
+  // 搜索逻辑已通过computed实现
+}
+
+// 重置筛选
+const resetFilters = () => {
+  pageQuery.value.searchQuery = ''
+  pageQuery.value.selectedType = ''
+  pageQuery.value.selectedStatus = ''
+  currentPage.value = 1
+}
 
 // 分页方法
 const handleCurrentChange = (page: number) => {
@@ -284,6 +316,140 @@ const showVehicleDetail = (vehicle: any) => {
   color: var(--text-tertiary);
   font-size: 0.8rem;
   margin: 0;
+}
+
+/* 搜索区域样式 */
+.search-section {
+  margin-bottom: 2rem;
+}
+
+.search-header {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.search-header h3 {
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.search-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-card);
+}
+
+.filter-row {
+  display: flex;
+  gap: 1rem;
+  align-items: end;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  flex: 1;
+  min-width: 180px;
+  max-width: 200px;
+}
+
+.filter-label {
+  font-size: 0.625rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.filter-input {
+  width: 100%;
+}
+
+.filter-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-shrink: 0;
+  min-width: 200px;
+}
+
+.search-btn {
+  height: 40px;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.search-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.reset-btn {
+  height: 40px;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.reset-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+  .filter-row {
+    flex-wrap: wrap;
+  }
+  
+  .filter-group {
+    min-width: 160px;
+    max-width: 180px;
+  }
+  
+  .filter-actions {
+    flex: 1;
+    justify-content: flex-end;
+    min-width: 180px;
+  }
+}
+
+@media (max-width: 768px) {
+  .search-section {
+    padding: 1rem;
+  }
+  
+  .search-header h3 {
+    font-size: 1.1rem;
+  }
+  
+  .filter-row {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .filter-group {
+    min-width: 100%;
+  }
+  
+  .filter-actions {
+    flex-direction: row;
+    justify-content: center;
+    gap: 1rem;
+  }
+  
+  .search-btn,
+  .reset-btn {
+    flex: 1;
+    max-width: 150px;
+  }
 }
 
 /* 响应式设计 - 页面特有 */
