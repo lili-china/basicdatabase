@@ -8,6 +8,8 @@
 src/utils/
 ├── commonUtils.ts          # 常用工具类函数
 ├── commonUtils.example.ts  # 使用示例
+├── collectionUtils.ts      # 集合操作工具类
+├── collectionUtils.example.ts # 集合操作示例
 ├── axios.ts               # HTTP 客户端配置
 ├── sessionValidator.ts     # 会话验证工具
 ├── themeManager.ts        # 主题管理
@@ -57,6 +59,42 @@ src/utils/
 - `getUrlParam(name)` - 获取URL参数
 - `setUrlParam(name, value)` - 设置URL参数
 - `removeUrlParam(name)` - 移除URL参数
+
+### 9. 集合操作 (新增)
+- `unique(arr, key)` - 数组去重
+- `groupBy(arr, key)` - 数组分组
+- `sortBy(arr, key, order)` - 数组排序
+- `paginate(arr, page, pageSize)` - 数组分页
+- `flatten(arr, depth)` - 数组扁平化
+- `intersection(arr1, arr2)` - 数组交集
+- `union(arr1, arr2)` - 数组并集
+- `difference(arr1, arr2)` - 数组差集
+- `shuffle(arr)` - 数组随机打乱
+- `randomChoice(arr, count)` - 数组随机选择
+- `chunk(arr, size)` - 数组分块
+- `fill(length, value)` - 数组填充
+- `range(start, end, step)` - 数组范围
+- `countBy(arr, key)` - 数组统计
+- `sum(arr, key)` - 数组求和
+- `average(arr, key)` - 数组平均值
+- `max(arr, key)` - 数组最大值
+- `min(arr, key)` - 数组最小值
+- `includes(arr, item)` - 检查数组是否包含元素
+- `first(arr)` - 获取数组第一个元素
+- `last(arr)` - 获取数组最后一个元素
+- `deepMerge(target, ...sources)` - 对象深度合并
+- `flattenObject(obj, prefix)` - 对象扁平化
+- `pick(obj, keys)` - 对象选择指定属性
+- `omit(obj, keys)` - 对象排除指定属性
+- `toPairs(obj)` - 对象转键值对数组
+- `fromPairs(pairs)` - 键值对数组转对象
+- `setIntersection(set1, set2)` - Set交集
+- `setUnion(set1, set2)` - Set并集
+- `setDifference(set1, set2)` - Set差集
+- `mapToObject(map)` - Map转对象
+- `objectToMap(obj)` - 对象转Map
+- `mapToPairs(map)` - Map转键值对数组
+- `pairsToMap(pairs)` - 键值对数组转Map
 
 ## 使用示例
 
@@ -160,6 +198,76 @@ const groupedByRole = groupBy(users, 'role')
 // 结果: { admin: [...], user: [...] }
 ```
 
+### 集合操作 (新增)
+```typescript
+import {
+  unique, groupBy, sortBy, paginate, intersection, union, difference,
+  shuffle, randomChoice, chunk, countBy, sum, average, max, min,
+  deepMerge, pick, omit, setIntersection, mapToObject
+} from '@/utils/collectionUtils'
+
+// 数组操作
+const users = [
+  { id: 1, name: 'Alice', age: 25, city: 'Beijing', salary: 5000 },
+  { id: 2, name: 'Bob', age: 30, city: 'Shanghai', salary: 6000 },
+  { id: 3, name: 'Charlie', age: 25, city: 'Beijing', salary: 5500 }
+]
+
+// 数组去重
+const uniqueUsers = unique(users, 'city')
+
+// 数组分组
+const usersByCity = groupBy(users, 'city')
+
+// 数组排序
+const sortedUsers = sortBy(users, 'salary', 'desc')
+
+// 数组分页
+const pageResult = paginate(users, 1, 2)
+
+// 数组集合操作
+const arr1 = [1, 2, 3, 4, 5]
+const arr2 = [4, 5, 6, 7, 8]
+const intersectionResult = intersection(arr1, arr2)
+const unionResult = union(arr1, arr2)
+const differenceResult = difference(arr1, arr2)
+
+// 数组随机操作
+const shuffledUsers = shuffle([...users])
+const randomUsers = randomChoice(users, 2)
+
+// 数组分块
+const chunks = chunk(users, 2)
+
+// 数组统计
+const cityStats = countBy(users, 'city')
+const salaries = users.map(u => u.salary)
+const totalSalary = sum(salaries)
+const avgSalary = average(salaries)
+const maxSalary = max(salaries)
+const minSalary = min(salaries)
+
+// 对象操作
+const user = { id: 1, name: 'Alice', profile: { age: 25 } }
+const userUpdate = { name: 'Alice Smith', profile: { age: 26 } }
+
+// 对象深度合并
+const mergedUser = deepMerge({ ...user }, userUpdate)
+
+// 对象属性选择
+const userBasic = pick(user, ['id', 'name'])
+const userWithoutProfile = omit(user, ['profile'])
+
+// Set 操作
+const set1 = new Set([1, 2, 3, 4, 5])
+const set2 = new Set([4, 5, 6, 7, 8])
+const setIntersectionResult = setIntersection(set1, set2)
+
+// Map 操作
+const userMap = new Map([['id', 1], ['name', 'Alice']])
+const userObj = mapToObject(userMap)
+```
+
 ### 数据验证
 ```typescript
 import { isValidEmail, isValidPhone, isValidIdCard } from '@/utils/commonUtils'
@@ -197,6 +305,70 @@ const asyncTask = async () => {
 }
 ```
 
+## 实际应用场景
+
+### 1. 用户数据处理
+```typescript
+import { groupBy, average, sortBy, paginate } from '@/utils/collectionUtils'
+
+// 处理用户数据
+const processUserData = (users) => {
+  // 按城市分组
+  const usersByCity = groupBy(users, 'city')
+  
+  // 计算每个城市的平均薪资
+  const cityStats = Object.entries(usersByCity).map(([city, cityUsers]) => ({
+    city,
+    userCount: cityUsers.length,
+    avgSalary: average(cityUsers.map(u => u.salary))
+  }))
+  
+  // 按平均薪资排序
+  const sortedStats = sortBy(cityStats, 'avgSalary', 'desc')
+  
+  // 分页显示
+  const pageResult = paginate(sortedStats, 1, 10)
+  
+  return pageResult
+}
+```
+
+### 2. 表单数据处理
+```typescript
+import { deepMerge, flattenObject, pick } from '@/utils/collectionUtils'
+
+// 处理表单数据
+const processFormData = (formData, requiredFields) => {
+  // 扁平化表单数据
+  const flattened = flattenObject(formData)
+  
+  // 选择必需字段
+  const required = pick(flattened, requiredFields)
+  
+  // 合并默认值
+  const result = deepMerge({}, required)
+  
+  return result
+}
+```
+
+### 3. 数据统计
+```typescript
+import { countBy, sum, average, max, min } from '@/utils/collectionUtils'
+
+// 数据统计
+const generateStats = (data) => {
+  return {
+    total: data.length,
+    categoryCount: countBy(data, 'category'),
+    totalValue: sum(data, 'value'),
+    avgValue: average(data, 'value'),
+    maxValue: max(data, 'value'),
+    minValue: min(data, 'value')
+  }
+}
+```
+
 ## 注意事项
 
 1. **类型安全**: 所有函数都使用 TypeScript 类型定义
@@ -204,19 +376,22 @@ const asyncTask = async () => {
 3. **浏览器兼容**: 复制功能包含降级方案
 4. **错误处理**: 函数包含适当的错误处理
 5. **文档完整**: 每个函数都有详细的 JSDoc 注释
+6. **集合操作**: 新增的集合操作工具类提供了丰富的数组、对象、Set、Map 操作功能
 
 ## 扩展建议
 
 如果需要添加新的工具函数：
 
-1. 在 `commonUtils.ts` 中添加新函数
+1. 在 `commonUtils.ts` 或 `collectionUtils.ts` 中添加新函数
 2. 添加完整的 TypeScript 类型定义
 3. 添加 JSDoc 注释说明
-4. 在 `commonUtils.example.ts` 中添加使用示例
+4. 在对应的 example 文件中添加使用示例
 5. 更新此文档
 
 ## 相关文件
 
+- `commonUtils.ts` - 基础工具函数
+- `collectionUtils.ts` - 集合操作工具类
 - `axios.ts` - HTTP 客户端配置
 - `sessionValidator.ts` - 会话验证工具
 - `themeManager.ts` - 主题管理
