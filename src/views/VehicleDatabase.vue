@@ -156,45 +156,10 @@ import { ref, computed } from 'vue'
 import WaveBackground from '../components/WaveBackground.vue'
 import NavigationBar from '../components/NavigationBar.vue'
 import VehicleDetailDialog from '../components/VehicleDetailDialog.vue'
+import { generateMockVehicles } from '../utils/mockData'
 
-// 生成车辆数据
-const generateVehicles = () => {
-  const vehicleTypes = ['Company Car', 'Personal Vehicle', 'Motorcycle', 'Truck']
-  const statuses = ['Active', 'Maintenance', 'Retired']
-  const brands = ['Toyota', 'Honda', 'Ford', 'BMW', 'Mercedes', 'Audi', 'Volkswagen', 'Nissan']
-  const models = ['Camry', 'Accord', 'Focus', '3 Series', 'C-Class', 'A4', 'Golf', 'Altima']
-  const colors = ['White', 'Black', 'Silver', 'Blue', 'Red', 'Gray', 'Green', 'Yellow']
-  const owners = [
-    'John Smith', 'Sarah Johnson', 'Michael Chen', 'Emily Rodriguez',
-    'David Kim', 'Lisa Wang', 'Alex Thompson', 'Maria Garcia'
-  ]
-  
-  const vehicles = []
-  
-  for (let i = 0; i < 30; i++) {
-    const year = Math.floor(Math.random() * 10) + 2015 // 2015-2024
-    const licensePlate = `${String.fromCharCode(65 + Math.floor(Math.random() * 26))}${String.fromCharCode(65 + Math.floor(Math.random() * 26))}${Math.floor(Math.random() * 9000) + 1000}`
-    const brandIndex = i % brands.length
-    const modelIndex = i % models.length
-    
-    vehicles.push({
-      id: `VEH-2024-${String(i + 1).padStart(3, '0')}`,
-      type: vehicleTypes[i % vehicleTypes.length],
-      licensePlate: licensePlate,
-      brand: brands[brandIndex],
-      model: models[modelIndex],
-      year: year,
-      color: colors[i % colors.length],
-      status: statuses[i % statuses.length],
-      owner: owners[i % owners.length],
-      image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=400&h=300&fit=crop'
-    })
-  }
-  
-  return vehicles
-}
-
-const allVehicles = ref(generateVehicles())
+// 使用mock数据
+const allVehicles = ref(generateMockVehicles())
 
 // 页面查询对象
 const pageQuery = ref({

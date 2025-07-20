@@ -193,93 +193,10 @@ import { ref, computed } from 'vue'
 import WaveBackground from '../components/WaveBackground.vue'
 import NavigationBar from '../components/NavigationBar.vue'
 import UserDetailDialog from '../components/UserDetailDialog.vue'
+import { generateMockUsers } from '../utils/mockData'
 
-// 生成50个用户数据
-const generateUsers = () => {
-  const names = [
-    'John Smith', 'Sarah Johnson', 'Michael Chen', 'Emily Rodriguez',
-    'David Kim', 'Lisa Wang', 'Alex Thompson', 'Maria Garcia',
-    'James Wilson', 'Jennifer Lee', 'Robert Brown', 'Amanda Davis',
-    'Christopher Miller', 'Jessica Taylor', 'Daniel Anderson', 'Ashley White',
-    'Matthew Jackson', 'Nicole Martinez', 'Joshua Garcia', 'Stephanie Rodriguez',
-    'Andrew Lopez', 'Rachel Gonzalez', 'Kevin Perez', 'Lauren Torres',
-    'Brian Moore', 'Megan Lewis', 'Ryan Clark', 'Katherine Hall',
-    'Steven Young', 'Victoria Allen', 'Timothy King', 'Samantha Wright',
-    'Jeffrey Green', 'Hannah Scott', 'Gary Baker', 'Olivia Adams',
-    'Ronald Nelson', 'Isabella Carter', 'Edward Mitchell', 'Sophia Roberts',
-    'Kenneth Turner', 'Ava Phillips', 'Donald Campbell', 'Mia Parker',
-    'Paul Evans', 'Chloe Edwards', 'Mark Collins', 'Grace Stewart',
-    'George Morris', 'Zoe Rogers'
-  ]
-  
-  const positions = [
-    'Software Engineer', 'UI/UX Designer', 'Product Manager', 'Data Scientist',
-    'DevOps Engineer', 'Frontend Developer', 'Backend Developer', 'QA Engineer',
-    'System Administrator', 'Network Engineer', 'Security Analyst', 'Business Analyst',
-    'Project Manager', 'Technical Lead', 'Architect', 'Database Administrator'
-  ]
-  
-  const nationalities = [
-    'American', 'Canadian', 'British', 'Australian', 'German', 'French',
-    'Italian', 'Spanish', 'Dutch', 'Swedish', 'Norwegian', 'Danish',
-    'Swiss', 'Austrian', 'Belgian', 'Irish', 'Scottish', 'Welsh'
-  ]
-  
-  const genders = ['Male', 'Female']
-  
-  const avatars = [
-    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-    'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
-    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-    'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
-    'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face',
-    'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face',
-    'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150&h=150&fit=crop&crop=face',
-    'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face'
-  ]
-  
-  const users = []
-  
-  for (let i = 0; i < 50; i++) {
-    const age = Math.floor(Math.random() * 25) + 22 // 22-46岁
-    const phoneNumber = `+1 (555) ${String(Math.floor(Math.random() * 900) + 100)}-${String(Math.floor(Math.random() * 9000) + 1000)}`
-    const mainAvatar = avatars[i % avatars.length]
-    
-    // 为每个用户生成多张照片（10多张）
-    const userAvatars = [
-      mainAvatar,
-      avatars[(i + 1) % avatars.length],
-      avatars[(i + 2) % avatars.length],
-      avatars[(i + 3) % avatars.length],
-      avatars[(i + 4) % avatars.length],
-      avatars[(i + 5) % avatars.length],
-      avatars[(i + 6) % avatars.length],
-      avatars[(i + 7) % avatars.length],
-      avatars[(i + 8) % avatars.length],
-      avatars[(i + 9) % avatars.length],
-      avatars[(i + 10) % avatars.length],
-      avatars[(i + 11) % avatars.length],
-      avatars[(i + 12) % avatars.length]
-    ]
-    
-    users.push({
-      id: `EMP-2024-${String(i + 1).padStart(3, '0')}`,
-      name: names[i % names.length],
-      position: positions[i % positions.length],
-      email: `${names[i % names.length].toLowerCase().replace(' ', '.')}@company.com`,
-      avatar: mainAvatar,
-      avatars: userAvatars,
-      nationality: nationalities[i % nationalities.length],
-      gender: genders[i % genders.length],
-      age: age,
-      phone: phoneNumber
-    })
-  }
-  
-  return users
-}
-
-const allUsers = ref(generateUsers())
+// 使用mock数据
+const allUsers = ref(generateMockUsers())
 
 // 页面查询对象
 const pageQuery = ref({
