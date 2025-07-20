@@ -400,45 +400,5 @@ onMounted(() => {
   border-radius: 8px;
 }
 
-/* 响应式设计 - Dashboard特有 */
-@media (max-width: 1400px) {
-  .stats-grid {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  }
-}
 
-@media (max-width: 1200px) {
-  .stats-grid {
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  }
-}
-
-@media (max-width: 768px) {
-  .stats-grid {
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 1rem;
-  }
-  
-  .dashboard-title {
-    font-size: 2rem;
-  }
-  
-  .actions-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 480px) {
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .dashboard-title {
-    font-size: 1.5rem;
-  }
-  
-  .stat-card {
-    padding: 1rem;
-  }
-}
 </style> 

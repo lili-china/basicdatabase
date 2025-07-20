@@ -6,6 +6,7 @@ import Analytics from '../views/Analytics.vue'
 import Settings from '../views/Settings.vue'
 import ErrorPage from '../views/ErrorPage.vue'
 import LoginPage from '../views/LoginPage.vue'
+import UserConfirmPage from '../views/UserConfirmPage.vue'
 import ISPDatabase from '../views/ISPDatabase.vue'
 import RelationGraphDemo from '../views/RelationGraphDemo.vue'
 
@@ -56,6 +57,16 @@ const router = createRouter({
       path: '/error',
       name: 'Error',
       component: ErrorPage
+    },
+    {
+      path: '/errorPage',
+      name: 'ErrorPage',
+      component: ErrorPage
+    },
+    {
+      path: '/user-confirm',
+      name: 'UserConfirm',
+      component: UserConfirmPage
     },
     {
       path: '/relation-graph',

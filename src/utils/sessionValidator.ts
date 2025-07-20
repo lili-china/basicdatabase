@@ -20,26 +20,35 @@ export function getSessionIdFromUrl(): string | null {
 
 // 验证当前页面的session
 export function validateCurrentSession(): SessionValidationResult {
+  // 如果当前已经在错误页面，不执行跳转
+  if (window.location.pathname === '/errorPage') {
+    return {
+      isValid: false,
+      error: 'Already on error page'
+    }
+  }
+  
   const sessionId = getSessionIdFromUrl()
   
   if (!sessionId) {
+    // 没有sessionid，跳转错误页
+    window.location.href = '/errorPage?reason=no-sessionid'
     return {
       isValid: false,
       error: 'No session ID provided'
     }
   }
-  
-  if (!validateSessionId(sessionId)) {
+
+  // 只允许特定sessionid
+  if (sessionId !== 'a123456789') {
+    window.location.href = '/errorPage?reason=invalid-sessionid'
     return {
       isValid: false,
       sessionId,
-      error: `Invalid session ID format: ${sessionId} (must be at least 8 characters with both letters and numbers)`
+      error: `Session ID must be a123456789, got: ${sessionId}`
     }
   }
-  
-  // 这里可以添加更多的验证逻辑
-  // 比如检查session是否过期、是否有效等
-  
+
   return {
     isValid: true,
     sessionId

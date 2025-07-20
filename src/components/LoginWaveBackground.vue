@@ -362,17 +362,4 @@ export default {
   box-sizing: border-box;
   overflow: hidden;
 }
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .content-slot {
-    padding: 15px;
-  }
-}
-
-@media (max-width: 480px) {
-  .content-slot {
-    padding: 10px;
-  }
-}
 </style> 

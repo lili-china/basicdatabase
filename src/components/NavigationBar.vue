@@ -2,7 +2,7 @@
   <nav class="navigation-bar" :class="{ 'nav-hidden': isNavHidden }">
     <div class="nav-container">
       <!-- Logo区域 -->
-      <router-link :to="{ path: '/dashboard', query: { sessionId: currentSessionId } }" class="nav-logo">
+      <a @click="handleNavigation('/dashboard')" class="nav-logo">
         <div class="logo-icon">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -11,65 +11,65 @@
           </svg>
         </div>
         <span class="logo-text">Basic Database</span>
-      </router-link>
+      </a>
 
     
       <!-- 导航菜单 -->
       <div class="nav-menu">
-        <router-link :to="{ path: '/dashboard', query: { sessionId: currentSessionId } }" class="nav-item" :class="{ active: $route.path === '/dashboard' }">
+        <a @click="handleNavigation('/dashboard')" class="nav-item" :class="{ active: $route.path === '/dashboard' }">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <polyline points="9,22 9,12 15,12 15,22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
           <span>Dashboard</span>
-        </router-link>
+        </a>
 
-        <router-link :to="{ path: '/isp-database', query: { sessionId: currentSessionId } }" class="nav-item" :class="{ active: $route.path === '/isp-database' }">
+        <a @click="handleNavigation('/isp-database')" class="nav-item" :class="{ active: $route.path === '/isp-database' }">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
           <span>ISP Database</span>
-        </router-link>
+        </a>
 
         
-        <router-link :to="{ path: '/personal-database', query: { sessionId: currentSessionId } }" class="nav-item" :class="{ active: $route.path === '/personal-database' }">
+        <a @click="handleNavigation('/personal-database')" class="nav-item" :class="{ active: $route.path === '/personal-database' }">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
           <span>Personal Database</span>
-        </router-link>
+        </a>
         
-        <router-link :to="{ path: '/vehicle-database', query: { sessionId: currentSessionId } }" class="nav-item" :class="{ active: $route.path === '/vehicle-database' }">
+        <a @click="handleNavigation('/vehicle-database')" class="nav-item" :class="{ active: $route.path === '/vehicle-database' }">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             <path d="M7 17L3 21L7 17ZM3 21V11C3 10.4696 3.21071 9.96086 3.58579 9.58579C3.96086 9.21071 4.46957 9 5 9H11L21 19V21C21 21.5304 20.7893 22.0391 20.4142 22.4142C20.0391 22.7893 19.5304 23 19 23H5C4.46957 23 3.96086 22.7893 3.58579 22.4142C3.21071 22.0391 3 21.5304 3 21V21Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M16 3H21V8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M4 15L9 20L20 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
           <span>Vehicle Database</span>
-        </router-link>
+        </a>
         
       
         
-        <router-link :to="{ path: '/analytics', query: { sessionId: currentSessionId } }" class="nav-item" :class="{ active: $route.path === '/analytics' }">
+        <a @click="handleNavigation('/analytics')" class="nav-item" :class="{ active: $route.path === '/analytics' }">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             <path d="M9 11H1L9 3V11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M20.2 5.8L16 10L20.2 14.2L16 18.4L20.2 22.6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M4 19H12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
           <span>Analytics</span>
-        </router-link>
+        </a>
         
-        <!-- <router-link :to="{ path: '/settings', query: { sessionId: currentSessionId } }" class="nav-item" :class="{ active: $route.path === '/settings' }">
+        <!-- <a @click="handleNavigation('/settings')" class="nav-item" :class="{ active: $route.path === '/settings' }">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M12 16V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
           <span>Settings</span>
-        </router-link> -->
+        </a> -->
       </div>
 
       <!-- 用户区域 -->
@@ -359,21 +359,37 @@ const handleAboutAccount = () => {
   showAboutDialog.value = true
 }
 
+// 处理导航
+const handleNavigation = (path: string) => {
+  console.log('导航到:', path)
+  
+  // 验证sessionId
+  const sessionId = localStorage.getItem('sessionId')
+  if (!sessionId || sessionId !== 'a123456789') {
+    console.log('SessionId无效，跳转到错误页面')
+    router.push({
+      path: '/errorPage',
+      query: { reason: 'invalid-session' }
+    })
+    return
+  }
+  
+  // 验证通过，跳转到目标页面（不携带sessionId）
+  router.push(path)
+}
+
 // 处理登出
 const handleLogout = () => {
   console.log('登出被点击')
   
-  // 清除登录状态
-  localStorage.removeItem('isLoggedIn')
-  localStorage.removeItem('sessionId')
-  localStorage.removeItem('username')
-  localStorage.removeItem('rememberMe')
-  
   // 关闭用户菜单
   isUserMenuOpen.value = false
   
-  // 跳转到登录页面
-  router.push('/login')
+  // 跳转到用户确认页面
+  router.push({
+    path: '/user-confirm',
+    query: { sessionId: currentSessionId.value }
+  })
 }
 
 // 点击外部关闭菜单
@@ -388,7 +404,20 @@ const handleClickOutside = (event: Event) => {
 
 // 组件挂载时获取session ID和添加事件监听
 onMounted(() => {
-  currentSessionId.value = getSessionIdFromUrl()
+  // 优先从localStorage获取sessionId
+  let sessionId = localStorage.getItem('sessionId')
+  
+  // 如果localStorage中没有，尝试从URL获取（仅第一次）
+  if (!sessionId) {
+    sessionId = getSessionIdFromUrl()
+    
+    // 如果从URL获取到有效的sessionId，保存到localStorage
+    if (sessionId && sessionId === 'a123456789') {
+      localStorage.setItem('sessionId', sessionId)
+    }
+  }
+  
+  currentSessionId.value = sessionId
   document.addEventListener('click', handleClickOutside)
   
   // 从localStorage恢复导航栏状态
@@ -442,6 +471,7 @@ onUnmounted(() => {
   transition: all 0.2s ease;
   border-radius: 8px;
   padding: 0.25rem;
+  cursor: pointer;
 }
 
 .nav-logo:hover {
@@ -486,6 +516,7 @@ onUnmounted(() => {
   font-size: 0.875rem;
   transition: all 0.2s ease;
   position: relative;
+  cursor: pointer;
 }
 
 .nav-item:hover {
@@ -914,94 +945,5 @@ onUnmounted(() => {
   gap: 0.5rem;
 }
 
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .nav-container {
-    padding: 0 0.75rem;
-  }
-  
-  .nav-menu {
-    gap: 0.25rem;
-  }
-  
-  .nav-item {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.8rem;
-  }
-  
-  .nav-item span {
-    display: none;
-  }
-  
-  .user-info {
-    display: none;
-  }
-  
-  .floating-nav-trigger {
-    width: 44px;
-    height: 44px;
-    top: 16px;
-    right: 16px;
-  }
-  
-  .floating-dropdown-menu {
-    min-width: 200px;
-  }
-  
-  .floating-dropdown-item {
-    padding: 0.625rem;
-    font-size: 0.8rem;
-  }
-}
 
-@media (max-width: 480px) {
-  .nav-container {
-    padding: 0 0.5rem;
-  }
-  
-  .logo-text {
-    display: none;
-  }
-  
-  .nav-menu {
-    gap: 0.125rem;
-  }
-  
-  .nav-item {
-    padding: 0.5rem;
-  }
-  
-  .floating-nav-trigger {
-    width: 40px;
-    height: 40px;
-    top: 12px;
-    right: 12px;
-  }
-  
-  .floating-dropdown-menu {
-    min-width: 180px;
-  }
-  
-  .floating-dropdown-item {
-    padding: 0.5rem;
-    font-size: 0.75rem;
-  }
-  
-  .floating-dropdown-header {
-    padding: 0.75rem;
-  }
-  
-  .floating-dropdown-avatar {
-    width: 32px;
-    height: 32px;
-  }
-  
-  .floating-dropdown-user-name {
-    font-size: 0.8rem;
-  }
-  
-  .floating-dropdown-user-role {
-    font-size: 0.7rem;
-  }
-}
 </style> 

@@ -363,16 +363,5 @@ export default {
   overflow-y: auto; /* 只在内容区域显示滚动条 */
 }
 
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .content-slot {
-    padding: 15px;
-  }
-}
 
-@media (max-width: 480px) {
-  .content-slot {
-    padding: 10px;
-  }
-}
 </style> 

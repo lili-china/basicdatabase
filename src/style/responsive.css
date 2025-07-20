@@ -1,0 +1,482 @@
+/* 响应式样式文件 */
+/* 统一管理所有页面的响应式设计 */
+
+/* ==================== 通用响应式断点 ==================== */
+
+/* 大屏幕 (1400px以下) */
+@media (max-width: 1400px) {
+  .action-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+/* 中等屏幕 (1200px以下) */
+@media (max-width: 1200px) {
+  /* 通用筛选行样式 */
+  .filter-row {
+    flex-wrap: wrap;
+  }
+  
+  .filter-group {
+    min-width: 160px;
+    max-width: 180px;
+  }
+  
+  .filter-actions {
+    flex: 1;
+    justify-content: flex-end;
+    min-width: 180px;
+  }
+  
+  /* 卡片网格 */
+  .action-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  
+  .cards-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+}
+
+/* 平板设备 (768px以下) */
+@media (max-width: 768px) {
+  /* 通用页面样式 */
+  .page-header h1 {
+    font-size: 1.75rem;
+  }
+  
+  .page-header p {
+    font-size: 0.875rem;
+  }
+  
+  /* 搜索区域 */
+  .search-section {
+    padding: 1rem;
+  }
+  
+  .search-header h3 {
+    font-size: 1.1rem;
+  }
+  
+  /* 筛选区域 */
+  .filter-row {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .filter-group {
+    min-width: 100%;
+  }
+  
+  .filter-actions {
+    flex-direction: row;
+    justify-content: center;
+    gap: 1rem;
+  }
+  
+  .search-btn,
+  .reset-btn {
+    flex: 1;
+    max-width: 150px;
+  }
+  
+  /* 卡片网格 */
+  .action-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .cards-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 0.75rem;
+  }
+  
+  /* 数据卡片 */
+  .data-card {
+    padding: 1rem;
+  }
+  
+  /* ISP列表 */
+  .isp-list {
+    gap: 1rem;
+  }
+  
+  .isp-item {
+    padding: 1rem;
+  }
+  
+  .isp-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .isp-photo {
+    align-self: center;
+  }
+  
+  .isp-info {
+    text-align: center;
+  }
+  
+  .isp-highlight {
+    justify-content: center;
+  }
+  
+  .isp-timeline {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  
+  .isp-actions {
+    align-self: center;
+  }
+  
+  /* 详情弹窗 */
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .detail-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .detail-value {
+    text-align: left;
+    max-width: 100%;
+  }
+  
+  /* 导航栏 */
+  .nav-container {
+    padding: 0.75rem 1rem;
+  }
+  
+  .nav-menu {
+    display: none;
+  }
+  
+  .nav-menu.active {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg-primary);
+    border-top: 1px solid var(--border-card);
+    padding: 1rem;
+    gap: 0.5rem;
+  }
+  
+  .nav-item {
+    padding: 0.75rem;
+    border-radius: 8px;
+  }
+  
+  /* 登录页面 */
+  .login-container {
+    padding: 2rem 1rem;
+  }
+  
+  .login-form {
+    padding: 2rem 1.5rem;
+  }
+  
+  /* 错误页面 */
+  .error-container {
+    padding: 2rem 1rem;
+  }
+  
+  .error-content {
+    padding: 2rem 1.5rem;
+  }
+  
+  /* 关系图 */
+  .relation-graph-container {
+    padding: 1rem;
+  }
+  
+  /* 用户详情组件 */
+  .user-detail-section {
+    padding: 1rem;
+  }
+  
+  .basic-info-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .family-members-grid,
+  .identity-records-grid,
+  .phone-records-grid,
+  .social-media-grid,
+  .investments-grid,
+  .vehicle-records-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  /* 车辆详情弹窗 */
+  .vehicle-detail-content {
+    padding: 1rem;
+  }
+  
+  .vehicle-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 手机设备 (480px以下) */
+@media (max-width: 480px) {
+  /* 通用容器 */
+  .wave-demo-container {
+    padding: 1rem;
+  }
+  
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .page-header p {
+    font-size: 0.875rem;
+  }
+  
+  /* 搜索区域 */
+  .search-section {
+    padding: 0.75rem;
+  }
+  
+  .filter-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .search-btn,
+  .reset-btn {
+    max-width: 100%;
+  }
+  
+  /* 卡片网格 */
+  .cards-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  /* 车辆图标 */
+  .vehicle-icon {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .vehicle-info-section h2 {
+    font-size: 1.1rem;
+  }
+  
+  .license {
+    font-size: 0.8rem;
+  }
+  
+  .owner {
+    font-size: 0.75rem;
+  }
+  
+  /* 导航栏 */
+  .nav-container {
+    padding: 0.5rem;
+  }
+  
+  .nav-logo {
+    font-size: 1.25rem;
+  }
+  
+  /* 登录页面 */
+  .login-container {
+    padding: 1rem;
+  }
+  
+  .login-form {
+    padding: 1.5rem 1rem;
+  }
+  
+  /* 错误页面 */
+  .error-container {
+    padding: 1rem;
+  }
+  
+  .error-content {
+    padding: 1.5rem 1rem;
+  }
+  
+  /* 关系图 */
+  .relation-graph-container {
+    padding: 0.5rem;
+  }
+  
+  /* 用户详情组件 */
+  .user-detail-section {
+    padding: 0.75rem;
+  }
+  
+  /* 车辆详情弹窗 */
+  .vehicle-detail-content {
+    padding: 0.75rem;
+  }
+}
+
+/* ==================== 特定页面响应式样式 ==================== */
+
+/* Dashboard页面特有样式 */
+@media (max-width: 768px) {
+  .dashboard-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  
+  .dashboard-stats .stat-card {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-stats {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}
+
+/* 波浪背景组件 */
+@media (max-width: 768px) {
+  .wave-container {
+    padding: 1rem;
+  }
+  
+  .wave-content {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .wave-container {
+    padding: 0.75rem;
+  }
+  
+  .wave-content {
+    padding: 1rem;
+  }
+}
+
+/* 登录波浪背景 */
+@media (max-width: 768px) {
+  .login-wave-container {
+    padding: 1rem;
+  }
+  
+  .login-wave-content {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-wave-container {
+    padding: 0.75rem;
+  }
+  
+  .login-wave-content {
+    padding: 1rem;
+  }
+}
+
+/* ==================== 打印样式 ==================== */
+@media print {
+  .nav-container,
+  .search-section,
+  .filter-actions,
+  .pagination-section {
+    display: none !important;
+  }
+  
+  .data-card,
+  .isp-item {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  
+  .page-header {
+    margin-bottom: 1rem;
+  }
+  
+  .cards-grid,
+  .isp-list {
+    display: block;
+  }
+  
+  .data-card,
+  .isp-item {
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    padding: 1rem;
+  }
+}
+
+/* ==================== 高对比度模式 ==================== */
+@media (prefers-contrast: high) {
+  .data-card,
+  .isp-item,
+  .search-filters {
+    border: 2px solid var(--text-primary);
+  }
+  
+  .search-btn,
+  .reset-btn {
+    border: 2px solid var(--text-primary);
+  }
+}
+
+/* ==================== 减少动画模式 ==================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .wave-animation {
+    animation: none !important;
+  }
+}
+
+/* ==================== 深色模式响应式 ==================== */
+@media (prefers-color-scheme: dark) {
+  .data-card,
+  .isp-item,
+  .search-filters {
+    background: var(--bg-card-dark);
+    border-color: var(--border-card-dark);
+  }
+  
+  .detail-section {
+    background: var(--bg-card-dark);
+    border-color: var(--border-card-dark);
+  }
+}
+
+/* ==================== 横屏模式优化 ==================== */
+@media (orientation: landscape) and (max-height: 600px) {
+  .page-header {
+    margin-bottom: 1rem;
+  }
+  
+  .search-section {
+    margin-bottom: 1rem;
+  }
+  
+  .cards-grid,
+  .isp-list {
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+} 

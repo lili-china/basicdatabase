@@ -171,4 +171,7 @@ html, body {
     width: 100% !important;
     height: 100% !important;
   }
-} 
+}
+
+/* 引入响应式样式文件 */
+@import './style/responsive.css'; 

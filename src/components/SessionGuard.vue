@@ -17,6 +17,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { validateCurrentSession } from '@/utils/sessionValidator'
 
 const router = useRouter()
 const route = useRoute()
@@ -24,7 +25,7 @@ const isLoading = ref(true)
 
 // 检查当前路由是否需要session验证
 const needsSessionValidation = (path: string) => {
-  return !path.startsWith('/error') && !path.startsWith('/login')
+  return !path.startsWith('/error') && !path.startsWith('/errorPage') && !path.startsWith('/login') && !path.startsWith('/user-confirm')
 }
 
 // 检查登录状态
@@ -41,45 +42,51 @@ const checkLoginStatus = () => {
   return true
 }
 
-// 执行session验证
+// 执行session验证（新版：用localStorage和URL参数校验）
 const performSessionValidation = async () => {
   try {
     console.log('SessionGuard: Starting session validation...')
+
+    // 优先从localStorage获取sessionId
+    let sessionId = localStorage.getItem('sessionId')
     
-    // 首先检查登录状态
-    if (!checkLoginStatus()) {
+    // 如果localStorage中没有，尝试从URL获取（仅第一次）
+    if (!sessionId) {
+      sessionId = new URLSearchParams(window.location.search).get('sessionId') || 
+                  new URLSearchParams(window.location.search).get('sessionid')
+      
+      // 如果从URL获取到有效的sessionId，保存到localStorage
+      if (sessionId && sessionId === 'a123456789') {
+        localStorage.setItem('sessionId', sessionId)
+      }
+    }
+    
+    // 验证sessionId
+    if (sessionId && sessionId !== 'a123456789') {
+      // sessionId不正确，跳转到错误页面
+      window.location.href = '/errorPage?reason=invalid-sessionid'
       return
     }
     
-    // 简化验证逻辑 - 只检查localStorage中的登录状态
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'
-    const sessionId = localStorage.getItem('sessionId')
-    
-    if (isLoggedIn && sessionId) {
-      console.log('SessionGuard: Login status valid, showing content')
-      isLoading.value = false
-    } else {
-      console.log('SessionGuard: Login status invalid, redirecting to login')
-      // 清除登录状态并跳转到登录页面
-      localStorage.removeItem('isLoggedIn')
-      localStorage.removeItem('sessionId')
-      localStorage.removeItem('username')
-      localStorage.removeItem('rememberMe')
-      router.push('/login')
+    // 如果没有sessionId，跳转到错误页面
+    if (!sessionId) {
+      window.location.href = '/errorPage?reason=no-sessionid'
+      return
     }
     
+    // 校验通过，显示内容
+    isLoading.value = false
   } catch (error) {
     console.error('SessionGuard: Session validation error:', error)
-    // 清除登录状态并跳转到登录页面
-    localStorage.removeItem('isLoggedIn')
-    localStorage.removeItem('sessionId')
-    localStorage.removeItem('username')
-    localStorage.removeItem('rememberMe')
-    router.push('/login')
+    // 万一异常，跳转到错误页
+    window.location.href = '/errorPage?reason=exception'
   }
 }
 
 onMounted(async () => {
+  console.log('SessionGuard: Current path:', route.path)
+  console.log('SessionGuard: Needs validation:', needsSessionValidation(route.path))
+  
   // 如果当前是错误页面，直接显示内容
   if (!needsSessionValidation(route.path)) {
     console.log('SessionGuard: Error page detected, skipping validation')
@@ -87,6 +94,7 @@ onMounted(async () => {
     return
   }
   
+  console.log('SessionGuard: Proceeding with validation...')
   await performSessionValidation()
 })
 
