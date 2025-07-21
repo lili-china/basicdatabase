@@ -29,9 +29,9 @@
             <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <span>ISP Database</span>
+          <span>ISP </span>
         </a>
-
+<!-- 
         <a @click="handleNavigation('/personal-database')" class="nav-item" :class="{ active: $route.path === '/personal-database' }">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -50,7 +50,7 @@
         </a>
         
         <!-- More下拉菜单 -->
-        <div class="nav-more-dropdown" ref="moreDropdown">
+        <!-- <div class="nav-more-dropdown" ref="moreDropdown">
           <button class="nav-more-btn" @click="toggleMoreMenu" :class="{ active: isMoreMenuOpen }">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <circle cx="12" cy="12" r="1" stroke="currentColor" stroke-width="2"/>
@@ -61,7 +61,7 @@
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" class="dropdown-arrow" :class="{ 'rotated': isMoreMenuOpen }">
               <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-          </button>
+          </button> 
           
           <div v-if="isMoreMenuOpen" class="more-dropdown-menu">
             <a 
@@ -75,7 +75,7 @@
               <span>{{ item.label }}</span>
             </a>
           </div>
-        </div>
+        </div> -->
       </div>
 
       <!-- 用户区域 -->
@@ -238,7 +238,6 @@ const isMoreMenuOpen = ref(false)
 const aboutAccountDialogVisible = ref(false)
 
 // DOM引用
-const navMenu = ref<HTMLElement>()
 const moreDropdown = ref<HTMLElement>()
 const userMenuTrigger = ref<HTMLElement>()
 
@@ -258,11 +257,6 @@ const moreMenuItems = ref([
 
 // 图标组件映射
 const iconComponents = {
-  AnalyticsIcon: () => h('svg', { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none' }, [
-    h('path', { d: 'M9 11H1L9 3V11Z', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
-    h('path', { d: 'M20.2 5.8L16 10L20.2 14.2L16 18.4L20.2 22.6', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
-    h('path', { d: 'M4 19H12', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' })
-  ]),
   ApiTestIcon: () => h('svg', { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none' }, [
     h('path', { d: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
     h('polyline', { points: '14,2 14,8 20,8', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
@@ -274,16 +268,6 @@ const iconComponents = {
     h('path', { d: 'M12 2L2 7L12 12L22 7L12 2Z', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
     h('path', { d: 'M2 17L12 22L22 17', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
     h('path', { d: 'M2 12L12 17L22 12', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' })
-  ]),
-  DatabaseIcon: () => h('svg', { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none' }, [
-    h('path', { d: 'M12 2L2 7L12 12L22 7L12 2Z', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
-    h('path', { d: 'M2 17L12 22L22 17', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
-    h('path', { d: 'M2 12L12 17L22 12', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' })
-  ]),
-  VehicleDatabaseIcon: () => h('svg', { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none' }, [
-    h('path', { d: 'M7 17L3 21L7 17ZM3 21V11C3 10.4696 3.21071 9.96086 3.58579 9.58579C3.96086 9.21071 4.46957 9 5 9H11L21 19V21C21 21.5304 20.7893 22.0391 20.4142 22.4142C20.0391 22.7893 19.5304 23 19 23H5C4.46957 23 3.96086 22.7893 3.58579 22.4142C3.21071 22.0391 3 21.5304 3 21V21Z', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
-    h('path', { d: 'M16 3H21V8', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
-    h('path', { d: 'M4 15L9 20L20 9', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' })
   ])
 }
 
@@ -439,19 +423,6 @@ onUnmounted(() => {
 
 .logo-text {
   color: var(--text-primary);
-}
-
-.system-name {
-  color: var(--text-primary);
-}
-
-.system-arrow {
-  transition: transform 0.2s ease;
-  color: var(--text-secondary);
-}
-
-.system-arrow.rotated {
-  transform: rotate(180deg);
 }
 
 /* 导航菜单样式 */

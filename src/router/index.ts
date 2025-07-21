@@ -32,11 +32,11 @@ const router = createRouter({
       name: 'Dashboard',
       component: Dashboard
     },
-    {
-      path: '/personal-database',
-      name: 'PersonalDatabase',
-      component: PersonalDatabase
-    },
+    // {
+    //   path: '/personal-database',
+    //   name: 'PersonalDatabase',
+    //   component: PersonalDatabase
+    // },
     {
       path: '/vehicle-database',
       name: 'VehicleDatabase',

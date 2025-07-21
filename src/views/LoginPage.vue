@@ -154,11 +154,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import LoginWaveBackground from '../components/LoginWaveBackground.vue'
 import { currentTheme, toggleTheme } from '@/utils/themeManager'
 import { isAnimationPaused, toggleAnimation } from '@/utils/animationManager'
+import { getSessionIdFromUrl } from '@/utils/sessionValidator'
 
 const router = useRouter()
 
@@ -172,6 +173,15 @@ const loginForm = reactive({
 // 状态管理
 const isLoading = ref(false)
 const errorMessage = ref('')
+
+onMounted(() => {
+  // 检查sessionId
+  const urlSessionId = getSessionIdFromUrl()
+  const localSessionId = localStorage.getItem('sessionId')
+  if (urlSessionId && localSessionId && urlSessionId === localSessionId) {
+    router.push('/user-confirm?sessionId=' + urlSessionId)
+  } 
+})
 
 // 处理登录
 const handleLogin = () => {

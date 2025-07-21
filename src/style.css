@@ -3,6 +3,7 @@
   --z-navbar: 10000;
   --z-dropdown: 100000;
   --z-dialog: 200000;
+  --border-navbar: #e5e7eb; /* 恢复导航栏边框变量，风格与--border-card一致 */
 }
 
 /* 全局弹窗层级控制 - 确保所有弹窗都在最顶层 */

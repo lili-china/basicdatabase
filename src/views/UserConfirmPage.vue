@@ -44,6 +44,13 @@ onMounted(() => {
   // 从URL获取sessionId
   sessionId.value = getSessionIdFromUrl() || ''
 
+  // 校验sessionId有效性，无效则跳转到errorPage
+  const localSessionId = localStorage.getItem('sessionId')
+  if (!sessionId.value || sessionId.value !== localSessionId) {
+    router.push('/errorPage?reason=invalid-sessionid')
+    return
+  }
+
   // 强制显示导航栏
   localStorage.setItem('navHidden', 'false')
 
