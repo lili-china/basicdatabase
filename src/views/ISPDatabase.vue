@@ -10,360 +10,236 @@
           <h1>ISP Database</h1>
           <p>Search and view internet service provider information</p>
         </div>
+        <div class="content-area">
+          <template v-if="!showDetail">
+            <!-- 搜索和筛选区域 -->
+            <div class="search-section">
+              <div class="search-filters">
+                <!-- 运营商筛选行 -->
+                <div class="letter-filter-row">
+                  <label class="filter-label">Operator Filter</label>
+                  <div class="letter-filters">
+                    <button 
+                      class="letter-btn" 
+                      :class="{ active: pageQuery.selectedLetter === '' }"
+                      @click="selectLetter('')"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 16H28M12 20H28M12 24H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="28" cy="24" r="3" fill="currentColor"/>
+                      </svg>
+                      <span>All</span>
+                    </button>
+                    <button 
+                      class="letter-btn" 
+                      :class="{ active: pageQuery.selectedLetter === 'A' }"
+                      @click="selectLetter('A')"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span>A</span>
+                    </button>
+                    <button 
+                      class="letter-btn" 
+                      :class="{ active: pageQuery.selectedLetter === 'B' }"
+                      @click="selectLetter('B')"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M4 19V5C4 4.44772 4.44772 4 5 4H12C13.1046 4 14 4.89543 14 6C14 7.10457 13.1046 8 12 8H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M6 8H12C13.1046 8 14 8.89543 14 10C14 11.1046 13.1046 12 12 12H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M6 12H12C13.1046 12 14 12.8954 14 14C14 15.1046 13.1046 16 12 16H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span>B</span>
+                    </button>
+                    <button 
+                      class="letter-btn" 
+                      :class="{ active: pageQuery.selectedLetter === 'C' }"
+                      @click="selectLetter('C')"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M8 12C8 9.79 9.79 8 12 8C14.21 8 16 9.79 16 12C16 14.21 14.21 16 12 16C9.79 16 8 14.21 8 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span>C</span>
+                    </button>
+                    <button 
+                      class="letter-btn" 
+                      :class="{ active: pageQuery.selectedLetter === 'D' }"
+                      @click="selectLetter('D')"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M4 6H20V18H4V6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M4 6L12 12L20 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span>D</span>
+                    </button>
+                    <button 
+                      class="letter-btn" 
+                      :class="{ active: pageQuery.selectedLetter === 'E' }"
+                      @click="selectLetter('E')"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M4 6H20V8H4V6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M4 12H20V14H4V12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M4 18H20V20H4V18Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span>E</span>
+                    </button>
+                  </div>
+                </div>
 
-        <!-- 搜索和筛选区域 -->
-        <div class="search-section">
-         
-          
-          <div class="search-filters">
-            <!-- 运营商筛选行 -->
-            <div class="letter-filter-row">
-              <label class="filter-label">Operator Filter</label>
-              <div class="letter-filters">
-                <button 
-                  class="letter-btn" 
-                  :class="{ active: pageQuery.selectedLetter === '' }"
-                  @click="selectLetter('')"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 16H28M12 20H28M12 24H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    <circle cx="28" cy="24" r="3" fill="currentColor"/>
-                  </svg>
-                  <span>All</span>
-                </button>
-                <button 
-                  class="letter-btn" 
-                  :class="{ active: pageQuery.selectedLetter === 'A' }"
-                  @click="selectLetter('A')"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                  <span>A</span>
-                </button>
-                <button 
-                  class="letter-btn" 
-                  :class="{ active: pageQuery.selectedLetter === 'B' }"
-                  @click="selectLetter('B')"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M4 19V5C4 4.44772 4.44772 4 5 4H12C13.1046 4 14 4.89543 14 6C14 7.10457 13.1046 8 12 8H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M6 8H12C13.1046 8 14 8.89543 14 10C14 11.1046 13.1046 12 12 12H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M6 12H12C13.1046 12 14 12.8954 14 14C14 15.1046 13.1046 16 12 16H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                  <span>B</span>
-                </button>
-                <button 
-                  class="letter-btn" 
-                  :class="{ active: pageQuery.selectedLetter === 'C' }"
-                  @click="selectLetter('C')"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M8 12C8 9.79 9.79 8 12 8C14.21 8 16 9.79 16 12C16 14.21 14.21 16 12 16C9.79 16 8 14.21 8 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                  <span>C</span>
-                </button>
-                <button 
-                  class="letter-btn" 
-                  :class="{ active: pageQuery.selectedLetter === 'D' }"
-                  @click="selectLetter('D')"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M4 6H20V18H4V6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M4 6L12 12L20 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                  <span>D</span>
-                </button>
-                <button 
-                  class="letter-btn" 
-                  :class="{ active: pageQuery.selectedLetter === 'E' }"
-                  @click="selectLetter('E')"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M4 6H20V8H4V6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M4 12H20V14H4V12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M4 18H20V20H4V18Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                  <span>E</span>
-                </button>
+                <div class="filter-row">
+                  <!-- 身份证号输入框 -->
+                  <div class="filter-group">
+                    <label class="filter-label">Identity Number</label>
+                    <el-input
+                      v-model="pageQuery.identityNo"
+                      placeholder="Enter identity number"
+                      class="filter-input"
+                      clearable
+                    />
+                  </div>
+
+                  <!-- 电话号码输入框 -->
+                  <div class="filter-group">
+                    <label class="filter-label">Phone Number</label>
+                    <el-input
+                      v-model="pageQuery.phoneNum"
+                      placeholder="Enter phone number"
+                      class="filter-input"
+                      clearable
+                    />
+                  </div>
+
+                  <!-- 真实姓名输入框 -->
+                  <div class="filter-group">
+                    <label class="filter-label">Real Name</label>
+                    <el-input
+                      v-model="pageQuery.realName"
+                      placeholder="Enter real name"
+                      class="filter-input"
+                      clearable
+                    />
+                  </div>
+
+                  <!-- Status单独一行用radio-group -->
+                  <div class="filter-group">
+                    <label class="filter-label">Status</label>
+                    <el-radio-group v-model="pageQuery.selectedStatus" size="small">
+                      <el-radio-button label="">All Status</el-radio-button>
+                      <el-radio-button label="active">Active</el-radio-button>
+                      <el-radio-button label="inactive">Inactive</el-radio-button>
+                      <el-radio-button label="pending">Pending</el-radio-button>
+                      <el-radio-button label="suspended">Suspended</el-radio-button>
+                    </el-radio-group>
+                  </div>
+
+                  <!-- 操作按钮 -->
+                  <div class="filter-actions">
+                    <el-button type="primary" @click="performSearch" class="search-btn">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="search-icon">
+                        <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      Search
+                    </el-button>
+                    <el-button @click="resetFilters" class="reset-btn">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="reset-icon">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M3 3v5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      Reset
+                    </el-button>
+                  </div>
+                </div>
               </div>
             </div>
-
-            <div class="filter-row">
-              <!-- 运营商下拉框 -->
-              <div class="filter-group">
-                <label class="filter-label">Operator</label>
-                <el-select v-model="pageQuery.selectedOperator" placeholder="Select Operator" class="filter-input">
-                  <el-option label="All Operators" value="" />
-                  <el-option label="Comcast" value="comcast" />
-                  <el-option label="Verizon" value="verizon" />
-                  <el-option label="AT&T" value="att" />
-                  <el-option label="Spectrum" value="spectrum" />
-                  <el-option label="CenturyLink" value="centurylink" />
-                  <el-option label="Cox" value="cox" />
-                  <el-option label="Frontier" value="frontier" />
-                  <el-option label="Windstream" value="windstream" />
-                </el-select>
-              </div>
-
-              <!-- 身份证号输入框 -->
-              <div class="filter-group">
-                <label class="filter-label">Identity Number</label>
-                <el-input
-                  v-model="pageQuery.identityNo"
-                  placeholder="Enter identity number"
-                  class="filter-input"
-                  clearable
-                />
-              </div>
-
-              <!-- 电话号码输入框 -->
-              <div class="filter-group">
-                <label class="filter-label">Phone Number</label>
-                <el-input
-                  v-model="pageQuery.phoneNum"
-                  placeholder="Enter phone number"
-                  class="filter-input"
-                  clearable
-                />
-              </div>
-
-              <!-- 真实姓名输入框 -->
-              <div class="filter-group">
-                <label class="filter-label">Real Name</label>
-                <el-input
-                  v-model="pageQuery.realName"
-                  placeholder="Enter real name"
-                  class="filter-input"
-                  clearable
-                />
-              </div>
-
-              <!-- 状态下拉框 -->
-              <div class="filter-group">
-                <label class="filter-label">Status</label>
-                <el-select v-model="pageQuery.selectedStatus" placeholder="Select Status" class="filter-input">
-                  <el-option label="All Status" value="" />
-                  <el-option label="Active" value="active" />
-                  <el-option label="Inactive" value="inactive" />
-                  <el-option label="Pending" value="pending" />
-                  <el-option label="Suspended" value="suspended" />
-                </el-select>
-              </div>
-
-              <!-- 运行商筛选 -->
-              <div class="filter-group">
-                <label class="filter-label">Service Provider</label>
-                <el-select v-model="pageQuery.selectedServiceProvider" placeholder="Select Service Provider" class="filter-input">
-                  <el-option label="All Providers" value="" />
-                  <el-option label="Comcast" value="comcast" />
-                  <el-option label="Verizon Fios" value="verizon" />
-                  <el-option label="AT&T" value="att" />
-                  <el-option label="Spectrum" value="spectrum" />
-                  <el-option label="CenturyLink" value="centurylink" />
-                  <el-option label="Cox Communications" value="cox" />
-                  <el-option label="Frontier" value="frontier" />
-                  <el-option label="Windstream" value="windstream" />
-                </el-select>
-              </div>
-
-              <!-- 操作按钮 -->
-              <div class="filter-actions">
-                <el-button type="primary" @click="performSearch" class="search-btn">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="search-icon">
-                    <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                  Search
-                </el-button>
-                <el-button @click="resetFilters" class="reset-btn">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="reset-icon">
-                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M3 3v5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                  Reset
-                </el-button>
+            <!-- ISP列表 -->
+            <div class="isp-list">
+              <div v-for="isp in filteredISPs" :key="isp.id" class="isp-item" @click="showDetail = true; selectedISP = isp; goToDetail(isp)">
+                <div class="isp-header">
+                  <div class="isp-photo">
+                    <img 
+                      :src="isp.photo || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiM2QjcyODAiLz4KPGNpcmNsZSBjeD0iNDAiIGN5PSIzMCIgcj0iMTIiIGZpbGw9IiNGRkZGRkYiLz4KPHBhdGggZD0iTTE2IDYwQzE2IDUwIDI2IDQwIDQwIDQwQzU0IDQwIDY0IDUwIDY0IDYwIiBmaWxsPSIjRkZGRkZGIi8+Cjwvc3ZnPgo='" 
+                      :alt="isp.realName"
+                      @error="handleImageError"
+                    />
+                  </div>
+                  <div class="isp-info">
+                    <div class="isp-basic">
+                      <h3 class="isp-name">{{ isp.realName }}</h3>
+                      <p class="isp-id clickable" @click.stop="showUserDetailDialog(isp)">ID: {{ isp.identityNo }}</p>
+                    </div>
+                    <div class="isp-highlight">
+                      <div class="highlight-item operator">
+                        <span class="highlight-label">Operator</span>
+                        <span class="highlight-value">{{ isp.name }}</span>
+                      </div>
+                      <div class="highlight-item phone">
+                        <span class="highlight-label">Phone</span>
+                        <span class="highlight-value">{{ isp.phoneNum }}</span>
+                      </div>
+                    </div>
+                    <div class="isp-details">
+                      <div class="detail-row">
+                        <span class="detail-label">Nationality:</span>
+                        <span class="detail-value">{{ isp.nationality }}</span>
+                      </div>
+                      <div class="detail-row">
+                        <span class="detail-label">Birth Date:</span>
+                        <span class="detail-value">{{ isp.birthDate }}</span>
+                      </div>
+                      <div class="detail-row">
+                        <span class="detail-label">Address:</span>
+                        <span class="detail-value">{{ isp.address }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="isp-timeline">
+                    <div class="timeline-item">
+                      <span class="timeline-label">Registration</span>
+                      <span class="timeline-date">{{ isp.registrationDate }}</span>
+                    </div>
+                    <div class="timeline-item">
+                      <span class="timeline-label">Expiry</span>
+                      <span class="timeline-date" :class="{ 'expired': isExpired(isp.expiryDate) }">{{ isp.expiryDate }}</span>
+                    </div>
+                  </div>
+                  <div class="isp-status">
+                    <span class="status-tag" :class="isp.status">{{ isp.status }}</span>
+                  </div>
+                  <div class="isp-actions">
+                    <el-button size="small" @click.stop="goToDetail(isp)">View</el-button>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        <!-- ISP列表 -->
-        <div class="isp-list">
-          <div v-for="isp in filteredISPs" :key="isp.id" class="isp-item" @click="showISPDetails(isp)">
-            <div class="isp-header">
-              <div class="isp-photo">
-                <img 
-                  :src="isp.photo || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiM2QjcyODAiLz4KPGNpcmNsZSBjeD0iNDAiIGN5PSIzMCIgcj0iMTIiIGZpbGw9IiNGRkZGRkYiLz4KPHBhdGggZD0iTTE2IDYwQzE2IDUwIDI2IDQwIDQwIDQwQzU0IDQwIDY0IDUwIDY0IDYwIiBmaWxsPSIjRkZGRkZGIi8+Cjwvc3ZnPgo='" 
-                  :alt="isp.realName"
-                  @error="handleImageError"
-                />
-              </div>
-              <div class="isp-info">
-                <div class="isp-basic">
-                  <h3 class="isp-name">{{ isp.realName }}</h3>
-                  <p class="isp-id clickable" @click.stop="showUserDetailDialog(isp)">ID: {{ isp.identityNo }}</p>
-                </div>
-                <div class="isp-highlight">
-                  <div class="highlight-item operator">
-                    <span class="highlight-label">Operator</span>
-                    <span class="highlight-value">{{ isp.name }}</span>
-                  </div>
-                  <div class="highlight-item phone">
-                    <span class="highlight-label">Phone</span>
-                    <span class="highlight-value">{{ isp.phoneNum }}</span>
-                  </div>
-                </div>
-                <div class="isp-details">
-                  <div class="detail-row">
-                    <span class="detail-label">Nationality:</span>
-                    <span class="detail-value">{{ isp.nationality }}</span>
-                  </div>
-                  <div class="detail-row">
-                    <span class="detail-label">Birth Date:</span>
-                    <span class="detail-value">{{ isp.birthDate }}</span>
-                  </div>
-                  <div class="detail-row">
-                    <span class="detail-label">Address:</span>
-                    <span class="detail-value">{{ isp.address }}</span>
-                  </div>
-                </div>
-              </div>
-              <div class="isp-timeline">
-                <div class="timeline-item">
-                  <span class="timeline-label">Registration</span>
-                  <span class="timeline-date">{{ isp.registrationDate }}</span>
-                </div>
-                <div class="timeline-item">
-                  <span class="timeline-label">Expiry</span>
-                  <span class="timeline-date" :class="{ 'expired': isExpired(isp.expiryDate) }">{{ isp.expiryDate }}</span>
-                </div>
-              </div>
-              <div class="isp-status">
-                <span class="status-tag" :class="isp.status">{{ isp.status }}</span>
-              </div>
-              <div class="isp-actions">
-                <el-button size="small" @click.stop="showISPDetails(isp)">View</el-button>
-              </div>
+            <!-- 分页 -->
+            <div class="pagination-section">
+              <el-pagination
+                v-model:current-page="currentPage"
+                v-model:page-size="pageSize"
+                :page-sizes="[10, 20, 50, 100]"
+                :total="totalItems"
+                layout="total, sizes, prev, pager, next, jumper"
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+              />
             </div>
-          </div>
-        </div>
-
-        <!-- 分页 -->
-        <div class="pagination-section">
-          <el-pagination
-            v-model:current-page="currentPage"
-            v-model:page-size="pageSize"
-            :page-sizes="[10, 20, 50, 100]"
-            :total="totalItems"
-            layout="total, sizes, prev, pager, next, jumper"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-          />
+          </template>
+          <template v-else>
+            <ISPDetailPage v-if="selectedISP" :isp="selectedISP" :contacts="recentContacts" @back="showDetail = false" />
+          </template>
         </div>
       </div>
     </WaveBackground>
-
     <!-- UserDetailDialog组件 -->
     <UserDetailDialog
       v-model="userDetailDialogVisible"
       :user="selectedUserForDialog"
     />
-
-    <!-- ISP详情弹窗 -->
-    <el-dialog
-      :append-to-body="true"
-      v-model="ispDetailDialogVisible"
-      :title="`ISP Details - ${selectedISP?.realName || ''}`"
-      width="800px"
-      class="isp-detail-dialog"
-    >
-      <div v-if="selectedISP" class="isp-detail-content">
-        <div class="detail-section">
-          <h4>Basic Information</h4>
-          <div class="detail-grid">
-            <div class="detail-item">
-              <span class="detail-label">Real Name:</span>
-              <span class="detail-value">{{ selectedISP.realName }}</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Identity Number:</span>
-              <span class="detail-value">{{ selectedISP.identityNo }}</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Phone Number:</span>
-              <span class="detail-value">{{ selectedISP.phoneNum }}</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Nationality:</span>
-              <span class="detail-value">{{ selectedISP.nationality }}</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Birth Date:</span>
-              <span class="detail-value">{{ selectedISP.birthDate }}</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Address:</span>
-              <span class="detail-value">{{ selectedISP.address }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="detail-section">
-          <h4>ISP Information</h4>
-          <div class="detail-grid">
-            <div class="detail-item">
-              <span class="detail-label">Operator:</span>
-              <span class="detail-value">{{ selectedISP.name }}</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Service Type:</span>
-              <span class="detail-value">{{ selectedISP.serviceType }}</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Max Speed:</span>
-              <span class="detail-value">{{ selectedISP.maxSpeed }}</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Coverage:</span>
-              <span class="detail-value">{{ selectedISP.coverage }}</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Location:</span>
-              <span class="detail-value">{{ selectedISP.location }}</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Description:</span>
-              <span class="detail-value">{{ selectedISP.description }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="detail-section">
-          <h4>Timeline Information</h4>
-          <div class="detail-grid">
-            <div class="detail-item">
-              <span class="detail-label">Registration Date:</span>
-              <span class="detail-value">{{ selectedISP.registrationDate }}</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Expiry Date:</span>
-              <span class="detail-value" :class="{ 'expired': isExpired(selectedISP.expiryDate) }">
-                {{ selectedISP.expiryDate }}
-              </span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Status:</span>
-              <span class="detail-value">
-                <span class="status-tag" :class="selectedISP.status">{{ selectedISP.status }}</span>
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -374,6 +250,9 @@ import WaveBackground from '../components/WaveBackground.vue'
 import NavigationBar from '../components/NavigationBar.vue'
 import UserDetailDialog from '../components/UserDetailDialog.vue'
 import { mockISPs } from '../utils/mockData'
+import { mockCallRecords } from '../utils/mockData'
+import { useRouter } from 'vue-router'
+import ISPDetailPage from './ISPDetailPage.vue'
 
 // 当前session ID
 const currentSessionId = ref<string | null>(null)
@@ -496,13 +375,57 @@ const userDetailDialogVisible = ref(false)
 const selectedUserForDialog = ref<any>(null)
 
 // ISP详情弹窗状态
-const ispDetailDialogVisible = ref(false)
+const showDetail = ref(false)
 const selectedISP = ref<any>(null)
+const recentContacts = ref<any[]>([])
+
+// 最近通话联系人
+interface ContactRecord {
+  name: string;
+  phone: string;
+  direction: string;
+  time: string;
+  photo?: string;
+}
+interface AggregatedContact {
+  name: string;
+  phone: string;
+  photo?: string;
+  count: number;
+  records: Array<{ direction: string; time: string }>;
+}
+
+// 获取联系人头像（根据姓名匹配 mockISPs）
+const getContactPhoto = (name: string) => {
+  const match = ispData.value.find(isp => isp.realName === name)
+  return match && match.photo ? match.photo : 'https://via.placeholder.com/40x40/cccccc/ffffff?text=User'
+}
 
 // ISP详情功能
-const showISPDetails = (isp: any) => {
+const goToDetail = (isp: any) => {
   selectedISP.value = isp
-  ispDetailDialogVisible.value = true
+  // 查找最近通话联系人
+  const record = mockCallRecords.find(r => r.userId === isp.identityNo)
+  const contacts = record ? record.contacts.slice(0, 20) : []
+  // 聚合同一联系人
+  const contactMap: Record<string, any> = {}
+  contacts.forEach(c => {
+    const key = c.name + '_' + c.phone
+    if (!contactMap[key]) {
+      contactMap[key] = {
+        name: c.name,
+        phone: c.phone,
+        photo: getContactPhoto(c.name),
+        count: 1,
+        records: [{ direction: c.direction, time: c.time }]
+      }
+    } else {
+      contactMap[key].count++
+      contactMap[key].records.push({ direction: c.direction, time: c.time })
+    }
+  })
+  recentContacts.value = Object.values(contactMap)
+  showDetail.value = true
 }
 
 // 用户详情功能
@@ -573,6 +496,8 @@ const handleImageError = (event: Event) => {
 onMounted(() => {
   currentSessionId.value = getSessionIdFromUrl()
 })
+
+const router = useRouter()
 </script>
 
 <style scoped>
@@ -953,10 +878,11 @@ onMounted(() => {
   }
 }
 
-.isp-detail-content {
+.isp-detail-dialog .el-dialog {
+  max-width: 100vw;
+  max-height: 90vh;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
 }
 
 .detail-section {
@@ -1039,5 +965,132 @@ onMounted(() => {
   color: #ef4444;
 }
 
-
+.contact-card-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.contact-card {
+  background: var(--bg-card, #fff);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border: 1px solid var(--border-card, #e5e7eb);
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  min-width: 180px;
+  max-width: 320px;
+  gap: 1rem;
+  transition: box-shadow 0.2s, transform 0.2s;
+  flex: 1 1 220px;
+}
+.contact-card:hover {
+  box-shadow: 0 4px 16px rgba(59,130,246,0.15);
+  transform: translateY(-2px) scale(1.03);
+}
+.contact-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border-card, #e5e7eb);
+  background: #f3f4f6;
+}
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+.contact-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary, #222);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+.contact-id {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #888);
+}
+.contact-count {
+  font-size: 0.85rem;
+  color: #2563eb;
+  font-weight: 500;
+}
+.isp-detail-avatar-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+.isp-detail-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--accent-primary, #2563eb);
+  background: #f3f4f6;
+  box-shadow: 0 2px 8px rgba(59,130,246,0.10);
+}
+.detail-breadcrumb {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+  color: #888;
+  gap: 0.5em;
+}
+.left-breadcrumb {
+  justify-content: flex-start;
+}
+.breadcrumb-link {
+  color: var(--accent-primary, #2563eb);
+  cursor: pointer;
+  text-decoration: underline;
+}
+.breadcrumb-link:hover {
+  color: #1d4ed8;
+}
+.breadcrumb-sep {
+  margin: 0 0.5em;
+  color: #bbb;
+}
+.breadcrumb-current {
+  color: #222;
+  font-weight: 600;
+}
+.breadcrumb-phone {
+  margin-left: 1em;
+  background: var(--accent-primary, #2563eb);
+  color: #fff;
+  border-radius: 16px;
+  padding: 0.15em 0.9em;
+  font-size: 0.95em;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(59,130,246,0.08);
+  display: inline-block;
+}
+.breadcrumb-back {
+  display: flex;
+  align-items: center;
+  color: var(--accent-primary, #2563eb);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1em;
+  user-select: none;
+  gap: 0.2em;
+  transition: color 0.2s;
+}
+.breadcrumb-back:hover {
+  color: #1d4ed8;
+}
+.breadcrumb-arrow {
+  margin-right: 0.2em;
+  vertical-align: middle;
+  color: inherit;
+}
 </style> 

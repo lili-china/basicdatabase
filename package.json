@@ -10,6 +10,7 @@
   "dependencies": {
     "axios": "^1.10.0",
     "element-plus": "^2.4.0",
+    "ol": "^10.6.1",
     "relation-graph": "^2.2.11",
     "vue": "^3.4.0",
     "vue-router": "^4.2.0"

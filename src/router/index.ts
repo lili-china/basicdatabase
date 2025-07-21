@@ -32,11 +32,11 @@ const router = createRouter({
       name: 'Dashboard',
       component: Dashboard
     },
-    // {
-    //   path: '/personal-database',
-    //   name: 'PersonalDatabase',
-    //   component: PersonalDatabase
-    // },
+    {
+      path: '/personal-database',
+      name: 'PersonalDatabase',
+      component: PersonalDatabase
+    },
     {
       path: '/vehicle-database',
       name: 'VehicleDatabase',
@@ -56,6 +56,11 @@ const router = createRouter({
       path: '/isp-database',
       name: 'ISPDatabase',
       component: ISPDatabase
+    },
+    {
+      path: '/isp-detail/:id',
+      name: 'isp-detail',
+      component: () => import('@/views/ISPDetailPage.vue')
     },
     {
       path: '/analytics',

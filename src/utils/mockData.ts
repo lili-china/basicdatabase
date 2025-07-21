@@ -386,6 +386,51 @@ export const generateMockEnterprises = () => {
   return enterprises
 }
 
+// ==================== ISP最近通话Mock数据 ====================
+export const mockCallRecords = [
+  {
+    userId: 'COM001', // John Smith
+    contacts: [
+      { name: 'Sarah Johnson', phone: '+1-800-922-0204', direction: '呼出', time: '2024-06-01 10:00' },
+      { name: 'Michael Brown', phone: '+1-800-288-2020', direction: '呼入', time: '2024-05-31 16:20' },
+      { name: 'Emily Davis', phone: '+1-800-555-1234', direction: '呼出', time: '2024-05-30 14:10' },
+      { name: 'David Wilson', phone: '+1-800-555-5678', direction: '呼入', time: '2024-05-29 09:45' },
+      { name: 'Sophia Lee', phone: '+1-800-555-8765', direction: '呼出', time: '2024-05-28 11:30' },
+      { name: 'James Miller', phone: '+1-800-555-4321', direction: '呼入', time: '2024-05-27 17:05' },
+      { name: 'Olivia Martinez', phone: '+1-800-555-2468', direction: '呼出', time: '2024-05-26 13:15' },
+      { name: 'William Anderson', phone: '+1-800-555-1357', direction: '呼入', time: '2024-05-25 08:50' },
+      { name: 'Ava Thomas', phone: '+1-800-555-9753', direction: '呼出', time: '2024-05-24 19:40' },
+      { name: 'Benjamin Taylor', phone: '+1-800-555-8642', direction: '呼入', time: '2024-05-23 15:25' },
+      { name: 'Mia Harris', phone: '+1-800-555-7531', direction: '呼出', time: '2024-05-22 10:55' },
+      { name: 'Lucas Clark', phone: '+1-800-555-6420', direction: '呼入', time: '2024-05-21 12:35' },
+      { name: 'Charlotte Lewis', phone: '+1-800-555-5319', direction: '呼出', time: '2024-05-20 14:20' },
+      { name: 'Henry Walker', phone: '+1-800-555-4208', direction: '呼入', time: '2024-05-19 16:10' },
+      { name: 'Amelia Hall', phone: '+1-800-555-3197', direction: '呼出', time: '2024-05-18 18:00' },
+      { name: 'Jack Allen', phone: '+1-800-555-2086', direction: '呼入', time: '2024-05-17 20:45' },
+      { name: 'Harper Young', phone: '+1-800-555-1975', direction: '呼出', time: '2024-05-16 22:30' },
+      { name: 'Evelyn King', phone: '+1-800-555-0864', direction: '呼入', time: '2024-05-15 09:15' },
+      { name: 'Alexander Wright', phone: '+1-800-555-9753', direction: '呼出', time: '2024-05-14 11:05' },
+      { name: 'Ella Scott', phone: '+1-800-555-8642', direction: '呼入', time: '2024-05-13 13:50' }
+    ]
+  },
+  {
+    userId: 'VER002', // Sarah Johnson
+    contacts: [
+      { name: 'John Smith', phone: '+1-800-934-6489', direction: '呼入', time: '2024-06-01 10:00' },
+      { name: 'Michael Brown', phone: '+1-800-288-2020', direction: '呼出', time: '2024-05-31 15:00' },
+      { name: 'Emily Davis', phone: '+1-800-555-1234', direction: '呼入', time: '2024-05-30 13:00' },
+      { name: 'David Wilson', phone: '+1-800-555-5678', direction: '呼出', time: '2024-05-29 12:00' },
+      { name: 'Sophia Lee', phone: '+1-800-555-8765', direction: '呼入', time: '2024-05-28 11:00' },
+      { name: 'James Miller', phone: '+1-800-555-4321', direction: '呼出', time: '2024-05-27 10:00' },
+      { name: 'Olivia Martinez', phone: '+1-800-555-2468', direction: '呼入', time: '2024-05-26 09:00' },
+      { name: 'William Anderson', phone: '+1-800-555-1357', direction: '呼出', time: '2024-05-25 08:00' },
+      { name: 'Ava Thomas', phone: '+1-800-555-9753', direction: '呼入', time: '2024-05-24 07:00' },
+      { name: 'Benjamin Taylor', phone: '+1-800-555-8642', direction: '呼出', time: '2024-05-23 06:00' }
+    ]
+  },
+  // 可继续添加其他用户的通话记录
+];
+
 // ==================== Mock数据API接口 ====================
 // 这些函数模拟真实的API调用，后期可以替换为真实的API
 

@@ -31,7 +31,6 @@
           </svg>
           <span>ISP </span>
         </a>
-<!-- 
         <a @click="handleNavigation('/personal-database')" class="nav-item" :class="{ active: $route.path === '/personal-database' }">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -50,7 +49,7 @@
         </a>
         
         <!-- More下拉菜单 -->
-        <!-- <div class="nav-more-dropdown" ref="moreDropdown">
+        <div class="nav-more-dropdown" ref="moreDropdown"> 
           <button class="nav-more-btn" @click="toggleMoreMenu" :class="{ active: isMoreMenuOpen }">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <circle cx="12" cy="12" r="1" stroke="currentColor" stroke-width="2"/>
@@ -75,7 +74,7 @@
               <span>{{ item.label }}</span>
             </a>
           </div>
-        </div> -->
+        </div>
       </div>
 
       <!-- 用户区域 -->
