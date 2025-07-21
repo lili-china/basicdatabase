@@ -354,7 +354,7 @@ export default {
   flex-direction: column;
   padding: 20px;
   box-sizing: border-box;
-  min-height: calc(100vh - 35px); /* 最小高度，允许内容扩展 */
+  min-height: calc(100vh); /* 最小高度，允许内容扩展 */
   max-height: calc(100vh - 64px); /* 最大高度限制 */
   overflow-y: auto; /* 只在内容区域显示滚动条 */
 }

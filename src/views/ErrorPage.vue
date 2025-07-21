@@ -118,7 +118,8 @@ onMounted(() => {
 }
 
 .error-container {
-  background: var(--bg-dialog);
+  background: none;
+  /* background: var(--bg-dialog); */
   backdrop-filter: blur(20px);
   border-radius: 24px;
   padding: 3.5rem;

@@ -918,7 +918,7 @@ onMounted(() => {
 }
 
 .search-btn {
-  height: 40px;
+  height: 32px;
   padding: 0 1.5rem;
   display: flex;
   align-items: center;
@@ -931,7 +931,7 @@ onMounted(() => {
 }
 
 .reset-btn {
-  height: 40px;
+  height: 32px;
   padding: 0 1.5rem;
   display: flex;
   align-items: center;

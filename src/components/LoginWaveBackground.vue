@@ -45,12 +45,8 @@ export default {
     this.setupResizeListener()
     this.setupAnimationControlListener()
     this.initParticles()
-    
-    // 检查全局动画状态，如果暂停则不启动动画
-    const isPaused = localStorage.getItem('animationPaused') === 'true'
-    if (!isPaused) {
-      this.startAnimation()
-    }
+    // 页面加载后波浪动画一直播放
+    this.startAnimation()
   },
   beforeDestroy() {
     this.stopAnimation()

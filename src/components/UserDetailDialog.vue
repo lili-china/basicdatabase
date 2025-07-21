@@ -10,7 +10,7 @@
     :modal="false"
     :append-to-body="true"
     :lock-scroll="false"
-
+    top="5vh"
   >
     <template #header="{ close, titleId, titleClass }">
       <div class="dialog-header">

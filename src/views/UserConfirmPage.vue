@@ -77,8 +77,9 @@ const enterSystem = () => {
 }
 
 .confirm-container {
-  background: var(--bg-dialog);
-  backdrop-filter: blur(20px);
+  /* background: var(--bg-dialog); */
+  background: none;
+  backdrop-filter: blur(20px);  
   border-radius: 24px;
   padding: 3.5rem;
   max-width: 480px;
