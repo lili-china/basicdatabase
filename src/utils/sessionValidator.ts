@@ -1,4 +1,6 @@
 // Session验证工具
+import { getApiConfig, getApiUrl, isApiEnabled, getAuthEndpoints } from './apiConfig'
+
 export interface SessionValidationResult {
   isValid: boolean
   sessionId?: string
@@ -35,8 +37,107 @@ export function refreshCache(newSessionId: string): void {
   console.log('缓存刷新完成，新的sessionId:', newSessionId)
 }
 
+// 预留：调用内网API验证session
+export async function validateSessionWithApi(sessionId: string): Promise<boolean> {
+  if (!isApiEnabled()) {
+    console.log('API验证未启用，使用本地验证')
+    return false
+  }
+
+  try {
+    console.log('调用内网API验证session:', sessionId)
+    
+    const apiConfig = getApiConfig()
+    const authEndpoints = getAuthEndpoints()
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), apiConfig.timeout)
+    
+    const response = await fetch(getApiUrl(authEndpoints.validateSession), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Session-ID': sessionId
+      },
+      body: JSON.stringify({ sessionId }),
+      signal: controller.signal
+    })
+    
+    clearTimeout(timeoutId)
+    
+    if (!response.ok) {
+      console.error('API验证失败，状态码:', response.status)
+      return false
+    }
+    
+    const result = await response.json()
+    console.log('API验证结果:', result)
+    
+    return result.isValid === true
+  } catch (error) {
+    console.error('API验证异常:', error)
+    return false
+  }
+}
+
+// 预留：获取用户信息
+export async function getUserInfoFromApi(sessionId: string): Promise<any> {
+  if (!isApiEnabled()) {
+    console.log('API获取用户信息未启用')
+    return null
+  }
+
+  try {
+    const authEndpoints = getAuthEndpoints()
+    const response = await fetch(getApiUrl(authEndpoints.getUserInfo), {
+      method: 'GET',
+      headers: {
+        'X-Session-ID': sessionId
+      }
+    })
+    
+    if (!response.ok) {
+      return null
+    }
+    
+    return await response.json()
+  } catch (error) {
+    console.error('获取用户信息异常:', error)
+    return null
+  }
+}
+
+// 预留：刷新session
+export async function refreshSessionWithApi(sessionId: string): Promise<string | null> {
+  if (!isApiEnabled()) {
+    console.log('API刷新session未启用')
+    return null
+  }
+
+  try {
+    const authEndpoints = getAuthEndpoints()
+    const response = await fetch(getApiUrl(authEndpoints.refreshSession), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Session-ID': sessionId
+      },
+      body: JSON.stringify({ sessionId })
+    })
+    
+    if (!response.ok) {
+      return null
+    }
+    
+    const result = await response.json()
+    return result.newSessionId || null
+  } catch (error) {
+    console.error('刷新session异常:', error)
+    return null
+  }
+}
+
 // 验证当前页面的session
-export function validateCurrentSession(): SessionValidationResult {
+export async function validateCurrentSession(): Promise<SessionValidationResult> {
   // 如果当前已经在错误页面，不执行跳转
   if (window.location.pathname === '/errorPage') {
     return {
@@ -70,7 +171,46 @@ export function validateCurrentSession(): SessionValidationResult {
     }
   }
 
-  // 只允许特定sessionid
+  // 检查session是否过期
+  if (isSessionExpired()) {
+    console.log('Session已过期，尝试刷新...')
+    
+    // 尝试通过API刷新session
+    const newSessionId = await refreshSessionWithApi(sessionId)
+    if (newSessionId) {
+      refreshCache(newSessionId)
+      sessionId = newSessionId
+      cacheRefreshed = true
+    } else {
+      // 刷新失败，跳转错误页
+      window.location.href = '/errorPage?reason=session-expired'
+      return {
+        isValid: false,
+        error: 'Session expired and refresh failed'
+      }
+    }
+  }
+
+  // 如果API验证启用，优先使用API验证
+  if (isApiEnabled()) {
+    console.log('使用API验证session...')
+    const apiValid = await validateSessionWithApi(sessionId)
+    
+    if (apiValid) {
+      return {
+        isValid: true,
+        sessionId,
+        cacheRefreshed
+      }
+    } else {
+      console.log('API验证失败，回退到本地验证')
+    }
+  }
+
+  // 本地验证（备用方案）
+  console.log('使用本地验证session...')
+  
+  // 只允许特定sessionid（当前硬编码验证）
   if (sessionId !== 'a123456789') {
     window.location.href = '/errorPage?reason=invalid-sessionid'
     return {

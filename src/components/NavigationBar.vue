@@ -13,9 +13,8 @@
         <span class="logo-text">Basic Database</span>
       </a>
 
-    
       <!-- 导航菜单 -->
-      <div class="nav-menu">
+      <div class="nav-menu" ref="navMenu">
         <a @click="handleNavigation('/dashboard')" class="nav-item" :class="{ active: $route.path === '/dashboard' }">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -33,7 +32,6 @@
           <span>ISP Database</span>
         </a>
 
-        
         <a @click="handleNavigation('/personal-database')" class="nav-item" :class="{ active: $route.path === '/personal-database' }">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -51,25 +49,33 @@
           <span>Vehicle Database</span>
         </a>
         
-      
-        
-        <a @click="handleNavigation('/analytics')" class="nav-item" :class="{ active: $route.path === '/analytics' }">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M9 11H1L9 3V11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M20.2 5.8L16 10L20.2 14.2L16 18.4L20.2 22.6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M4 19H12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span>Analytics</span>
-        </a>
-        
-        <!-- <a @click="handleNavigation('/settings')" class="nav-item" :class="{ active: $route.path === '/settings' }">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M12 16V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span>Settings</span>
-        </a> -->
+        <!-- More下拉菜单 -->
+        <div class="nav-more-dropdown" ref="moreDropdown">
+          <button class="nav-more-btn" @click="toggleMoreMenu" :class="{ active: isMoreMenuOpen }">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="1" stroke="currentColor" stroke-width="2"/>
+              <circle cx="19" cy="12" r="1" stroke="currentColor" stroke-width="2"/>
+              <circle cx="5" cy="12" r="1" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            <span>More</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" class="dropdown-arrow" :class="{ 'rotated': isMoreMenuOpen }">
+              <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          
+          <div v-if="isMoreMenuOpen" class="more-dropdown-menu">
+            <a 
+              v-for="item in moreMenuItems" 
+              :key="item.path"
+              @click="handleMoreNavigation(item.path)"
+              class="more-dropdown-item"
+              :class="{ active: $route.path === item.path }"
+            >
+              <component :is="iconComponents[item.icon as keyof typeof iconComponents]" width="16" height="16" />
+              <span>{{ item.label }}</span>
+            </a>
+          </div>
+        </div>
       </div>
 
       <!-- 用户区域 -->
@@ -142,205 +148,128 @@
             <button class="dropdown-item" @click="toggleAnimation">
               <!-- 波浪图标 (动画暂停时) -->
               <svg v-if="isAnimationPaused" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M2 12C2 12 4 8 8 8C12 8 14 12 18 12C22 12 24 8 24 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M2 16C2 16 4 12 8 12C12 12 14 16 18 16C22 16 24 12 24 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle cx="12" cy="12" r="2" fill="currentColor"/>
+                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-              <!-- 暂停波浪图标 (动画播放时) -->
+              <!-- 暂停图标 (动画播放时) -->
               <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M2 12C2 12 4 8 8 8C12 8 14 12 18 12C22 12 24 8 24 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M2 16C2 16 4 12 8 12C12 12 14 16 18 16C22 16 24 12 24 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <line x1="8" y1="6" x2="8" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                <line x1="16" y1="6" x2="16" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <rect x="6" y="4" width="4" height="16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <rect x="14" y="4" width="4" height="16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-              <span>{{ isAnimationPaused ? 'Resume Background Animation' : 'Pause Background Animation' }}</span>
+              <span>{{ isAnimationPaused ? 'Resume Animation' : 'Pause Animation' }}</span>
             </button>
             
             <button class="dropdown-item" @click="toggleNavVisibility">
-              <svg v-if="!isNavHidden" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
               <span>{{ isNavHidden ? 'Show Navigation' : 'Hide Navigation' }}</span>
             </button>
-            
-            <button class="dropdown-item" @click="handleLogout">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M16 17L21 12L16 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M21 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              <span>Logout</span>
-            </button>
           </div>
+          
+          <div class="dropdown-divider"></div>
+          
+          <button class="dropdown-item logout-item" @click="handleLogout">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline points="16,17 21,12 16,7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="21" y1="12" x2="9" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Logout</span>
+          </button>
         </div>
       </div>
     </div>
   </nav>
-  
-  <!-- 悬浮标 -->
-  <div v-if="isNavHidden" class="floating-nav-trigger" @click="toggleFloatingMenu" ref="floatingMenuTrigger">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-      <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    
-    <!-- 悬浮下拉菜单 -->
-    <div v-if="isFloatingMenuOpen" class="floating-dropdown-menu">
-      <div class="floating-dropdown-header">
-        <div class="floating-dropdown-user-info">
-          <div class="floating-dropdown-avatar">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="8" r="5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M20 21C20 16.5817 16.4183 13 12 13C7.58172 13 4 16.5817 4 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <div class="floating-dropdown-user-details">
-            <span class="floating-dropdown-user-name">Admin User</span>
-            <span class="floating-dropdown-user-role">Administrator</span>
-          </div>
-        </div>
-      </div>
-      
-      <div class="floating-dropdown-divider"></div>
-      
-      <div class="floating-dropdown-menu-items">
-        <button class="floating-dropdown-item" @click="toggleNavVisibility">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span>Show Navigation</span>
-        </button>
-        
-        <button class="floating-dropdown-item" @click="toggleTheme">
-          <!-- 太阳图标 (亮色模式) -->
-          <svg v-if="currentTheme === 'light'" width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <line x1="1" y1="12" x2="3" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <line x1="21" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <!-- 月亮图标 (暗色模式) -->
-          <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span>{{ currentTheme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode' }}</span>
-        </button>
-        
-        <button class="floating-dropdown-item" @click="toggleAnimation">
-          <!-- 波浪图标 (动画暂停时) -->
-          <svg v-if="isAnimationPaused" width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M2 12C2 12 4 8 8 8C12 8 14 12 18 12C22 12 24 8 24 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M2 16C2 16 4 12 8 12C12 12 14 16 18 16C22 16 24 12 24 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <circle cx="12" cy="12" r="2" fill="currentColor"/>
-          </svg>
-          <!-- 暂停波浪图标 (动画播放时) -->
-          <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M2 12C2 12 4 8 8 8C12 8 14 12 18 12C22 12 24 8 24 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M2 16C2 16 4 12 8 12C12 12 14 16 18 16C22 16 24 12 24 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <line x1="8" y1="6" x2="8" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            <line x1="16" y1="6" x2="16" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-          <span>{{ isAnimationPaused ? 'Resume Background Animation' : 'Pause Background Animation' }}</span>
-        </button>
-      </div>
-    </div>
-  </div>
-  
-  <!-- 关于账户弹窗 -->
-  <el-dialog
-    v-model="showAboutDialog"
-    title="Account Information"
-    width="400px"
-    :show-close="true"
-    :close-on-click-modal="true"
-    :close-on-press-escape="true"
-    class="about-account-dialog"
-  >
-    <div class="account-info">
-      <div class="account-avatar">
-        <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="8" r="5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M20 21C20 16.5817 16.4183 13 12 13C7.58172 13 4 16.5817 4 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      
-      <div class="account-details">
-        <div class="account-field">
-          <label>User ID:</label>
-          <span>ADMIN-001</span>
-        </div>
-        <div class="account-field">
-          <label>Username:</label>
-          <span>Admin User</span>
-        </div>
-        <div class="account-field">
-          <label>Email:</label>
-          <span>admin@company.com</span>
-        </div>
-        <div class="account-field">
-          <label>Role:</label>
-          <span>Administrator</span>
-        </div>
-        <div class="account-field">
-          <label>Status:</label>
-          <span class="status-active">Active</span>
-        </div>
-      </div>
-    </div>
-    
-    <template #footer>
-      <div class="dialog-footer">
-        <el-button @click="showAboutDialog = false">Close</el-button>
-      </div>
-    </template>
-  </el-dialog>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { getSessionIdFromUrl } from '@/utils/sessionValidator'
+import { ref, onMounted, onUnmounted, watch, h, nextTick, computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { currentTheme, toggleTheme } from '@/utils/themeManager'
 import { isAnimationPaused, toggleAnimation } from '@/utils/animationManager'
+import { getSessionIdFromUrl } from '@/utils/sessionValidator'
 
 const router = useRouter()
+const route = useRoute()
 
-// 当前session ID
-const currentSessionId = ref<string | null>(null)
-
-// 导航栏隐藏状态
+// 导航栏状态
 const isNavHidden = ref(false)
-
-// 用户菜单状态
 const isUserMenuOpen = ref(false)
+const isMoreMenuOpen = ref(false)
+
+// DOM引用
+const navMenu = ref<HTMLElement>()
+const moreDropdown = ref<HTMLElement>()
 const userMenuTrigger = ref<HTMLElement>()
 
-// 悬浮菜单状态
-const isFloatingMenuOpen = ref(false)
-const floatingMenuTrigger = ref<HTMLElement>()
+// More菜单项配置（始终在More菜单中）
+const moreMenuItems = ref([
+  {
+    path: '/enterprise-database',
+    label: 'Enterprise Database',
+    icon: 'EnterpriseDatabaseIcon'
+  },
+  {
+    path: '/api-test',
+    label: 'API Test',
+    icon: 'ApiTestIcon'
+  }
+])
 
-// 关于账户弹窗状态
-const showAboutDialog = ref(false)
+// 图标组件映射
+const iconComponents = {
+  AnalyticsIcon: () => h('svg', { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none' }, [
+    h('path', { d: 'M9 11H1L9 3V11Z', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
+    h('path', { d: 'M20.2 5.8L16 10L20.2 14.2L16 18.4L20.2 22.6', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
+    h('path', { d: 'M4 19H12', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' })
+  ]),
+  ApiTestIcon: () => h('svg', { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none' }, [
+    h('path', { d: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
+    h('polyline', { points: '14,2 14,8 20,8', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
+    h('line', { x1: '16', y1: '13', x2: '8', y2: '13', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
+    h('line', { x1: '16', y1: '17', x2: '8', y2: '17', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
+    h('polyline', { points: '10,9 9,9 8,9', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' })
+  ]),
+  EnterpriseDatabaseIcon: () => h('svg', { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none' }, [
+    h('path', { d: 'M12 2L2 7L12 12L22 7L12 2Z', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
+    h('path', { d: 'M2 17L12 22L22 17', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
+    h('path', { d: 'M2 12L12 17L22 12', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' })
+  ]),
+  DatabaseIcon: () => h('svg', { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none' }, [
+    h('path', { d: 'M12 2L2 7L12 12L22 7L12 2Z', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
+    h('path', { d: 'M2 17L12 22L22 17', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
+    h('path', { d: 'M2 12L12 17L22 12', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' })
+  ]),
+  VehicleDatabaseIcon: () => h('svg', { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none' }, [
+    h('path', { d: 'M7 17L3 21L7 17ZM3 21V11C3 10.4696 3.21071 9.96086 3.58579 9.58579C3.96086 9.21071 4.46957 9 5 9H11L21 19V21C21 21.5304 20.7893 22.0391 20.4142 22.4142C20.0391 22.7893 19.5304 23 19 23H5C4.46957 23 3.96086 22.7893 3.58579 22.4142C3.21071 22.0391 3 21.5304 3 21V21Z', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
+    h('path', { d: 'M16 3H21V8', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
+    h('path', { d: 'M4 15L9 20L20 9', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' })
+  ])
+}
 
-// 切换导航栏可见性
-const toggleNavVisibility = () => {
-  isNavHidden.value = !isNavHidden.value
-  // 保存状态到localStorage
-  localStorage.setItem('navHidden', isNavHidden.value.toString())
+// 切换More菜单
+const toggleMoreMenu = () => {
+  isMoreMenuOpen.value = !isMoreMenuOpen.value
+}
+
+// 处理导航
+const handleNavigation = (path: string) => {
+  const sessionId = getSessionIdFromUrl() || localStorage.getItem('sessionId')
+  if (sessionId) {
+    router.push({ path, query: { sessionId } })
+  } else {
+    router.push(path)
+  }
+}
+
+// 处理More菜单中的导航
+const handleMoreNavigation = (path: string) => {
+  handleNavigation(path)
+  isMoreMenuOpen.value = false
 }
 
 // 切换用户菜单
@@ -348,59 +277,49 @@ const toggleUserMenu = () => {
   isUserMenuOpen.value = !isUserMenuOpen.value
 }
 
-// 切换悬浮菜单
-const toggleFloatingMenu = () => {
-  isFloatingMenuOpen.value = !isFloatingMenuOpen.value
+// 切换导航栏可见性
+const toggleNavVisibility = () => {
+  isNavHidden.value = !isNavHidden.value
+  localStorage.setItem('navHidden', isNavHidden.value.toString())
 }
 
 // 处理关于账户
 const handleAboutAccount = () => {
-  console.log('关于账户被点击')
-  showAboutDialog.value = true
-}
-
-// 处理导航
-const handleNavigation = (path: string) => {
-  console.log('导航到:', path)
-  
-  // 验证sessionId
-  const sessionId = localStorage.getItem('sessionId')
-  if (!sessionId || sessionId !== 'a123456789') {
-    console.log('SessionId无效，跳转到错误页面')
-    router.push({
-      path: '/errorPage',
-      query: { reason: 'invalid-session' }
-    })
-    return
-  }
-  
-  // 验证通过，跳转到目标页面（不携带sessionId）
-  router.push(path)
+  console.log('About account clicked')
+  isUserMenuOpen.value = false
 }
 
 // 处理登出
 const handleLogout = () => {
-  console.log('登出被点击')
-  
-  // 关闭用户菜单
+  const sessionId = localStorage.getItem('sessionId')
+  if (sessionId) {
+    router.push({ path: '/user-confirm', query: { sessionId } })
+  } else {
+    router.push('/login')
+  }
   isUserMenuOpen.value = false
-  
-  // 跳转到用户确认页面
-  router.push({
-    path: '/user-confirm',
-    query: { sessionId: currentSessionId.value }
-  })
 }
 
 // 点击外部关闭菜单
 const handleClickOutside = (event: Event) => {
-  if (userMenuTrigger.value && !userMenuTrigger.value.contains(event.target as Node)) {
+  const target = event.target as HTMLElement
+  
+  // 关闭用户菜单
+  if (userMenuTrigger.value && !userMenuTrigger.value.contains(target)) {
     isUserMenuOpen.value = false
   }
-  if (floatingMenuTrigger.value && !floatingMenuTrigger.value.contains(event.target as Node)) {
-    isFloatingMenuOpen.value = false
+  
+  // 关闭More菜单
+  if (moreDropdown.value && !moreDropdown.value.contains(target)) {
+    isMoreMenuOpen.value = false
   }
 }
+
+// 监听路由变化
+watch(() => route.path, () => {
+  isMoreMenuOpen.value = false
+  isUserMenuOpen.value = false
+})
 
 // 组件挂载时获取session ID和添加事件监听
 onMounted(() => {
@@ -417,7 +336,6 @@ onMounted(() => {
     }
   }
   
-  currentSessionId.value = sessionId
   document.addEventListener('click', handleClickOutside)
   
   // 从localStorage恢复导航栏状态
@@ -434,74 +352,85 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+/* 导航栏基础样式 */
 .navigation-bar {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
-  background: var(--bg-secondary);
+  height: 64px;
+  background: var(--bg-navbar);
   backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border-primary);
-  box-shadow: 0 2px 20px var(--shadow-primary);
-  transition: transform 0.3s ease-in-out;
-}
-
-.nav-hidden {
-  transform: translateY(-100%);
+  border-bottom: 1px solid var(--border-navbar);
+  z-index: 10000;
+  transition: transform 0.3s ease;
 }
 
 .nav-container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 1rem;
-  height: 64px;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 0 1.5rem;
+  gap: 1rem;
 }
 
-/* Logo区域 */
+/* Logo样式 */
 .nav-logo {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  text-decoration: none;
-  color: inherit;
-  transition: all 0.2s ease;
-  border-radius: 8px;
-  padding: 0.25rem;
   cursor: pointer;
+  text-decoration: none;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 1.125rem;
+  transition: color 0.2s ease;
+  flex-shrink: 0;
 }
 
 .nav-logo:hover {
-  background: rgba(59, 130, 246, 0.05);
-  transform: translateY(-1px);
+  color: var(--accent-primary);
 }
 
 .logo-icon {
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--accent-secondary);
+  color: var(--accent-primary);
 }
 
 .logo-text {
-  font-size: 1.25rem;
-  font-weight: 700;
   color: var(--text-primary);
-  letter-spacing: -0.025em;
 }
 
-/* 导航菜单 */
+.system-name {
+  color: var(--text-primary);
+}
+
+.system-arrow {
+  transition: transform 0.2s ease;
+  color: var(--text-secondary);
+}
+
+.system-arrow.rotated {
+  transform: rotate(180deg);
+}
+
+/* 导航菜单样式 */
 .nav-menu {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex: 1;
+  justify-content: center;
+  margin: 0;
 }
 
 .nav-item {
@@ -509,136 +438,180 @@ onUnmounted(() => {
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  border-radius: 8px;
   color: var(--text-secondary);
   text-decoration: none;
-  font-weight: 500;
-  font-size: 0.875rem;
+  border-radius: 8px;
   transition: all 0.2s ease;
-  position: relative;
   cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .nav-item:hover {
-  color: var(--accent-primary);
   background: var(--accent-secondary);
+  color: var(--accent-primary);
 }
 
 .nav-item.active {
-  color: var(--accent-primary);
   background: var(--accent-secondary);
+  color: var(--accent-primary);
 }
 
 .nav-item svg {
   flex-shrink: 0;
+  color: inherit;
 }
 
-/* 悬浮标 */
-.floating-nav-trigger {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  width: 48px;
-  height: 48px;
-  background: var(--bg-card);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--border-card);
-  border-radius: 50%;
-  box-shadow: var(--shadow-dialog);
+/* More下拉菜单样式 */
+.nav-more-dropdown {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 100000;
-  transition: all 0.3s ease;
-  color: var(--text-primary);
 }
 
-.floating-nav-trigger:hover {
-  transform: scale(1.1);
-  box-shadow: 0 8px 32px var(--shadow-primary);
+.nav-more-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.nav-more-btn:hover {
   background: var(--accent-secondary);
   color: var(--accent-primary);
 }
 
-.floating-nav-trigger svg {
-  transition: all 0.3s ease;
+.nav-more-btn.active {
+  background: var(--accent-secondary);
+  color: var(--accent-primary);
 }
 
-.floating-nav-trigger:hover svg {
-  transform: scale(1.1);
+.dropdown-arrow {
+  transition: transform 0.2s ease;
 }
 
-/* 用户区域 */
+.dropdown-arrow.rotated {
+  transform: rotate(180deg);
+}
+
+.more-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.5rem;
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-card);
+  border-radius: 12px;
+  box-shadow: var(--shadow-dialog);
+  z-index: 100000;
+  min-width: 240px;
+  width: max-content;
+  transform-origin: top left;
+  animation: dropdownSlideIn 0.2s ease-out;
+}
+
+.more-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border-radius: 0;
+}
+
+.more-dropdown-item:first-child {
+  border-radius: 12px 12px 0 0;
+}
+
+.more-dropdown-item:last-child {
+  border-radius: 0 0 12px 12px;
+}
+
+.more-dropdown-item:hover {
+  background: var(--accent-secondary);
+  color: var(--accent-primary);
+}
+
+.more-dropdown-item.active {
+  background: var(--accent-secondary);
+  color: var(--accent-primary);
+}
+
+.more-dropdown-item svg {
+  color: inherit;
+}
+
+/* 用户区域样式 */
 .nav-user {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  cursor: pointer;
   padding: 0.5rem;
   border-radius: 8px;
   transition: all 0.2s ease;
-  position: relative; /* 添加相对定位 */
-  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
 }
 
 .nav-user:hover {
-  background: var(--border-secondary);
+  background: var(--accent-secondary);
 }
 
 .user-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 2px solid rgba(59, 130, 246, 0.2);
-  background: rgba(59, 130, 246, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #3b82f6;
-}
-
-.user-avatar svg {
-  width: 20px;
-  height: 20px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--accent-secondary);
+  color: var(--accent-primary);
 }
 
 .user-info {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  gap: 0.125rem;
 }
 
 .user-name {
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--text-primary);
-  line-height: 1.2;
+  line-height: 1;
 }
 
 .user-role {
   font-size: 0.75rem;
   color: var(--text-secondary);
-  line-height: 1.2;
+  line-height: 1;
 }
 
 .user-menu-btn {
-  width: 24px;
-  height: 24px;
-  border: none;
-  background: transparent;
-  color: var(--text-secondary);
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
   transition: all 0.2s ease;
-}
-
-.user-menu-btn:hover {
-  color: var(--accent-primary);
-  background: var(--accent-secondary);
 }
 
 .user-menu-btn svg {
@@ -649,7 +622,7 @@ onUnmounted(() => {
   transform: rotate(180deg);
 }
 
-/* 用户下拉菜单 */
+/* 用户下拉菜单样式 */
 .user-dropdown-menu {
   position: absolute;
   top: 100%;
@@ -661,20 +634,10 @@ onUnmounted(() => {
   border-radius: 12px;
   box-shadow: var(--shadow-dialog);
   z-index: 100000;
-  min-width: 220px;
+  min-width: 260px;
+  width: max-content;
   transform-origin: top right;
-  animation: dropdownFadeIn 0.2s ease-out;
-}
-
-@keyframes dropdownFadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95) translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+  animation: dropdownSlideIn 0.2s ease-out;
 }
 
 .dropdown-header {
@@ -689,16 +652,14 @@ onUnmounted(() => {
 }
 
 .dropdown-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 2px solid rgba(59, 130, 246, 0.2);
-  background: rgba(59, 130, 246, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #3b82f6;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--accent-secondary);
+  color: var(--accent-primary);
 }
 
 .dropdown-user-details {
@@ -708,44 +669,39 @@ onUnmounted(() => {
 }
 
 .dropdown-user-name {
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: var(--text-primary);
-  line-height: 1.2;
 }
 
 .dropdown-user-email {
   font-size: 0.75rem;
   color: var(--text-secondary);
-  line-height: 1.2;
 }
 
 .dropdown-divider {
   height: 1px;
-  background-color: var(--border-secondary);
-  margin: 0;
+  background: var(--border-secondary);
+  margin: 0.5rem 0;
 }
 
 .dropdown-menu-items {
-  padding: 0.5rem;
+  padding: 0.5rem 0;
 }
 
 .dropdown-item {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.75rem;
-  width: 100%;
-  color: var(--text-primary);
-  text-decoration: none;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  border-radius: 8px;
-  cursor: pointer;
-  border: none;
+  padding: 0.75rem 1rem;
   background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
   text-align: left;
+  font-size: 0.875rem;
 }
 
 .dropdown-item:hover {
@@ -754,33 +710,25 @@ onUnmounted(() => {
 }
 
 .dropdown-item svg {
-  flex-shrink: 0;
-  color: var(--text-secondary);
-  transition: color 0.2s ease;
+  color: inherit;
 }
 
-.dropdown-item:hover svg {
-  color: var(--accent-primary);
+.logout-item {
+  color: #ef4444;
 }
 
-/* 悬浮下拉菜单 */
-.floating-dropdown-menu {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  margin-top: 0.5rem;
-  background: var(--bg-card);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--border-card);
-  border-radius: 12px;
-  box-shadow: var(--shadow-dialog);
-  z-index: 100000;
-  min-width: 220px;
-  transform-origin: top right;
-  animation: dropdownFadeIn 0.2s ease-out;
+.logout-item:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
 }
 
-@keyframes dropdownFadeIn {
+/* 导航栏隐藏状态 */
+.nav-hidden {
+  transform: translateY(-100%);
+}
+
+/* 下拉菜单动画 */
+@keyframes dropdownSlideIn {
   from {
     opacity: 0;
     transform: scale(0.95) translateY(-10px);
@@ -791,159 +739,34 @@ onUnmounted(() => {
   }
 }
 
-.floating-dropdown-header {
-  padding: 1rem;
-  border-bottom: 1px solid var(--border-secondary);
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .nav-container {
+    padding: 0 1rem;
+    gap: 0.5rem;
+  }
+  
+  .nav-menu {
+    margin: 0;
+    gap: 0.25rem;
+  }
+  
+  .nav-item {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+  }
+  
+  .user-info {
+    display: none;
+  }
+  
+  .nav-logo {
+    font-size: 1rem;
+  }
+  
+  .logo-icon {
+    width: 28px;
+    height: 28px;
+  }
 }
-
-.floating-dropdown-user-info {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.floating-dropdown-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 2px solid rgba(59, 130, 246, 0.2);
-  background: rgba(59, 130, 246, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #3b82f6;
-}
-
-.floating-dropdown-user-details {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.floating-dropdown-user-name {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  line-height: 1.2;
-}
-
-.floating-dropdown-user-role {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  line-height: 1.2;
-}
-
-.floating-dropdown-divider {
-  height: 1px;
-  background-color: var(--border-secondary);
-  margin: 0;
-}
-
-.floating-dropdown-menu-items {
-  padding: 0.5rem;
-}
-
-.floating-dropdown-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  width: 100%;
-  color: var(--text-primary);
-  text-decoration: none;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  border-radius: 8px;
-  cursor: pointer;
-  border: none;
-  background: transparent;
-  text-align: left;
-}
-
-.floating-dropdown-item:hover {
-  background: var(--accent-secondary);
-  color: var(--accent-primary);
-}
-
-.floating-dropdown-item svg {
-  flex-shrink: 0;
-  color: var(--text-secondary);
-  transition: color 0.2s ease;
-}
-
-.floating-dropdown-item:hover svg {
-  color: var(--accent-primary);
-}
-
-/* 关于账户弹窗样式 */
-.about-account-dialog {
-  backdrop-filter: blur(20px);
-}
-
-.account-info {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.5rem;
-  padding: 1rem 0;
-}
-
-.account-avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 3px solid rgba(59, 130, 246, 0.2);
-  background: rgba(59, 130, 246, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #3b82f6;
-}
-
-.account-details {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.account-field {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid var(--border-secondary);
-}
-
-.account-field:last-child {
-  border-bottom: none;
-}
-
-.account-field label {
-  font-weight: 600;
-  color: var(--text-secondary);
-  font-size: 0.875rem;
-}
-
-.account-field span {
-  color: var(--text-primary);
-  font-weight: 500;
-  font-size: 0.875rem;
-}
-
-.status-active {
-  color: #10b981 !important;
-  font-weight: 600 !important;
-}
-
-.dialog-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
-}
-
-
 </style> 

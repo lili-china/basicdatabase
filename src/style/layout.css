@@ -18,6 +18,12 @@
   /* 确保内容区域可以正常滚动 */
   min-height: calc(100vh - 64px);
   max-height: none; /* 移除最大高度限制 */
+  transition: margin-top 0.3s ease;
+}
+
+/* 当页面标题固定时，调整内容区域的上边距 */
+.wave-demo-container.with-fixed-header {
+  margin-top: 120px;
 }
 
 /* Dashboard 特有容器样式 */
@@ -32,25 +38,70 @@
 /* 页面标题样式 */
 .page-header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 0.7rem; /* 更紧凑 */
   max-width: 1400px;
   margin-left: auto;
   margin-right: auto;
+  transition: all 0.3s ease;
+  position: relative;
+  padding-top: 0.25rem; /* 更紧凑 */
+  padding-bottom: 0.25rem;
+}
+
+.page-header.scrolled {
+  text-align: left;
+  margin-bottom: 0;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+  position: fixed;
+  top: 64px;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  background: var(--bg-navbar);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-navbar);
+  padding: 0.25rem 0.7rem; /* 更紧凑 */
+  box-shadow: none; /* 去除阴影 */
 }
 
 .page-header h1 {
-  font-size: 2.5rem;
-  font-weight: 700;
+  font-size: 1.5rem; /* 更小 */
+  font-weight: 600; /* 字重降低 */
   color: var(--text-primary);
-  margin: 0 0 0.5rem 0;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 0 0 0.15rem 0; /* 更紧凑 */
+  text-shadow: none; /* 去除阴影 */
+  transition: all 0.3s ease;
+}
+
+.page-header.scrolled h1 {
+  font-size: 1rem; /* 更小 */
+  margin: 0;
+  text-shadow: none;
 }
 
 .page-header p {
-  font-size: 1.1rem;
+  font-size: 0.95rem; /* 更小 */
   color: var(--text-secondary);
   margin: 0;
-  font-weight: 500;
+  font-weight: 400; /* 字重降低 */
+  transition: all 0.3s ease;
+}
+
+.page-header.scrolled p {
+  font-size: 0.7rem; /* 更小 */
+  opacity: 0.7;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .page-header h1 {
+    font-size: 1.1rem;
+  }
+  .page-header p {
+    font-size: 0.8rem;
+  }
 }
 
 /* 搜索区域样式 */
@@ -229,79 +280,17 @@
   line-height: 1.6;
 }
 
+/* 主内容区域 */
+.main-content {
+  margin-top: 64px;
+  min-height: calc(100vh - 64px);
+  padding: 2rem;
+  transition: margin-top 0.3s ease;
+}
+
 /* 响应式设计 */
-@media (max-width: 1400px) {
-  .cards-grid {
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  }
-}
-
-@media (max-width: 1200px) {
-  .cards-grid {
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  }
-}
-
 @media (max-width: 768px) {
-  .wave-demo-container {
-    padding-top: 1rem;
-  }
-  
-  .wave-demo-container.dashboard-container {
+  .main-content {
     padding: 1rem;
-    padding-top: 1rem;
-  }
-  
-  .page-header h1 {
-    font-size: 2rem;
-  }
-  
-  .cards-grid {
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 0.75rem;
-  }
-  
-  .data-card {
-    padding: 1rem;
-  }
-  
-  .coming-soon-content {
-    padding: 2rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .wave-demo-container {
-    padding: 1rem;
-    padding-top: 1rem;
-  }
-  
-  .wave-demo-container.dashboard-container {
-    padding: 1rem;
-    padding-top: 1rem;
-  }
-  
-  .page-header h1 {
-    font-size: 1.8rem;
-  }
-  
-  .data-card {
-    padding: 1rem;
-  }
-  
-  .coming-soon-content {
-    padding: 1.5rem;
-  }
-  
-  .coming-soon-content h2 {
-    font-size: 1.5rem;
-  }
-  
-  .search-section {
-    margin-bottom: 1.5rem;
-  }
-  
-  .filter-controls {
-    flex-direction: column;
   }
 } 

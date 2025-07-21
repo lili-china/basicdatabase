@@ -5,8 +5,8 @@
     
     <!-- 波浪背景和内容 -->
     <WaveBackground>
-      <div class="wave-demo-container">
-        <div class="page-header">
+      <div class="wave-demo-container" :class="{ 'with-fixed-header': isScrolled }">
+        <div class="page-header" :class="{ 'scrolled': isScrolled }">
           <h1>Settings</h1>
           <p>System configuration and preferences</p>
         </div>
@@ -29,8 +29,12 @@
 </template>
 
 <script setup lang="ts">
+import { initScrollListener } from '@/utils/scrollManager'
 import WaveBackground from '../components/WaveBackground.vue'
 import NavigationBar from '../components/NavigationBar.vue'
+
+// 滚动状态
+const isScrolled = initScrollListener()
 </script>
 
 <style scoped>

@@ -5,8 +5,8 @@
     
     <!-- 波浪背景和内容 -->
     <WaveBackground>
-      <div class="wave-demo-container">
-        <div class="page-header">
+      <div class="wave-demo-container" :class="{ 'with-fixed-header': isScrolled }">
+        <div class="page-header" :class="{ 'scrolled': isScrolled }">
           <h1>Vehicle Database</h1>
           <p>Search and view vehicle information and records</p>
         </div>
@@ -152,14 +152,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { getSessionIdFromUrl } from '@/utils/sessionValidator'
+import { initScrollListener } from '@/utils/scrollManager'
 import WaveBackground from '../components/WaveBackground.vue'
 import NavigationBar from '../components/NavigationBar.vue'
 import VehicleDetailDialog from '../components/VehicleDetailDialog.vue'
 import { generateMockVehicles } from '../utils/mockData'
 
-// 使用mock数据
-const allVehicles = ref(generateMockVehicles())
+const route = useRoute()
+
+// 当前session ID
+const currentSessionId = ref<string | null>(null)
+
+// 滚动状态
+const isScrolled = initScrollListener()
 
 // 页面查询对象
 const pageQuery = ref({
@@ -173,6 +181,9 @@ const itemsPerPage = 12
 // 对话框相关状态
 const dialogVisible = ref(false)
 const selectedVehicle = ref<any>(null)
+
+// 使用mock数据
+const allVehicles = ref(generateMockVehicles())
 
 // 过滤后的车辆列表
 const filteredVehicles = computed(() => {
@@ -228,6 +239,11 @@ const resetFilters = () => {
 // 分页方法
 const handleCurrentChange = (page: number) => {
   currentPage.value = page
+  // 滚动到页面顶部
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  })
 }
 
 // 显示车辆详情
@@ -235,6 +251,11 @@ const showVehicleDetail = (vehicle: any) => {
   selectedVehicle.value = vehicle
   dialogVisible.value = true
 }
+
+// 组件挂载时获取session ID
+onMounted(() => {
+  currentSessionId.value = getSessionIdFromUrl()
+})
 </script>
 
 <style scoped>

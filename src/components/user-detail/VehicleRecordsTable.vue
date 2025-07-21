@@ -206,6 +206,11 @@ const handleSizeChange = (size: number) => {
 
 const handleCurrentChange = (page: number) => {
   currentPage.value = page
+  // 滚动到表格顶部
+  const tableContainer = document.querySelector('.table-container')
+  if (tableContainer) {
+    tableContainer.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 }
 </script>
 

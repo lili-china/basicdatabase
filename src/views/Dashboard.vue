@@ -5,8 +5,8 @@
     
     <!-- 波浪背景和内容 -->
     <WaveBackground>
-      <div class="wave-demo-container dashboard-container">
-        <div class="page-header">
+      <div class="wave-demo-container dashboard-container" :class="{ 'with-fixed-header': isScrolled }">
+        <div class="page-header" :class="{ 'scrolled': isScrolled }">
           <h1>Dashboard</h1>
           <p>System statistics and data insights</p>
         </div>
@@ -146,6 +146,17 @@
                 <span>View Vehicle Data</span>
               </router-link>
 
+              <router-link :to="{ path: '/enterprise-database', query: { sessionId: currentSessionId } }" class="action-card">
+                <div class="action-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M20 7L10 17L5 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M21 12V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M7 3H17V7H7V3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <span>View Enterprise Data</span>
+              </router-link>
+
               <router-link :to="{ path: '/analytics', query: { sessionId: currentSessionId } }" class="action-card">
                 <div class="action-icon">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -178,6 +189,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { getSessionIdFromUrl } from '@/utils/sessionValidator'
+import { initScrollListener } from '@/utils/scrollManager'
 import WaveBackground from '../components/WaveBackground.vue'
 import NavigationBar from '../components/NavigationBar.vue'
 
@@ -191,6 +203,9 @@ const enterpriseCount = ref(342)
 const custom1Count = ref(0)
 const custom2Count = ref(0)
 const custom3Count = ref(0)
+
+// 滚动状态
+const isScrolled = initScrollListener()
 
 // 组件挂载时获取session ID
 onMounted(() => {

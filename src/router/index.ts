@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Dashboard from '../views/Dashboard.vue'
 import PersonalDatabase from '../views/PersonalDatabase.vue'
 import VehicleDatabase from '../views/VehicleDatabase.vue'
+import EnterpriseDatabase from '../views/EnterpriseDatabase.vue'
+import EnterpriseDetail from '@/components/EnterpriseDetail.vue'
 import Analytics from '../views/Analytics.vue'
 import Settings from '../views/Settings.vue'
 import ErrorPage from '../views/ErrorPage.vue'
@@ -10,6 +12,7 @@ import UserConfirmPage from '../views/UserConfirmPage.vue'
 import ISPDatabase from '../views/ISPDatabase.vue'
 import RelationGraphDemo from '../views/RelationGraphDemo.vue'
 import SessionTest from '../views/SessionTest.vue'
+import ApiTest from '../views/ApiTest.vue'
 
 
 const router = createRouter({
@@ -38,6 +41,16 @@ const router = createRouter({
       path: '/vehicle-database',
       name: 'VehicleDatabase',
       component: VehicleDatabase
+    },
+    {
+      path: '/enterprise-database',
+      name: 'EnterpriseDatabase',
+      component: EnterpriseDatabase
+    },
+    {
+      path: '/enterprise-detail/:id',
+      name: 'EnterpriseDetail',
+      component: EnterpriseDetail
     },
     {
       path: '/isp-database',
@@ -78,6 +91,11 @@ const router = createRouter({
       path: '/sessionTest',
       name: 'SessionTest',
       component: SessionTest
+    },
+    {
+      path: '/api-test',
+      name: 'ApiTest',
+      component: ApiTest
     },
 
   ]

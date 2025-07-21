@@ -26,22 +26,6 @@
             </svg>
             Go to Home
           </button>
-          
-          <button @click="goBack" class="btn btn-secondary">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M19 12H5M12 19L5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Go Back
-          </button>
-          
-          <button @click="refreshPage" class="btn btn-secondary">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M1 4V10H7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M23 20V14H17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14L18.36 18.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Refresh Page
-          </button>
         </div>
       </div>
     </LoginWaveBackground>
@@ -114,14 +98,6 @@ const errorMessage = computed(() => {
 
 const goHome = () => {
   router.push('/')
-}
-
-const goBack = () => {
-  window.history.back()
-}
-
-const refreshPage = () => {
-  window.location.reload()
 }
 
 // 组件挂载时检查sessionId

@@ -52,14 +52,11 @@ onMounted(() => {
 })
 
 const enterSystem = () => {
-  // 验证sessionId
-  if (sessionId.value !== 'a123456789') {
-    // sessionId不正确，跳转到错误页面
+  const localSessionId = localStorage.getItem('sessionId')
+  if (!sessionId.value || sessionId.value !== localSessionId) {
     window.location.href = '/errorPage?reason=invalid-sessionid'
     return
   }
-  
-  // 验证通过，进入系统，跳转到dashboard（不携带sessionId）
   router.push('/dashboard')
 }
 

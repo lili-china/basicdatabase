@@ -15,10 +15,6 @@
         
         <!-- 搜索和筛选区域 -->
         <div class="search-section">
-          <div class="search-header">
-            <h3>Search & Filter</h3>
-          </div>
-          
           <div class="search-filters">
             <div class="filter-row">
               <!-- 搜索输入框 -->
@@ -266,6 +262,11 @@ const resetFilters = () => {
 // 分页方法
 const handleCurrentChange = (page: number) => {
   currentPage.value = page
+  // 滚动到页面顶部
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  })
 }
 
 // 显示用户详情

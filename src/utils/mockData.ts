@@ -342,6 +342,50 @@ export const generateMockUsers = () => {
   return users
 }
 
+// ==================== 企业数据库Mock数据 ====================
+export const generateMockEnterprises = () => {
+  const companyTypes = ['Technology', 'Manufacturing', 'Finance', 'Healthcare', 'Education', 'Retail', 'Consulting']
+  const statuses = ['Active', 'Inactive', 'Suspended', 'Dissolved']
+  const cities = ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix', 'Philadelphia', 'San Antonio', 'San Diego', 'Dallas', 'San Jose']
+  const states = ['NY', 'CA', 'IL', 'TX', 'AZ', 'PA', 'FL', 'OH', 'GA', 'NC']
+  
+  const enterprises = []
+  
+  for (let i = 1; i <= 100; i++) {
+    const companyType = companyTypes[Math.floor(Math.random() * companyTypes.length)]
+    const status = statuses[Math.floor(Math.random() * statuses.length)]
+    const cityIndex = Math.floor(Math.random() * cities.length)
+    const foundedYear = Math.floor(Math.random() * 30) + 1990
+    const capital = Math.floor(Math.random() * 1000000000) + 100000
+    
+    const enterprise = {
+      id: `ENT${i.toString().padStart(3, '0')}`,
+      companyName: `${companyType} Corp ${i}`,
+      registrationNumber: `REG${Math.floor(Math.random() * 1000000).toString().padStart(6, '0')}`,
+      companyType,
+      registeredCapital: `$${(capital / 1000000).toFixed(1)}M`,
+      foundedYear: foundedYear.toString(),
+      legalRepresentative: `Legal Rep ${i}`,
+      phone: `+1-${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}`,
+      email: `contact@${companyType.toLowerCase()}corp${i}.com`,
+      website: `https://www.${companyType.toLowerCase()}corp${i}.com`,
+      address: `${Math.floor(Math.random() * 9999) + 1} ${['Main', 'Oak', 'Pine', 'Elm', 'Maple'][Math.floor(Math.random() * 5)]} St, ${cities[cityIndex]}, ${states[cityIndex]} ${Math.floor(Math.random() * 90000) + 10000}`,
+      status,
+      businessScope: `${companyType} services and solutions for enterprise clients. Specializing in innovative technologies and customer-focused solutions.`,
+      employees: Math.floor(Math.random() * 10000) + 10,
+      revenue: `$${(Math.floor(Math.random() * 1000000000) / 1000000).toFixed(1)}M`,
+      industry: companyType,
+      taxId: `TAX${Math.floor(Math.random() * 100000000).toString().padStart(8, '0')}`,
+      registrationDate: `${foundedYear}-${Math.floor(Math.random() * 12) + 1}-${Math.floor(Math.random() * 28) + 1}`,
+      lastUpdated: new Date(Date.now() - Math.floor(Math.random() * 365 * 24 * 60 * 60 * 1000)).toISOString().split('T')[0]
+    }
+    
+    enterprises.push(enterprise)
+  }
+  
+  return enterprises
+}
+
 // ==================== Mock数据API接口 ====================
 // 这些函数模拟真实的API调用，后期可以替换为真实的API
 

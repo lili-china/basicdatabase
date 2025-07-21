@@ -33,8 +33,8 @@ const performSessionValidation = async () => {
   try {
     console.log('SessionGuard: Starting session validation...')
 
-    // 使用新的验证函数
-    const result = validateCurrentSession()
+    // 使用新的异步验证函数
+    const result = await validateCurrentSession()
     
     console.log('SessionGuard: Validation result:', result)
     
