@@ -324,7 +324,6 @@ const handleLogin = () => {
   text-align: center;
   margin-bottom: 2.5rem;
   position: relative;
-  z-index: 1;
 }
 
 .logo-container {
@@ -388,7 +387,6 @@ const handleLogin = () => {
   flex-direction: column;
   gap: 1.5rem;
   position: relative;
-  z-index: 1;
 }
 
 .form-group {
@@ -613,7 +611,6 @@ const handleLogin = () => {
   font-size: 0.875rem;
   color: var(--text-secondary);
   position: relative;
-  z-index: 1;
 }
 
 .signup-link {

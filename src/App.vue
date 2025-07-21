@@ -135,7 +135,7 @@ console.log('Current theme:', currentTheme.value)
 
 html, body {
   height: 100%;
-  overflow: hidden; /* 防止页面级滚动 */
+  overflow: auto;
 }
 
 body {
@@ -150,7 +150,7 @@ body {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* 防止应用级滚动 */
+  overflow: auto;
 }
 
 /* 全局过渡效果 */

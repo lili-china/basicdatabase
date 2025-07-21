@@ -336,7 +336,6 @@ export default {
   width: 100%;
   height: 200px;
   overflow: hidden;
-  z-index: 0;
 }
 
 /* Canvas波浪样式 */
@@ -346,13 +345,11 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 1;
 }
 
 /* 内容插槽 - 登录页面专用 */
 .content-slot {
   position: relative;
-  z-index: 10;
   width: 100%;
   height: 100vh;
   display: flex;

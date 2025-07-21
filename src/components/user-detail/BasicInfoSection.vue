@@ -306,7 +306,6 @@ const setCurrentAvatar = (index: number) => {
   gap: 2px;
   font-weight: 600;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  z-index: 2;
 }
 
 .avatar-number {
@@ -320,7 +319,6 @@ const setCurrentAvatar = (index: number) => {
   border-radius: 3px;
   font-weight: 600;
   border: 1px solid var(--border-primary);
-  z-index: 2;
 }
 
 .avatar-info {

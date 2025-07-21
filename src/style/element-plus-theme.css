@@ -1,10 +1,26 @@
 /* Element Plus 主题兼容性样式 */
 
+/* 层级变量说明 */
+:root {
+  --z-navbar: 10000;
+  --z-dropdown: 100000;
+  --z-dialog: 200000;
+}
+
 /* 对话框样式适配 */
-.el-dialog {
-  background: var(--bg-dialog) !important;
-  border: 1px solid var(--border-card) !important;
-  box-shadow: var(--shadow-dialog) !important;
+.el-dialog,
+.el-dialog__wrapper {
+  z-index: var(--z-dialog) !important;
+}
+
+/* 弹窗拖拽/全屏状态 */
+.el-dialog.is-dragging,
+.el-dialog.is-fullscreen {
+  z-index: calc(var(--z-dialog) + 1) !important;
+}
+
+.el-dialog__headerbtn {
+  z-index: calc(var(--z-dialog) + 2) !important;
 }
 
 .el-dialog__header {

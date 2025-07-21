@@ -58,7 +58,6 @@
   top: 64px;
   left: 0;
   right: 0;
-  z-index: 999;
   background: var(--bg-navbar);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border-navbar);
@@ -67,12 +66,17 @@
 }
 
 .page-header h1 {
-  font-size: 1.5rem; /* 更小 */
-  font-weight: 600; /* 字重降低 */
+  font-size: 2rem !important;
+  font-weight: 600;
   color: var(--text-primary);
-  margin: 0 0 0.15rem 0; /* 更紧凑 */
-  text-shadow: none; /* 去除阴影 */
+  margin: 0 0 0.15rem 0;
+  text-shadow: none;
   transition: all 0.3s ease;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .page-header.scrolled h1 {
@@ -82,10 +86,10 @@
 }
 
 .page-header p {
-  font-size: 0.95rem; /* 更小 */
+  font-size: 0.95rem !important;
   color: var(--text-secondary);
   margin: 0;
-  font-weight: 400; /* 字重降低 */
+  font-weight: 400;
   transition: all 0.3s ease;
 }
 
@@ -234,12 +238,17 @@
   margin-left: auto;
   margin-right: auto;
   padding: 1rem;
-  background: var(--bg-card);
+  /* 移除背景色相关样式 */
+  background:var(--bg-card);
   border-radius: 12px;
   backdrop-filter: blur(10px);
   border: 1px solid var(--border-card);
   box-shadow: var(--shadow-dialog);
 }
+
+.el-pagination{
+  background: none !important;;
+} 
 
 /* Coming Soon 样式 */
 .coming-soon {

@@ -43,7 +43,10 @@ const sessionId = ref('')
 onMounted(() => {
   // 从URL获取sessionId
   sessionId.value = getSessionIdFromUrl() || ''
-  
+
+  // 强制显示导航栏
+  localStorage.setItem('navHidden', 'false')
+
   // 从localStorage获取用户名
   const savedUserName = localStorage.getItem('username')
   if (savedUserName) {

@@ -184,6 +184,39 @@
       </div>
     </div>
   </nav>
+  <Teleport to="body">
+    <button
+      v-if="isNavHidden"
+      class="show-nav-btn"
+      @click="isNavHidden = false"
+      style="position:fixed;top:20px;right:20px;z-index:2147483646;width:48px;height:48px;background:#2563eb;border:none;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.12);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background 0.2s;"
+      title="显示导航栏"
+    >
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+        <rect x="3" y="6" width="18" height="3" rx="1.5" fill="#fff"/>
+        <rect x="3" y="11" width="18" height="3" rx="1.5" fill="#fff"/>
+        <rect x="3" y="16" width="18" height="3" rx="1.5" fill="#fff"/>
+      </svg>
+    </button>
+    <!-- About Account 弹窗 -->
+    <el-dialog
+      v-model="aboutAccountDialogVisible"
+      title="About Account"
+      width="400px"
+      :append-to-body="true"
+      :close-on-click-modal="true"
+    >
+      <div style="padding: 1.5rem 0; text-align: center;">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" style="margin-bottom: 1rem;">
+          <circle cx="12" cy="8" r="5" stroke="#2563eb" stroke-width="2" />
+          <path d="M20 21C20 16.5817 16.4183 13 12 13C7.58172 13 4 16.5817 4 21" stroke="#2563eb" stroke-width="2" />
+        </svg>
+        <div style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">Admin User</div>
+        <div style="color: var(--text-secondary); margin-bottom: 0.5rem;">admin@company.com</div>
+        <div style="color: var(--text-secondary);">Role: Administrator</div>
+      </div>
+    </el-dialog>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -200,6 +233,9 @@ const route = useRoute()
 const isNavHidden = ref(false)
 const isUserMenuOpen = ref(false)
 const isMoreMenuOpen = ref(false)
+
+// About Account弹窗状态
+const aboutAccountDialogVisible = ref(false)
 
 // DOM引用
 const navMenu = ref<HTMLElement>()
@@ -285,7 +321,7 @@ const toggleNavVisibility = () => {
 
 // 处理关于账户
 const handleAboutAccount = () => {
-  console.log('About account clicked')
+  aboutAccountDialogVisible.value = true
   isUserMenuOpen.value = false
 }
 
@@ -337,12 +373,7 @@ onMounted(() => {
   }
   
   document.addEventListener('click', handleClickOutside)
-  
-  // 从localStorage恢复导航栏状态
-  const savedNavHidden = localStorage.getItem('navHidden')
-  if (savedNavHidden) {
-    isNavHidden.value = savedNavHidden === 'true'
-  }
+  // 移除自动恢复导航栏状态逻辑
 })
 
 // 组件卸载时移除事件监听
@@ -351,7 +382,7 @@ onUnmounted(() => {
 })
 </script>
 
-<style scoped>
+<style>
 /* 导航栏基础样式 */
 .navigation-bar {
   position: fixed;
@@ -362,7 +393,7 @@ onUnmounted(() => {
   background: var(--bg-navbar);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border-navbar);
-  z-index: 10000;
+  z-index: var(--z-navbar) !important;
   transition: transform 0.3s ease;
 }
 
@@ -513,7 +544,7 @@ onUnmounted(() => {
   border: 1px solid var(--border-card);
   border-radius: 12px;
   box-shadow: var(--shadow-dialog);
-  z-index: 100000;
+  z-index: var(--z-dropdown) !important;
   min-width: 240px;
   width: max-content;
   transform-origin: top left;
@@ -633,7 +664,7 @@ onUnmounted(() => {
   border: 1px solid var(--border-card);
   border-radius: 12px;
   box-shadow: var(--shadow-dialog);
-  z-index: 100000;
+  z-index: var(--z-dropdown) !important;
   min-width: 260px;
   width: max-content;
   transform-origin: top right;
@@ -768,5 +799,19 @@ onUnmounted(() => {
     width: 28px;
     height: 28px;
   }
+}
+
+/* 弹窗打开时禁用导航栏交互 */
+body.el-popup-parent--hidden .navigation-bar,
+body.dialog-open .navigation-bar {
+  pointer-events: none !important;
+}
+body.el-popup-parent--hidden .navigation-bar *,
+body.dialog-open .navigation-bar * {
+  pointer-events: none !important;
+}
+body.el-popup-parent--hidden .navigation-bar,
+body.dialog-open .navigation-bar {
+  pointer-events: auto !important;
 }
 </style> 

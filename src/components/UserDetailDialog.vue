@@ -3,14 +3,14 @@
     v-model="dialogVisible"
     :title="currentUser ? currentUser.name + ' - Personal Information' : 'User Information'"
     width="90%"
-    class="user-dialog"
+    class="user-dialog super-z-dialog"
     draggable
     :fullscreen="isFullscreen"
     :before-close="handleClose"
     :modal="false"
     :append-to-body="true"
     :lock-scroll="false"
-    top="5vh"
+
   >
     <template #header="{ close, titleId, titleClass }">
       <div class="dialog-header">
@@ -476,7 +476,6 @@ const findUserByName = (name: string): User | null => {
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  z-index: 100001 !important;
 }
 
 .user-dialog :deep(.el-dialog__body) {
@@ -485,7 +484,6 @@ const findUserByName = (name: string): User | null => {
 }
 
 .user-dialog :deep(.el-dialog__wrapper) {
-  z-index: 100001 !important;
 }
 
 /* 全局样式已处理弹窗层级，这里只需要组件特定样式 */
@@ -567,7 +565,6 @@ const findUserByName = (name: string): User | null => {
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  z-index: 100001 !important;
 }
 
 .family-graph-dialog :deep(.el-dialog__body) {
@@ -577,7 +574,6 @@ const findUserByName = (name: string): User | null => {
 }
 
 .family-graph-dialog :deep(.el-dialog__wrapper) {
-  z-index: 100001 !important;
 }
 
 .family-graph-content {

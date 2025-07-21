@@ -274,6 +274,7 @@
 
     <!-- ISP详情弹窗 -->
     <el-dialog
+      :append-to-body="true"
       v-model="ispDetailDialogVisible"
       :title="`ISP Details - ${selectedISP?.realName || ''}`"
       width="800px"

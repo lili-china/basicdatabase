@@ -406,5 +406,16 @@ const showUserDetail = (user: any) => {
   height: 16px;
 }
 
+body.el-popup-parent--hidden .navigation-bar .nav-item,
+body.dialog-open .navigation-bar .nav-item {
+  color: var(--text-secondary) !important;
+  background: transparent !important;
+  pointer-events: none !important;
+}
+body.el-popup-parent--hidden .navigation-bar .nav-item.active,
+body.dialog-open .navigation-bar .nav-item.active {
+  color: var(--text-secondary) !important;
+  background: transparent !important;
+}
 
 </style> 

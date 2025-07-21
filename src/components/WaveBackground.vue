@@ -45,12 +45,11 @@ export default {
     this.setupResizeListener()
     this.setupAnimationControlListener()
     this.initParticles()
-    
-    // 检查全局动画状态，如果暂停则不启动动画
-    const isPaused = localStorage.getItem('animationPaused') === 'true'
-    if (!isPaused) {
-      this.startAnimation()
-    }
+    // 首次自动播放2秒后暂停
+    this.startAnimation()
+    setTimeout(() => {
+      this.stopAnimation()
+    }, 2000)
   },
   beforeDestroy() {
     this.stopAnimation()
@@ -336,7 +335,6 @@ export default {
   width: 100%;
   height: 200px; /* 从400px减少到200px，让波浪更矮 */
   overflow: hidden;
-  z-index: 0;
 }
 
 /* Canvas波浪样式 */
@@ -346,13 +344,11 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 1;
 }
 
 /* 内容插槽 */
 .content-slot {
   position: relative;
-  z-index: 10;
   width: 100%;
   display: flex;
   flex-direction: column;

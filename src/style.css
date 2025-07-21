@@ -1,3 +1,10 @@
+/* 层级变量定义 */
+:root {
+  --z-navbar: 10000;
+  --z-dropdown: 100000;
+  --z-dialog: 200000;
+}
+
 /* 全局弹窗层级控制 - 确保所有弹窗都在最顶层 */
 .el-dialog__wrapper {
   position: fixed !important;
@@ -34,7 +41,7 @@
 
 /* 确保弹窗可以覆盖导航栏 */
 .navigation-bar {
-  z-index: 1000 !important;
+  z-index: var(--z-navbar) !important;
 }
 
 /* 弹窗拖拽时提升层级 */
@@ -69,7 +76,7 @@
 .floating-nav-trigger,
 .user-dropdown-menu,
 .floating-dropdown-menu {
-  z-index: 100000 !important;
+  z-index: var(--z-dropdown) !important;
 }
 
 /* 确保对话框在所有导航栏元素之上 */
@@ -86,7 +93,7 @@
 
 /* 弹窗关闭按钮 */
 .el-dialog__headerbtn {
-  z-index: 100002 !important;
+  z-index: calc(var(--z-dialog) + 2) !important;
 }
 
 /* 移除body的overflow限制，允许弹窗自由移动 */
@@ -175,3 +182,46 @@ html, body {
 
 /* 引入响应式样式文件 */
 @import './style/responsive.css'; 
+
+/* 强制所有弹窗相关元素在最顶层 */
+.el-dialog,
+.el-dialog__wrapper,
+.el-overlay,
+.el-message,
+.el-notification,
+.el-loading-mask,
+.el-message-box__wrapper,
+.el-popup-parent--hidden,
+.dialog-open,
+body.dialog-open,
+html.dialog-open {
+  z-index: 2147483647 !important;
+  position: fixed !important;
+} 
+
+/* 强制压低导航栏层级，彻底保证弹窗遮住导航栏 */
+.navigation-bar {
+  z-index: 1 !important;
+} 
+
+/* UserDetailDialog超级层级，保证永远在最顶层 */
+.super-z-dialog,
+.super-z-dialog .el-dialog,
+.super-z-dialog .el-dialog__wrapper {
+  z-index: 2147483647 !important;
+  position: fixed !important;
+} 
+
+/* 优化 page-header 标题字号 */
+.page-header h1 {
+  font-size: 4rem !important;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.page-header p {
+  font-size: 2rem !important;
+  color: var(--text-secondary);
+  font-weight: 600;
+} 
