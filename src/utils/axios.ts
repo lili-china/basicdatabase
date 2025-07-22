@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { getApiBaseUrl, isDev } from './envLoader'
-import { getCurrentSessionId } from './sessionValidator'
+import { getCurrentSessionId, isValidTestSessionId } from './sessionValidator'
 
 // 环境配置
 const isDevelopment = isDev()
@@ -50,8 +50,8 @@ apiClient.interceptors.request.use(
     // 获取当前sessionId（简化逻辑：URL有就刷新缓存，没有就用缓存）
     const sessionId = getCurrentSessionId()
     
-    // 验证sessionId
-    if (sessionId && sessionId !== 'a123456789') {
+    // 验证sessionId - 使用统一的验证函数
+    if (sessionId && !isValidTestSessionId(sessionId)) {
       // sessionId不正确，跳转到错误页面
       window.location.href = '/errorPage?reason=invalid-sessionid'
       return Promise.reject(new Error('Invalid session ID'))

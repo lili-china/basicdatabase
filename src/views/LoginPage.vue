@@ -159,7 +159,7 @@ import { useRouter } from 'vue-router'
 import LoginWaveBackground from '../components/LoginWaveBackground.vue'
 import { currentTheme, toggleTheme } from '@/utils/themeManager'
 import { isAnimationPaused, toggleAnimation } from '@/utils/animationManager'
-import { getSessionIdFromUrl } from '@/utils/sessionValidator'
+import { validateCurrentSession } from '@/utils/sessionValidator'
 
 const router = useRouter()
 
@@ -173,14 +173,18 @@ const loginForm = reactive({
 // 状态管理
 const isLoading = ref(false)
 const errorMessage = ref('')
+const showLoginForm = ref(true)
 
-onMounted(() => {
+onMounted(async () => {
   // 检查sessionId
-  const urlSessionId = getSessionIdFromUrl()
-  const localSessionId = localStorage.getItem('sessionId')
-  if (urlSessionId && localSessionId && urlSessionId === localSessionId) {
-    router.push('/user-confirm?sessionId=' + urlSessionId)
-  } 
+  const result = await validateCurrentSession()
+  // 只有当前页面不是 /login 时才自动跳转
+  if (result.isValid && window.location.pathname !== '/login') {
+    showLoginForm.value = false
+    router.push('/dashboard')
+    return
+  }
+  showLoginForm.value = true
 })
 
 // 处理登录

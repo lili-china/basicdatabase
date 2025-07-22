@@ -15,6 +15,43 @@ export function validateSessionId(sessionId: string): boolean {
   return sessionRegex.test(sessionId)
 }
 
+// 验证session ID是否为有效的测试sessionId
+export function isValidTestSessionId(sessionId: string): boolean {
+  // 当前只允许特定的测试sessionId
+  const validTestSessionIds = ['a123456789']
+  return validTestSessionIds.includes(sessionId)
+}
+
+// 综合验证sessionId（支持多种验证模式）
+export function validateSessionIdComprehensive(sessionId: string): {
+  isValid: boolean
+  error?: string
+  validationType: 'format' | 'test' | 'api'
+} {
+  // 1. 格式验证
+  if (!validateSessionId(sessionId)) {
+    return {
+      isValid: false,
+      error: 'Session ID format is invalid',
+      validationType: 'format'
+    }
+  }
+  
+  // 2. 测试sessionId验证
+  if (!isValidTestSessionId(sessionId)) {
+    return {
+      isValid: false,
+      error: 'Session ID is not in the allowed test list',
+      validationType: 'test'
+    }
+  }
+  
+  return {
+    isValid: true,
+    validationType: 'test'
+  }
+}
+
 // 从URL参数获取session ID
 export function getSessionIdFromUrl(): string | null {
   const urlParams = new URLSearchParams(window.location.search)
@@ -210,13 +247,13 @@ export async function validateCurrentSession(): Promise<SessionValidationResult>
   // 本地验证（备用方案）
   console.log('使用本地验证session...')
   
-  // 只允许特定sessionid（当前硬编码验证）
-  if (sessionId !== 'a123456789') {
+  // 使用新的验证函数检查测试sessionId
+  if (!isValidTestSessionId(sessionId)) {
     window.location.href = '/errorPage?reason=invalid-sessionid'
     return {
       isValid: false,
       sessionId,
-      error: `Session ID must be a123456789, got: ${sessionId}`,
+      error: `Invalid test session ID: ${sessionId}`,
       cacheRefreshed
     }
   }
@@ -267,6 +304,35 @@ export function clearSessionCache(): void {
   localStorage.removeItem('userData')
   localStorage.removeItem('lastLoginTime')
   localStorage.removeItem('sessionCache')
+}
+
+// 调试函数：检查当前session状态
+export function debugSessionStatus(): {
+  urlSessionId: string | null
+  cachedSessionId: string | null
+  currentSessionId: string | null
+  isValid: boolean
+  validationResult?: any
+} {
+  const urlSessionId = getSessionIdFromUrl()
+  const cachedSessionId = localStorage.getItem('sessionId')
+  const currentSessionId = getCurrentSessionId()
+  
+  let isValid = false
+  let validationResult = null
+  
+  if (currentSessionId) {
+    validationResult = validateSessionIdComprehensive(currentSessionId)
+    isValid = validationResult.isValid
+  }
+  
+  return {
+    urlSessionId,
+    cachedSessionId,
+    currentSessionId,
+    isValid,
+    validationResult
+  }
 }
 
 // 检查session是否过期

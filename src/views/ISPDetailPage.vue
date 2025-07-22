@@ -90,58 +90,83 @@
             </div>
           </div>
         </div>
-        <div class="detail-section">
-          <h4>Caller & Called (Top 20)</h4>
-          <div v-if="!selectedContact" class="contact-card-list">
-            <div v-for="contact in contacts as Array<any>" :key="contact.phone" class="contact-card" @click="selectContact(contact)">
-              <img :src="contact.photo" alt="头像" class="contact-avatar" />
-              <div class="contact-info">
-                <div class="contact-name">{{ contact.name }}</div>
-                <div class="contact-id">ID: {{ contact.phone }}</div> 
-                <div class="contact-phone">+968 91312548</div>
-                <div class="contact-count">Call times: {{ contact.count }}</div>
-              </div>
-            </div>
-            <div v-if="contacts.length === 0" style="color: #999; padding: 1rem 0;">No call records</div>
+        <div class="detail-section collapsible">
+          <div class="section-header" @click="toggleSection('caller')">
+            <h4>Caller & Called (Top 20)</h4>
+            <svg class="collapse-icon" :class="{ 'collapsed': !expandedSections.caller }" width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </div>
-          <div v-else class="contact-call-list">
-            <div class="contact-detail-header">
-              <span @click="backToContacts" class="breadcrumb-back">
-                <svg class="breadcrumb-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </span>
-              <img :src="selectedContact.photo" alt="头像" class="contact-avatar" />
-              <div class="contact-info">
-                <div class="contact-name">{{ selectedContact.name }}</div>
-                <div class="contact-id">ID: {{ selectedContact.phone }}</div>
-                <div class="contact-phone"> {{ selectedContact.phone }}</div>
+          <div class="section-content" :class="{ 'collapsed': !expandedSections.caller }">
+            <div v-if="!selectedContact" class="contact-card-list">
+              <div v-for="contact in contacts as Array<any>" :key="contact.phone" class="contact-card" @click="selectContact(contact)">
+                <img :src="contact.photo" alt="头像" class="contact-avatar" />
+                <div class="contact-info">
+                  <div class="contact-name">{{ contact.name }}</div>
+                  <div class="contact-id">ID: {{ contact.phone }}</div> 
+                  <div class="contact-phone">+968 91312548</div>
+                  <div class="contact-count">Call times: {{ contact.count }}</div>
+                </div>
               </div>
+              <div v-if="contacts.length === 0" style="color: #999; padding: 1rem 0;">No call records</div>
             </div>
-            <table class="call-table">
-              <thead>
-                <tr>
-                  <th>Call Time</th>
-                  <th>Type</th>
-                  <th>Duration</th>
-                  <th>Other Phone</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(call, idx) in (selectedContact.calls || [])" :key="idx">
-                  <td>{{ call.time }}</td>
-                  <td>{{ call.type }}</td>
-                  <td>{{ call.duration }}</td>
-                  <td>{{ call.otherPhone }}</td>
-                </tr>
-                <tr v-if="!selectedContact.calls || selectedContact.calls.length === 0">
-                  <td colspan="4" style="color: #999; text-align: center;">No call records</td>
-                </tr>
-              </tbody>
-            </table>
+            <div v-else class="contact-call-list">
+              <div class="contact-detail-header">
+                <span @click="backToContacts" class="breadcrumb-back">
+                  <svg class="breadcrumb-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <img :src="selectedContact.photo" alt="头像" class="contact-avatar" />
+                <div class="contact-info">
+                  <div class="contact-name">{{ selectedContact.name }}</div>
+                  <div class="contact-id">ID: {{ selectedContact.phone }}</div>
+                  <div class="contact-phone"> {{ selectedContact.phone }}</div>
+                </div>
+              </div>
+              <table class="call-table">
+                <thead>
+                  <tr>
+                    <th>Call Time</th>
+                    <th>Type</th>
+                    <th>Duration</th>
+                    <th>Other Phone</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(call, idx) in (selectedContact.calls || [])" :key="idx">
+                    <td>{{ call.time }}</td>
+                    <td>{{ call.type }}</td>
+                    <td>{{ call.duration }}</td>
+                    <td>{{ call.otherPhone }}</td>
+                  </tr>
+                  <tr v-if="!selectedContact.calls || selectedContact.calls.length === 0">
+                    <td colspan="4" style="color: #999; text-align: center;">No call records</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-        <div class="detail-section">
-          <h4>Activity Heatmap (Current Month)</h4>
-          <MapHeatmap :points="activityPoints" />
+        <div class="detail-section collapsible">
+          <div class="section-header" @click="toggleSection('heatmap')">
+            <h4>Activity Heatmap (Current Month)</h4>
+            <svg class="collapse-icon" :class="{ 'collapsed': !expandedSections.heatmap }" width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="section-content" :class="{ 'collapsed': !expandedSections.heatmap }">
+            <MapHeatmap v-if="expandedSections.heatmap" :points="activityPoints" />
+          </div>
+        </div>
+        <div class="detail-section collapsible">
+          <div class="section-header" @click="toggleSection('track')">
+            <h4>Activity Track (Current Month)</h4>
+            <svg class="collapse-icon" :class="{ 'collapsed': !expandedSections.track }" width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="section-content" :class="{ 'collapsed': !expandedSections.track }">
+            <MapTrack v-if="expandedSections.track" ref="mapTrackRef" :trackPoints="trackPoints" />
+          </div>
         </div>
       </div>
     </template>
@@ -154,6 +179,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import MapHeatmap from '@/components/MapHeatmap.vue'
+import MapTrack from '@/components/MapTrack.vue'
 
 const props = defineProps({
   isp: Object,
@@ -207,7 +233,41 @@ function randomOmanPoints(n = 10) {
   }
   return points
 }
+
+// 生成轨迹点数据
+function randomOmanTrackPoints(n = 15) {
+  const points = []
+  let currentLon = 54 + Math.random() * 4 // 起始经度
+  let currentLat = 18 + Math.random() * 6 // 起始纬度
+  
+  for (let i = 0; i < n; i++) {
+    // 在当前位置附近随机生成下一个点
+    const deltaLon = (Math.random() - 0.5) * 2 // ±1度经度变化
+    const deltaLat = (Math.random() - 0.5) * 2 // ±1度纬度变化
+    
+    currentLon = Math.max(52, Math.min(60, currentLon + deltaLon))
+    currentLat = Math.max(16.5, Math.min(26.5, currentLat + deltaLat))
+    
+    points.push({ lon: currentLon, lat: currentLat })
+  }
+  return points
+}
+
 const activityPoints = ref(randomOmanPoints(10))
+const trackPoints = ref(randomOmanTrackPoints(15))
+const mapTrackRef = ref()
+
+// 折叠面板状态管理
+const expandedSections = ref({
+  caller: false,
+  heatmap: false,
+  track: false
+})
+
+function toggleSection(section: string) {
+  expandedSections.value[section as keyof typeof expandedSections.value] = 
+    !expandedSections.value[section as keyof typeof expandedSections.value]
+}
 
 function goBack() {
   emit('back')
@@ -464,5 +524,56 @@ function isExpired(dateString: string) {
 .call-table th {
   background: var(--bg-card, #f9fafb);
   font-weight: 600;
+}
+
+/* 折叠面板样式 */
+.collapsible .section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  transition: all 0.3s ease;
+}
+
+.collapsible .section-header:hover {
+  background: var(--bg-primary);
+  border-radius: 8px;
+  padding: 0.5rem;
+  margin: -0.5rem;
+}
+
+.collapsible .section-header h4 {
+  margin: 0;
+  padding: 0;
+  border-bottom: none;
+}
+
+.collapse-icon {
+  transition: transform 0.3s ease;
+  color: var(--text-secondary);
+}
+
+.collapse-icon.collapsed {
+  transform: rotate(-90deg);
+}
+
+.section-content {
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 1;
+  max-height: 2000px;
+  transform: translateY(0);
+}
+
+.section-content.collapsed {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-10px);
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 </style> 

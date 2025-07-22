@@ -34,8 +34,7 @@
       <div class="control-panel-content">
         <!-- 播放控制面板 -->
         <div v-if="!showDataList" class="control-section">
-          <h4 class="section-title">Track Controls</h4>
-          
+          <!-- <h4 class="section-title">Track Controls</h4> -->
           <!-- 主要控制按钮 -->
           <div class="main-controls">
             <!-- 图层切换按钮 -->
@@ -47,22 +46,22 @@
               </svg>
             </button>
             
-            <!-- 停止按钮 -->
-            <button @click="stopAnimation" class="control-btn stop-btn" title="Stop Animation">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <rect x="6" y="4" width="4" height="16" fill="currentColor"/>
-                <rect x="14" y="4" width="4" height="16" fill="currentColor"/>
-              </svg>
-            </button>
-            
             <!-- 播放/暂停按钮 -->
-            <button @click="togglePlayPause" class="control-btn play-btn" title="Play/Pause Animation">
+            <button @click="togglePlayPause" class="control-btn play-btn" :title="isPlaying ? '暂停' : '播放'">
               <svg v-if="!isPlaying" width="18" height="18" viewBox="0 0 24 24" fill="none">
                 <path d="M8 5v14l11-7z" fill="currentColor"/>
               </svg>
               <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none">
                 <rect x="6" y="4" width="4" height="16" fill="currentColor"/>
                 <rect x="14" y="4" width="4" height="16" fill="currentColor"/>
+              </svg>
+            </button>
+            
+            <!-- 停止按钮 -->
+            <button @click="() => { stopAnimation(); resetToStart(); }" class="control-btn stop-btn" title="Stop Animation">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+                <rect x="8" y="8" width="8" height="8" fill="currentColor"/>
               </svg>
             </button>
           </div>
@@ -94,7 +93,12 @@
               <div class="progress-bar">
                 <div class="progress-fill" :style="{ width: progressPercentage + '%' }"></div>
               </div>
-              <span class="progress-text">{{ currentIndex + 1 }} / {{ totalPoints }}</span>
+              <span class="progress-text">
+                <template v-if="totalPoints > 0">
+                  {{ Math.max(1, Math.min(totalPoints, Math.round(progress))) }} / {{ totalPoints }}
+                </template>
+                <span class="progress-percent">({{ progressPercentage.toFixed(1) }}%)</span>
+              </span>
             </div>
           </div>
         </div>
@@ -163,6 +167,14 @@ import LineString from 'ol/geom/LineString'
 import Point from 'ol/geom/Point'
 import { fromLonLat } from 'ol/proj'
 import { Style, Stroke, Circle, Fill } from 'ol/style'
+import XYZ from 'ol/source/XYZ'
+import Icon from 'ol/style/Icon'
+
+// 1. 起点SVG（绿色旗帜）和终点SVG（蓝色终点旗）
+const startIconSvg =
+  'data:image/svg+xml;utf8,<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="14" fill="%2322c55e"/><rect x="14" y="8" width="2" height="16" rx="1" fill="white"/><path d="M16 10H24V16H16Z" fill="white" stroke="white" stroke-width="1.5" stroke-linejoin="round"/></svg>'
+const endIconSvg =
+  'data:image/svg+xml;utf8,<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="14" fill="%233b82f6"/><rect x="14" y="8" width="2" height="16" rx="1" fill="white"/><path d="M16 10H24V16H16Z" fill="white" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><circle cx="24" cy="16" r="2" fill="white"/></svg>'
 
 const props = defineProps({
   trackPoints: {
@@ -183,8 +195,15 @@ let movingPointLayer: VectorLayer | null = null
 let movingPointFeature: Feature<Point> | null = null
 let animationId: number | null = null
 let currentIndex = 0
-let isPlaying = false
-let animationStartTime = 0
+const isPlaying = ref(false)
+let segmentStartTime: number | null = null
+let segmentElapsed: number = 0
+
+// 移动点动画变量
+const movingPointGlowRadius = ref(14)
+const movingPointGlowAlpha = ref(0.25)
+let movingPointGlowGrowing = true
+let movingPointBlinkTimer: number | null = null
 
 // 控制面板相关
 const currentLayer = ref('osm')
@@ -222,6 +241,76 @@ const groupedTrackData = computed(() => {
   return groups
 })
 
+// 1. 恢复 createPointStyle 为区分起点、终点、中间点
+const createPointStyle = (isStart: boolean = false, isEnd: boolean = false) => {
+  if (isStart) {
+    return new Style({
+      image: new Circle({
+        radius: 10,
+        fill: new Fill({ color: '#22c55e' })
+      })
+    })
+  } else if (isEnd) {
+    return new Style({
+      image: new Circle({
+        radius: 10,
+        fill: new Fill({ color: '#3b82f6' })
+      })
+    })
+  } else {
+    return new Style({
+      image: new Circle({
+        radius: 6,
+        fill: new Fill({ color: '#6366f1' })
+      })
+    })
+  }
+}
+
+// 2. 移动点样式：小红点+红色呼吸光圈
+const createMovingPointStyle = () => {
+  return [
+    // 呼吸光圈
+    new Style({
+      image: new Circle({
+        radius: movingPointGlowRadius.value,
+        fill: new Fill({ color: `rgba(239,68,68,${movingPointGlowAlpha.value})` })
+      })
+    }),
+    // 主体小红点
+    new Style({
+      image: new Circle({
+        radius: 6,
+        fill: new Fill({ color: '#ef4444' })
+      })
+    })
+  ]
+}
+
+// 移除 movingPointBlinkState、movingPointBlinkTimer 相关代码
+// onMounted 只保留光晕动画部分
+onMounted(() => {
+  movingPointGlowGrowing = true
+  movingPointGlowRadius.value = 14
+  movingPointGlowAlpha.value = 0.25
+  movingPointBlinkTimer = window.setInterval(() => {
+    // 光晕动画
+    if (movingPointGlowGrowing) {
+      movingPointGlowRadius.value += 1.5
+      movingPointGlowAlpha.value -= 0.025
+      if (movingPointGlowRadius.value >= 28) movingPointGlowGrowing = false
+    } else {
+      movingPointGlowRadius.value -= 1.5
+      movingPointGlowAlpha.value += 0.025
+      if (movingPointGlowRadius.value <= 14) movingPointGlowGrowing = true
+    }
+    if (movingPointFeature) movingPointFeature.setStyle(createMovingPointStyle())
+  }, 60)
+})
+onUnmounted(() => {
+  if (movingPointBlinkTimer) clearInterval(movingPointBlinkTimer)
+})
+
 // 生成轨迹样式
 const createTrackStyle = () => {
   return new Style({
@@ -233,57 +322,82 @@ const createTrackStyle = () => {
   })
 }
 
-// 生成起点和终点样式
-const createPointStyle = (isStart: boolean = false) => {
-  return new Style({
-    image: new Circle({
-      radius: 8,
-      fill: new Fill({
-        color: isStart ? '#22c55e' : '#ef4444'
-      }),
-      stroke: new Stroke({
-        color: '#ffffff',
-        width: 2
-      })
-    })
-  })
-}
+// 1. 新增响应式 progress 变量
+const progress = ref<number>(0)
 
-// 生成移动点样式
-const createMovingPointStyle = () => {
-  return new Style({
-    image: new Circle({
-      radius: 12,
-      fill: new Fill({
-        color: '#f59e0b'
-      }),
-      stroke: new Stroke({
-        color: '#ffffff',
-        width: 4
-      })
-    })
-  })
-}
-
-// 计算属性
+// 2. progressPercentage 计算用 progress.value
 const progressPercentage = computed(() => {
   if (totalPoints.value === 0) return 0
-  return (currentIndex / totalPoints.value) * 100
+  return (progress.value / totalPoints.value) * 100
 })
 
-// 开始轨迹动画
+// 3. animateMovingPoint 每帧更新 progress
+const animateMovingPoint = () => {
+  if (!isPlaying.value || !map || !movingPointFeature) return
+  const coordinates = (props.trackPoints || []).map((point: any) => fromLonLat([point.lon, point.lat]))
+  if (currentIndex >= coordinates.length - 1) {
+    // 到最后一个点，停止
+    currentIndex = coordinates.length - 1
+    progress.value = coordinates.length
+    isPlaying.value = false
+    if (animationId) {
+      cancelAnimationFrame(animationId)
+      animationId = null
+    }
+    return
+  }
+  // 每段动画时长
+  const segmentDuration = 1000 / playbackSpeed.value
+  if (segmentStartTime === null) segmentStartTime = Date.now() - segmentElapsed
+  const elapsed = Date.now() - segmentStartTime
+  let segmentProgress = Math.min(elapsed / segmentDuration, 1)
+  // 实时进度
+  progress.value = currentIndex + segmentProgress
+  // 插值坐标
+  const currentCoord = coordinates[currentIndex]
+  const nextCoord = coordinates[currentIndex + 1]
+  const interpolatedCoord = [
+    currentCoord[0] + (nextCoord[0] - currentCoord[0]) * segmentProgress,
+    currentCoord[1] + (nextCoord[1] - currentCoord[1]) * segmentProgress
+  ]
+  if (movingPointFeature && movingPointFeature.getGeometry()) {
+    const geometry = movingPointFeature.getGeometry() as Point
+    geometry.setCoordinates(interpolatedCoord)
+  }
+  if (segmentProgress >= 1) {
+    currentIndex++
+    segmentStartTime = Date.now()
+    segmentElapsed = 0
+  }
+  animationId = requestAnimationFrame(animateMovingPoint)
+}
+
+// 4. 进度条和百分比、当前点显示全部用 progress.value 和 progressPercentage
+// <span class="progress-text">
+//   {{ Math.max(1, Math.min(totalPoints, Math.round(progress.value))) }} / {{ totalPoints }}
+//   <span class="progress-percent">({{ progressPercentage.toFixed(1) }}%)</span>
+// </span>
+
+// 1. startAnimation 只用 currentIndex 计算动画起始时间
 const startAnimation = () => {
-  if (isPlaying || !map || !movingPointFeature) return
-  
-  isPlaying = true
-  currentIndex = 0
-  animationStartTime = Date.now()
+  if (isPlaying.value || !map || !movingPointFeature) return
+  // 如果已在终点，回到起点
+  if (currentIndex >= totalPoints.value - 1) {
+    currentIndex = 0
+    progress.value = 0
+    segmentElapsed = 0
+  }
+  isPlaying.value = true
+  segmentStartTime = Date.now() - segmentElapsed
   animateMovingPoint()
 }
 
+// 2. animateMovingPoint 里每段的移动时间只与 playbackSpeed.value 有关
+// 其它逻辑不变
+
 // 切换播放/暂停
 const togglePlayPause = () => {
-  if (isPlaying) {
+  if (isPlaying.value) {
     stopAnimation()
   } else {
     startAnimation()
@@ -291,15 +405,33 @@ const togglePlayPause = () => {
 }
 
 // 切换图层
+const MAP_URL = 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}'
+const SATELLITE_URL = 'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
+
 const toggleLayer = () => {
-  currentLayer.value = currentLayer.value === 'osm' ? 'satellite' : 'osm'
-  // TODO: 实现图层切换逻辑
+  if (!baseLayer || !map) return
+  if (currentLayer.value === 'osm') {
+    baseLayer.setSource(new XYZ({
+      url: SATELLITE_URL,
+      maxZoom: 18
+    }))
+    currentLayer.value = 'satellite'
+  } else {
+    baseLayer.setSource(new XYZ({
+      url: MAP_URL,
+      maxZoom: 18
+    }))
+    currentLayer.value = 'osm'
+  }
+  map.updateSize()
+  if (map.renderSync) map.renderSync()
 }
 
 // 增加播放速度
 const increaseSpeed = () => {
   if (playbackSpeed.value < 4) {
     playbackSpeed.value += 0.5
+    if (isPlaying.value) segmentStartTime = Date.now() - segmentElapsed
   }
 }
 
@@ -307,6 +439,7 @@ const increaseSpeed = () => {
 const decreaseSpeed = () => {
   if (playbackSpeed.value > 0.5) {
     playbackSpeed.value -= 0.5
+    if (isPlaying.value) segmentStartTime = Date.now() - segmentElapsed
   }
 }
 
@@ -370,92 +503,64 @@ const formatTime = (timestamp: Date) => {
 // 聚焦到指定点
 const focusOnPoint = (point: any) => {
   if (!map) return
-  
   const coord = fromLonLat([point.lon, point.lat])
+  // 1. 地图居中
   map.getView().animate({
     center: coord,
     zoom: 12,
     duration: 1000
   })
-  
-  // 高亮显示该点
+  // 2. 移动点跳到该点
   if (movingPointFeature && movingPointFeature.getGeometry()) {
     const geometry = movingPointFeature.getGeometry() as Point
     geometry.setCoordinates(coord)
   }
+  // 3. 停止动画
+  isPlaying.value = false
+  if (animationId) {
+    cancelAnimationFrame(animationId)
+    animationId = null
+  }
+  // 4. currentIndex 设为该点索引
+  const coordinates = (props.trackPoints || []).map((p: any) => fromLonLat([p.lon, p.lat]))
+  const idx = coordinates.findIndex(c => c[0] === coord[0] && c[1] === coord[1])
+  if (idx !== -1) {
+    currentIndex = idx
+  }
 }
 
-// 停止轨迹动画
+// 1. stopAnimation 只停止动画
 const stopAnimation = () => {
-  isPlaying = false
+  isPlaying.value = false
+  if (segmentStartTime) segmentElapsed = Date.now() - segmentStartTime
   if (animationId) {
     cancelAnimationFrame(animationId)
     animationId = null
   }
 }
 
-// 动画移动点
-const animateMovingPoint = () => {
-  if (!isPlaying || !map || !movingPointFeature) return
-  
-  const coordinates = (props.trackPoints || []).map((point: any) => 
-    fromLonLat([point.lon, point.lat])
-  )
-  
-  if (currentIndex >= coordinates.length) {
-    // 动画完成，重新开始
-    currentIndex = 0
-  }
-  
-  // 计算插值位置（平滑移动）
-  const moveDuration = 1000 / playbackSpeed.value // 根据播放速度调整移动时间
-  const elapsedTime = Date.now() - animationStartTime
-  const segmentTime = moveDuration
-  const segmentIndex = Math.floor(elapsedTime / segmentTime)
-  const segmentProgress = (elapsedTime % segmentTime) / segmentTime
-  
-  // 确保不超出范围
-  if (segmentIndex >= coordinates.length - 1) {
-    currentIndex = 0
-    animationStartTime = Date.now()
-    return
-  }
-  
-  const currentCoord = coordinates[segmentIndex]
-  const nextCoord = coordinates[segmentIndex + 1]
-  
-  const interpolatedCoord = [
-    currentCoord[0] + (nextCoord[0] - currentCoord[0]) * segmentProgress,
-    currentCoord[1] + (nextCoord[1] - currentCoord[1]) * segmentProgress
-  ]
-  
-  // 更新移动点位置
-  if (movingPointFeature && movingPointFeature.getGeometry()) {
+// 2. 新增 resetToStart
+const resetToStart = () => {
+  const coordinates = (props.trackPoints || []).map((point: any) => fromLonLat([point.lon, point.lat]))
+  if (coordinates.length > 0 && movingPointFeature && movingPointFeature.getGeometry()) {
     const geometry = movingPointFeature.getGeometry() as Point
-    geometry.setCoordinates(interpolatedCoord)
+    geometry.setCoordinates(coordinates[0])
+    currentIndex = 0
   }
-  
-  // 更新地图视图，跟随移动点
-  const view = map.getView()
-  view.animate({
-    center: interpolatedCoord,
-    duration: 100
-  })
-  
-  // 更新currentIndex用于进度显示
-  currentIndex = segmentIndex
-  
-  // 继续动画
-  animationId = requestAnimationFrame(animateMovingPoint)
 }
 
+
+
+// 动画移动点
+// 1. renderMap内部，创建地图后注册单击事件
 const renderMap = () => {
   if (!mapContainer.value) return
 
-  // 构建轨迹线
-  const coordinates = (props.trackPoints || []).map((point: any) => 
+  // 顶部声明所有变量
+  const coordinates: any[] = (props.trackPoints || []).map((point: any) => 
     fromLonLat([point.lon, point.lat])
   )
+  const trackPoints: Feature[] = []
 
   // 创建轨迹线要素
   const trackFeature = new Feature({
@@ -464,62 +569,28 @@ const renderMap = () => {
   trackFeature.setStyle(createTrackStyle())
 
   // 创建所有轨迹点
-  const trackPoints: Feature[] = []
-  coordinates.forEach((coord, index) => {
+  coordinates.forEach((coord: any, index: number) => {
     const pointFeature = new Feature({
       geometry: new Point(coord)
     })
-    
-    // 根据位置设置不同样式
-    if (index === 0) {
-      pointFeature.setStyle(createPointStyle(true)) // 起点
-    } else if (index === coordinates.length - 1) {
-      pointFeature.setStyle(createPointStyle(false)) // 终点
-    } else {
-      // 中间点使用不同的样式
-      pointFeature.setStyle(new Style({
-        image: new Circle({
-          radius: 4,
-          fill: new Fill({
-            color: '#6366f1'
-          }),
-          stroke: new Stroke({
-            color: '#ffffff',
-            width: 1
-          })
-        })
-      }))
-    }
-    
+    pointFeature.setId(index)
+    if (index === 0) pointFeature.setStyle(new Style({ image: new Icon({ src: startIconSvg, anchor: [0.5, 1], scale: 0.7 }) }))
+    else if (index === coordinates.length - 1) pointFeature.setStyle(new Style({ image: new Icon({ src: endIconSvg, anchor: [0.5, 1], scale: 0.7 }) }))
+    else pointFeature.setStyle(createPointStyle(false, false))
     trackPoints.push(pointFeature)
   })
 
   // 创建矢量源
   const features: Feature[] = [trackFeature, ...trackPoints]
-  
-  trackSource = new VectorSource({
-    features
-  })
-
-  // 创建轨迹图层
-  trackLayer = new VectorLayer({
-    source: trackSource
-  })
+  trackSource = new VectorSource({ features })
+  trackLayer = new VectorLayer({ source: trackSource })
   trackLayer.set('name', 'track')
-
-  // 创建底图图层
-  baseLayer = new TileLayer({
-    source: new OSM()
-  })
+  baseLayer = new TileLayer({ source: new XYZ({ url: MAP_URL, maxZoom: 18 }), visible: true })
   baseLayer.set('name', 'base')
 
-  // 创建地图
   map = new Map({
     target: mapContainer.value,
-    layers: [
-      baseLayer,
-      trackLayer
-    ],
+    layers: [baseLayer, trackLayer],
     view: new View({
       center: coordinates.length > 0 ? coordinates[0] : fromLonLat([57.5, 21.5]),
       zoom: 10
@@ -557,8 +628,30 @@ const renderMap = () => {
       })
     }
   }
+
+  // 注册地图单击事件
+  map.on('singleclick', (evt: any) => {
+    map.forEachFeatureAtPixel(evt.pixel, (feature: any) => {
+      const id = feature.getId()
+      if (typeof id === 'number') {
+        if (movingPointFeature && movingPointFeature.getGeometry()) {
+          const geometry = movingPointFeature.getGeometry() as Point
+          geometry.setCoordinates(coordinates[id])
+        }
+        currentIndex = id
+        isPlaying.value = false
+        if (animationId) {
+          cancelAnimationFrame(animationId)
+          animationId = null
+        }
+      }
+    })
+  })
 }
 
+
+
+// 2. onMounted只需renderMap()
 onMounted(async () => {
   await nextTick()
   renderMap()
@@ -571,6 +664,7 @@ watch(() => props.trackPoints, () => {
   // 清理旧的地图资源
   if (map) {
     map.setTarget(undefined)
+    // OpenLayers 没有全局 off，可以通过 setTarget(undefined) 彻底销毁实例
     map = null
   }
   
@@ -1031,6 +1125,11 @@ defineExpose({
   text-align: center;
 }
 
+.progress-percent {
+  color: #f59e0b;
+  margin-left: 6px;
+  font-weight: bold;
+}
 
 
 .date-group {

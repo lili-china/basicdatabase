@@ -13,6 +13,8 @@ import ISPDatabase from '../views/ISPDatabase.vue'
 import RelationGraphDemo from '../views/RelationGraphDemo.vue'
 import SessionTest from '../views/SessionTest.vue'
 import ApiTest from '../views/ApiTest.vue'
+import LocationPage from '../views/LocationPage.vue'
+import MapLayerDemo from '../views/MapLayerDemo.vue'
 
 
 const router = createRouter({
@@ -101,6 +103,16 @@ const router = createRouter({
       path: '/api-test',
       name: 'ApiTest',
       component: ApiTest
+    },
+    {
+      path: '/location',
+      name: 'Location',
+      component: LocationPage
+    },
+    {
+      path: '/map-layer-demo',
+      name: 'MapLayerDemo',
+      component: MapLayerDemo
     },
 
   ]
