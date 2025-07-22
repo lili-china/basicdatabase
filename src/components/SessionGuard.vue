@@ -25,7 +25,13 @@ const isLoading = ref(true)
 
 // 检查当前路由是否需要session验证
 const needsSessionValidation = (path: string) => {
-  return !path.startsWith('/error') && !path.startsWith('/errorPage') && !path.startsWith('/login') && !path.startsWith('/user-confirm')
+  // login页面没有sessionId时不验证
+  if (path.startsWith('/login')) {
+    const url = new URL(window.location.href)
+    const sessionId = url.searchParams.get('sessionId') || localStorage.getItem('sessionId')
+    return !!sessionId // 有sessionId才验证
+  }
+  return !path.startsWith('/error') && !path.startsWith('/errorPage') && !path.startsWith('/user-confirm')
 }
 
 // 执行session验证（使用新的validateCurrentSession函数）

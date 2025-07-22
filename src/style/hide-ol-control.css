@@ -1,0 +1,5 @@
+/* 只隐藏 OpenLayers 控件，不隐藏地图本体 */
+.ol-zoom,
+.ol-control {
+  display: none !important;
+} 

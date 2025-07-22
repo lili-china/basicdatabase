@@ -26,6 +26,7 @@ import Feature from 'ol/Feature'
 import Point from 'ol/geom/Point'
 import { fromLonLat } from 'ol/proj'
 import XYZ from 'ol/source/XYZ'
+import '@/style/hide-ol-control.css'
 
 const props = defineProps({
   points: {
@@ -238,5 +239,11 @@ onUnmounted(() => {
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.ol-zoom,
+.ol-control,
+.ol-unselectable {
+  display: none !important;
 }
 </style> 

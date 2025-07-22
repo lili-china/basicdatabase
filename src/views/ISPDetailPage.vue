@@ -259,9 +259,9 @@ const mapTrackRef = ref()
 
 // 折叠面板状态管理
 const expandedSections = ref({
-  caller: false,
-  heatmap: false,
-  track: false
+  caller: true,
+  heatmap: true,
+  track: true
 })
 
 function toggleSection(section: string) {

@@ -70,7 +70,7 @@
           
           <!-- 倍速控制 -->
           <div class="speed-section">
-            <label class="speed-label">Speed</label>
+            <!-- <label class="speed-label">Speed</label> -->
             <div class="speed-control">
               <button @click="decreaseSpeed" class="speed-btn" :disabled="playbackSpeed <= 0.5" title="Decrease Speed">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
@@ -88,16 +88,17 @@
           
           <!-- 进度条 -->
           <div class="progress-section">
-            <label class="progress-label">Progress</label>
+            <!-- <label class="progress-label">Progress</label> -->
             <div class="progress-container">
               <div class="progress-bar">
                 <div class="progress-fill" :style="{ width: progressPercentage + '%' }"></div>
               </div>
               <span class="progress-text">
-                <template v-if="totalPoints > 0">
+                <!-- <template v-if="totalPoints > 0">
                   {{ Math.max(1, Math.min(totalPoints, Math.round(progress))) }} / {{ totalPoints }}
-                </template>
-                <span class="progress-percent">({{ progressPercentage.toFixed(1) }}%)</span>
+                </template> -->
+                <span class="progress-percent" v-if="progressPercentage <100 && progressPercentage > 0">({{ progressPercentage.toFixed(1) }}%)</span>
+                <span class="progress-percent" v-else>({{ progressPercentage }}%)</span>
               </span>
             </div>
           </div>
@@ -150,6 +151,15 @@
       </div>
     </div>
   
+    <div v-if="showAvatarDialog" class="avatar-dialog-mask" @click="showAvatarDialog = false">
+      <div class="avatar-dialog glass" @click.stop>
+        <div class="avatar-dialog-row"><span class="label">ID:</span><span>{{ 123123213 }}</span></div>
+        <div class="avatar-dialog-row"><span class="label">Name:</span><span>Lee </span></div>
+        <div class="avatar-dialog-row"><span class="label">Nationality:</span><span>china </span></div>
+        <div class="avatar-dialog-row"><span class="label">Phone:</span><span>+968 91312548</span></div>
+        <button class="avatar-dialog-close" @click="showAvatarDialog = false">Close</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -160,7 +170,6 @@ import Map from 'ol/Map'
 import View from 'ol/View'
 import TileLayer from 'ol/layer/Tile'
 import VectorLayer from 'ol/layer/Vector'
-import OSM from 'ol/source/OSM'
 import VectorSource from 'ol/source/Vector'
 import Feature from 'ol/Feature'
 import LineString from 'ol/geom/LineString'
@@ -169,12 +178,13 @@ import { fromLonLat } from 'ol/proj'
 import { Style, Stroke, Circle, Fill } from 'ol/style'
 import XYZ from 'ol/source/XYZ'
 import Icon from 'ol/style/Icon'
+import Overlay from 'ol/Overlay'
+import '@/style/hide-ol-control.css'
 
-// 1. 起点SVG（绿色旗帜）和终点SVG（蓝色终点旗）
 const startIconSvg =
-  'data:image/svg+xml;utf8,<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="14" fill="%2322c55e"/><rect x="14" y="8" width="2" height="16" rx="1" fill="white"/><path d="M16 10H24V16H16Z" fill="white" stroke="white" stroke-width="1.5" stroke-linejoin="round"/></svg>'
+  'data:image/svg+xml;utf8,<svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="15" cy="15" r="13" fill="%2322c55e" stroke="white" stroke-width="2"/><rect x="13" y="7" width="4" height="16" rx="2" fill="white"/><path d="M15 9H25V17H15Z" fill="white" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><path d="M15 9L25 17" stroke="%2322c55e" stroke-width="1.5" stroke-linecap="round"/></svg>'
 const endIconSvg =
-  'data:image/svg+xml;utf8,<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="14" fill="%233b82f6"/><rect x="14" y="8" width="2" height="16" rx="1" fill="white"/><path d="M16 10H24V16H16Z" fill="white" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><circle cx="24" cy="16" r="2" fill="white"/></svg>'
+  'data:image/svg+xml;utf8,<svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="15" cy="15" r="13" fill="%233b82f6" stroke="white" stroke-width="2"/><rect x="13" y="7" width="4" height="16" rx="2" fill="white"/><path d="M15 9H25V17H15Z" fill="white" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><circle cx="25" cy="17" r="2.5" fill="white" stroke="%233b82f6" stroke-width="1.5"/></svg>'
 
 const props = defineProps({
   trackPoints: {
@@ -188,8 +198,6 @@ let map: Map | null = null
 let trackSource: VectorSource | null = null
 let trackLayer: VectorLayer | null = null
 let baseLayer: TileLayer | null = null
-
-// 移动点相关
 let movingPointSource: VectorSource | null = null
 let movingPointLayer: VectorLayer | null = null
 let movingPointFeature: Feature<Point> | null = null
@@ -198,50 +206,70 @@ let currentIndex = 0
 const isPlaying = ref(false)
 let segmentStartTime: number | null = null
 let segmentElapsed: number = 0
-
-// 移动点动画变量
 const movingPointGlowRadius = ref(14)
 const movingPointGlowAlpha = ref(0.25)
 let movingPointGlowGrowing = true
 let movingPointBlinkTimer: number | null = null
-
-// 控制面板相关
 const currentLayer = ref('osm')
-const playbackSpeed = ref(1)
+const playbackSpeed = ref(0.5)
 const totalPoints = ref(0)
 const isPanelHidden = ref(false)
 const showDataList = ref(false)
-const expandedDates = ref<string[]>([])
+const avatarUrl = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'
+let avatarOverlay: Overlay | null = null
+const showAvatarDialog = ref(false)
+const avatarDialogData = ref({ id: '', name: '', nationality: '', phone: '' })
 
-// 计算属性：按日期分组的数据
-const groupedTrackData = computed(() => {
-  const groups: Record<string, any[]> = {}
-  
-  props.trackPoints.forEach((point: any, index: number) => {
-    // 为每个点添加时间戳（模拟数据）
-    const timestamp = new Date()
-    timestamp.setDate(timestamp.getDate() - Math.floor(index / 5)) // 每天5个点
-    timestamp.setHours(8 + (index % 5) * 3) // 每3小时一个点
-    timestamp.setMinutes((index % 3) * 20)
-    
-    const dateKey = timestamp.toISOString().split('T')[0]
-    const pointWithData = {
-      ...point,
-      timestamp,
-      location: `Location ${index + 1}`,
-      index
+function handleAvatarClick() {
+  const idx = Math.round(currentIndex);
+  const point = props.trackPoints?.[idx];
+  if (point) {
+    avatarDialogData.value = {
+      id: point.id || '',
+      name: point.name || '',
+      nationality: point.nationality || '',
+      phone: point.phone || ''
     }
-    
-    if (!groups[dateKey]) {
-      groups[dateKey] = []
-    }
-    groups[dateKey].push(pointWithData)
-  })
-  
-  return groups
-})
+    showAvatarDialog.value = true;
+  }
+}
 
-// 1. 恢复 createPointStyle 为区分起点、终点、中间点
+function createAvatarOverlay() {
+  if (!map) return;
+  let avatarDiv: HTMLDivElement;
+  if (avatarOverlay) {
+    avatarDiv = avatarOverlay.getElement() as HTMLDivElement;
+    if (avatarDiv) {
+      avatarDiv.onclick = handleAvatarClick;
+      avatarDiv.style.pointerEvents = 'auto';
+    }
+    return;
+  }
+  avatarDiv = document.createElement('div');
+  avatarDiv.className = 'moving-avatar';
+  avatarDiv.innerHTML = `<img src="${avatarUrl}" alt="avatar" style="width:48px;height:48px;object-fit:cover;display:block;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.18);border:2px solid #fff;cursor:pointer;" />`;
+  avatarDiv.style.pointerEvents = 'auto';
+  avatarDiv.onclick = handleAvatarClick;
+  avatarOverlay = new Overlay({
+    element: avatarDiv,
+    positioning: 'bottom-center',
+    offset: [0, 0],
+    stopEvent: false
+  });
+  map.addOverlay(avatarOverlay);
+}
+
+function updateAvatarOverlayPosition() {
+  if (!avatarOverlay || !movingPointFeature) return
+  const geom = movingPointFeature.getGeometry() as Point
+  avatarOverlay.setPosition(geom.getCoordinates())
+}
+
+function syncAvatarOverlay() {
+  updateAvatarOverlayPosition()
+  requestAnimationFrame(syncAvatarOverlay)
+}
+
 const createPointStyle = (isStart: boolean = false, isEnd: boolean = false) => {
   if (isStart) {
     return new Style({
@@ -267,17 +295,16 @@ const createPointStyle = (isStart: boolean = false, isEnd: boolean = false) => {
   }
 }
 
-// 2. 移动点样式：小红点+红色呼吸光圈
 const createMovingPointStyle = () => {
+  // 修正 alpha 范围和精度
+  const safeAlpha = Math.max(0, Math.min(1, Number(movingPointGlowAlpha.value.toFixed(2))))
   return [
-    // 呼吸光圈
     new Style({
       image: new Circle({
         radius: movingPointGlowRadius.value,
-        fill: new Fill({ color: `rgba(239,68,68,${movingPointGlowAlpha.value})` })
+        fill: new Fill({ color: `rgba(239,68,68,${safeAlpha})` })
       })
     }),
-    // 主体小红点
     new Style({
       image: new Circle({
         radius: 6,
@@ -287,56 +314,26 @@ const createMovingPointStyle = () => {
   ]
 }
 
-// 移除 movingPointBlinkState、movingPointBlinkTimer 相关代码
-// onMounted 只保留光晕动画部分
-onMounted(() => {
-  movingPointGlowGrowing = true
-  movingPointGlowRadius.value = 14
-  movingPointGlowAlpha.value = 0.25
-  movingPointBlinkTimer = window.setInterval(() => {
-    // 光晕动画
-    if (movingPointGlowGrowing) {
-      movingPointGlowRadius.value += 1.5
-      movingPointGlowAlpha.value -= 0.025
-      if (movingPointGlowRadius.value >= 28) movingPointGlowGrowing = false
-    } else {
-      movingPointGlowRadius.value -= 1.5
-      movingPointGlowAlpha.value += 0.025
-      if (movingPointGlowRadius.value <= 14) movingPointGlowGrowing = true
-    }
-    if (movingPointFeature) movingPointFeature.setStyle(createMovingPointStyle())
-  }, 60)
-})
-onUnmounted(() => {
-  if (movingPointBlinkTimer) clearInterval(movingPointBlinkTimer)
-})
-
-// 生成轨迹样式
 const createTrackStyle = () => {
   return new Style({
     stroke: new Stroke({
-      color: '#fbbf24', // 黄色
-      width: 2, // 更细的线条
-      lineDash: [6, 3] // 更小的虚线效果
+      color: '#fbbf24',
+      width: 2,
+      lineDash: [6, 3]
     })
   })
 }
 
-// 1. 新增响应式 progress 变量
 const progress = ref<number>(0)
-
-// 2. progressPercentage 计算用 progress.value
 const progressPercentage = computed(() => {
   if (totalPoints.value === 0) return 0
   return (progress.value / totalPoints.value) * 100
 })
 
-// 3. animateMovingPoint 每帧更新 progress
 const animateMovingPoint = () => {
   if (!isPlaying.value || !map || !movingPointFeature) return
   const coordinates = (props.trackPoints || []).map((point: any) => fromLonLat([point.lon, point.lat]))
   if (currentIndex >= coordinates.length - 1) {
-    // 到最后一个点，停止
     currentIndex = coordinates.length - 1
     progress.value = coordinates.length
     isPlaying.value = false
@@ -346,14 +343,11 @@ const animateMovingPoint = () => {
     }
     return
   }
-  // 每段动画时长
   const segmentDuration = 1000 / playbackSpeed.value
   if (segmentStartTime === null) segmentStartTime = Date.now() - segmentElapsed
   const elapsed = Date.now() - segmentStartTime
   let segmentProgress = Math.min(elapsed / segmentDuration, 1)
-  // 实时进度
   progress.value = currentIndex + segmentProgress
-  // 插值坐标
   const currentCoord = coordinates[currentIndex]
   const nextCoord = coordinates[currentIndex + 1]
   const interpolatedCoord = [
@@ -372,16 +366,8 @@ const animateMovingPoint = () => {
   animationId = requestAnimationFrame(animateMovingPoint)
 }
 
-// 4. 进度条和百分比、当前点显示全部用 progress.value 和 progressPercentage
-// <span class="progress-text">
-//   {{ Math.max(1, Math.min(totalPoints, Math.round(progress.value))) }} / {{ totalPoints }}
-//   <span class="progress-percent">({{ progressPercentage.toFixed(1) }}%)</span>
-// </span>
-
-// 1. startAnimation 只用 currentIndex 计算动画起始时间
 const startAnimation = () => {
   if (isPlaying.value || !map || !movingPointFeature) return
-  // 如果已在终点，回到起点
   if (currentIndex >= totalPoints.value - 1) {
     currentIndex = 0
     progress.value = 0
@@ -392,10 +378,6 @@ const startAnimation = () => {
   animateMovingPoint()
 }
 
-// 2. animateMovingPoint 里每段的移动时间只与 playbackSpeed.value 有关
-// 其它逻辑不变
-
-// 切换播放/暂停
 const togglePlayPause = () => {
   if (isPlaying.value) {
     stopAnimation()
@@ -404,7 +386,6 @@ const togglePlayPause = () => {
   }
 }
 
-// 切换图层
 const MAP_URL = 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}'
 const SATELLITE_URL = 'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
 
@@ -427,109 +408,78 @@ const toggleLayer = () => {
   if (map.renderSync) map.renderSync()
 }
 
-// 增加播放速度
 const increaseSpeed = () => {
   if (playbackSpeed.value < 4) {
-    playbackSpeed.value += 0.5
-    if (isPlaying.value) segmentStartTime = Date.now() - segmentElapsed
+    if (isPlaying.value && segmentStartTime !== null) {
+      segmentElapsed = Date.now() - segmentStartTime;
+    }
+    playbackSpeed.value += 0.5;
+    if (isPlaying.value) {
+      segmentStartTime = Date.now() - segmentElapsed;
+    }
   }
 }
 
-// 减少播放速度
 const decreaseSpeed = () => {
   if (playbackSpeed.value > 0.5) {
-    playbackSpeed.value -= 0.5
-    if (isPlaying.value) segmentStartTime = Date.now() - segmentElapsed
+    if (isPlaying.value && segmentStartTime !== null) {
+      segmentElapsed = Date.now() - segmentStartTime;
+    }
+    playbackSpeed.value -= 0.5;
+    if (isPlaying.value) {
+      segmentStartTime = Date.now() - segmentElapsed;
+    }
   }
 }
 
-// 切换面板显示/隐藏
 const togglePanel = (mode?: number) => {
   if (mode === 10) {
-    // 显示控制面板
     isPanelHidden.value = false
     showDataList.value = false
   } else if (mode === 20) {
-    // 显示数据列表
     isPanelHidden.value = false
     showDataList.value = true
   } else {
-    // 默认切换行为：如果是隐藏状态，显示控制面板；如果是显示状态，隐藏整个面板
     if (isPanelHidden.value) {
-      // 当前是隐藏，显示控制面板
       isPanelHidden.value = false
       showDataList.value = false
     } else {
-      // 当前是显示，隐藏整个面板
       isPanelHidden.value = true
     }
   }
 }
 
-
-
-
-
-// 切换日期组展开/收起
-const toggleDateGroup = (date: string) => {
-  const index = expandedDates.value.indexOf(date)
-  if (index > -1) {
-    expandedDates.value.splice(index, 1)
-  } else {
-    expandedDates.value.push(date)
-  }
-}
-
-// 格式化日期
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('en-US', { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
+onMounted(() => {
+  movingPointGlowGrowing = true
+  movingPointGlowRadius.value = 14
+  movingPointGlowAlpha.value = 0.25
+  movingPointBlinkTimer = window.setInterval(() => {
+    if (movingPointGlowGrowing) {
+      movingPointGlowRadius.value += 1.5
+      movingPointGlowAlpha.value -= 0.025
+      if (movingPointGlowRadius.value >= 28) movingPointGlowGrowing = false
+    } else {
+      movingPointGlowRadius.value -= 1.5
+      movingPointGlowAlpha.value += 0.025
+      if (movingPointGlowRadius.value <= 14) movingPointGlowGrowing = true
+    }
+    if (movingPointFeature) movingPointFeature.setStyle(createMovingPointStyle())
+  }, 60)
+  nextTick(() => {
+    renderMap()
+    createAvatarOverlay()
+    syncAvatarOverlay()
   })
-}
+})
 
-// 格式化时间
-const formatTime = (timestamp: Date) => {
-  return timestamp.toLocaleTimeString('en-US', { 
-    hour: '2-digit', 
-    minute: '2-digit',
-    hour12: true 
-  })
-}
+onUnmounted(() => {
+  if (movingPointBlinkTimer) clearInterval(movingPointBlinkTimer)
+  if (avatarOverlay && map) {
+    map.removeOverlay(avatarOverlay)
+    avatarOverlay = null
+  }
+})
 
-// 聚焦到指定点
-const focusOnPoint = (point: any) => {
-  if (!map) return
-  const coord = fromLonLat([point.lon, point.lat])
-  // 1. 地图居中
-  map.getView().animate({
-    center: coord,
-    zoom: 12,
-    duration: 1000
-  })
-  // 2. 移动点跳到该点
-  if (movingPointFeature && movingPointFeature.getGeometry()) {
-    const geometry = movingPointFeature.getGeometry() as Point
-    geometry.setCoordinates(coord)
-  }
-  // 3. 停止动画
-  isPlaying.value = false
-  if (animationId) {
-    cancelAnimationFrame(animationId)
-    animationId = null
-  }
-  // 4. currentIndex 设为该点索引
-  const coordinates = (props.trackPoints || []).map((p: any) => fromLonLat([p.lon, p.lat]))
-  const idx = coordinates.findIndex(c => c[0] === coord[0] && c[1] === coord[1])
-  if (idx !== -1) {
-    currentIndex = idx
-  }
-}
-
-// 1. stopAnimation 只停止动画
 const stopAnimation = () => {
   isPlaying.value = false
   if (segmentStartTime) segmentElapsed = Date.now() - segmentStartTime
@@ -539,7 +489,6 @@ const stopAnimation = () => {
   }
 }
 
-// 2. 新增 resetToStart
 const resetToStart = () => {
   const coordinates = (props.trackPoints || []).map((point: any) => fromLonLat([point.lon, point.lat]))
   if (coordinates.length > 0 && movingPointFeature && movingPointFeature.getGeometry()) {
@@ -549,45 +498,32 @@ const resetToStart = () => {
   }
 }
 
-
-
-// 动画移动点
-// 1. renderMap内部，创建地图后注册单击事件
 const renderMap = () => {
   if (!mapContainer.value) return
-
-  // 顶部声明所有变量
   const coordinates: any[] = (props.trackPoints || []).map((point: any) => 
     fromLonLat([point.lon, point.lat])
   )
   const trackPoints: Feature[] = []
-
-  // 创建轨迹线要素
   const trackFeature = new Feature({
     geometry: new LineString(coordinates)
   })
   trackFeature.setStyle(createTrackStyle())
-
-  // 创建所有轨迹点
   coordinates.forEach((coord: any, index: number) => {
     const pointFeature = new Feature({
       geometry: new Point(coord)
     })
     pointFeature.setId(index)
-    if (index === 0) pointFeature.setStyle(new Style({ image: new Icon({ src: startIconSvg, anchor: [0.5, 1], scale: 0.7 }) }))
-    else if (index === coordinates.length - 1) pointFeature.setStyle(new Style({ image: new Icon({ src: endIconSvg, anchor: [0.5, 1], scale: 0.7 }) }))
+    if (index === 0) pointFeature.setStyle(new Style({ image: new Icon({ src: startIconSvg, anchor: [0.5, 0.5], scale: 1 }) }))
+    else if (index === coordinates.length - 1) pointFeature.setStyle(new Style({ image: new Icon({ src: endIconSvg, anchor: [0.5, 0.5], scale: 1 }) }))
     else pointFeature.setStyle(createPointStyle(false, false))
     trackPoints.push(pointFeature)
   })
-
-  // 创建矢量源
   const features: Feature[] = [trackFeature, ...trackPoints]
   trackSource = new VectorSource({ features })
   trackLayer = new VectorLayer({ source: trackSource })
   trackLayer.set('name', 'track')
   baseLayer = new TileLayer({ source: new XYZ({ url: MAP_URL, maxZoom: 18 }), visible: true })
   baseLayer.set('name', 'base')
-
   map = new Map({
     target: mapContainer.value,
     layers: [baseLayer, trackLayer],
@@ -596,30 +532,20 @@ const renderMap = () => {
       zoom: 10
     })
   })
-
-  // 创建移动点
   if (coordinates.length > 0) {
     movingPointFeature = new Feature({
       geometry: new Point(coordinates[0])
     })
     movingPointFeature.setStyle(createMovingPointStyle())
-    
     movingPointSource = new VectorSource({
       features: [movingPointFeature]
     })
-    
     movingPointLayer = new VectorLayer({
       source: movingPointSource
     })
     movingPointLayer.set('name', 'movingPoint')
-    
-    // 添加移动点图层到地图
     map.addLayer(movingPointLayer)
-    
-    // 更新总点数
     totalPoints.value = coordinates.length
-    
-    // 自动调整视图范围
     if (trackSource) {
       const extent = trackSource.getExtent()
       map.getView().fit(extent, {
@@ -628,8 +554,6 @@ const renderMap = () => {
       })
     }
   }
-
-  // 注册地图单击事件
   map.on('singleclick', (evt: any) => {
     map.forEachFeatureAtPixel(evt.pixel, (feature: any) => {
       const id = feature.getId()
@@ -649,98 +573,128 @@ const renderMap = () => {
   })
 }
 
-
-
-// 2. onMounted只需renderMap()
-onMounted(async () => {
-  await nextTick()
-  renderMap()
-})
-
 watch(() => props.trackPoints, () => {
-  // 停止动画
   stopAnimation()
-  
-  // 清理旧的地图资源
   if (map) {
     map.setTarget(undefined)
-    // OpenLayers 没有全局 off，可以通过 setTarget(undefined) 彻底销毁实例
     map = null
   }
-  
-  // 清理图层资源
   if (trackLayer) {
     trackLayer.setSource(null)
     trackLayer = null
   }
-  
   if (trackSource) {
     trackSource.clear()
     trackSource = null
   }
-  
-  // 清理移动点资源
   if (movingPointLayer) {
     movingPointLayer.setSource(null)
     movingPointLayer = null
   }
-  
   if (movingPointSource) {
     movingPointSource.clear()
     movingPointSource = null
   }
-  
   movingPointFeature = null
-  
+  if (avatarOverlay && map) {
+    map.removeOverlay(avatarOverlay)
+    avatarOverlay = null
+  }
   renderMap()
 })
 
-// 组件卸载时清理资源
-onUnmounted(() => {
-  // 停止动画
-  stopAnimation()
-  
-  // 清理地图
-  if (map) {
-    map.setTarget(undefined)
-    map = null
-  }
-  
-  // 清理图层资源
-  if (trackLayer) {
-    trackLayer.setSource(null)
-    trackLayer = null
-  }
-  
-  if (trackSource) {
-    trackSource.clear()
-    trackSource = null
-  }
-  
-  // 清理移动点资源
-  if (movingPointLayer) {
-    movingPointLayer.setSource(null)
-    movingPointLayer = null
-  }
-  
-  if (movingPointSource) {
-    movingPointSource.clear()
-    movingPointSource = null
-  }
-  
-  if (baseLayer) {
-    baseLayer.setSource(null)
-    baseLayer = null
-  }
-  
-  movingPointFeature = null
-})
-
-// 暴露方法给父组件
 defineExpose({
   startAnimation,
   stopAnimation
 })
+// 弹窗浮动定位样式
+import { computed } from 'vue'
+const avatarFloatStyle = computed(() => {
+  if (!avatarOverlay || !avatarOverlay.getPosition() || !map) return {}
+  const pixel = map.getPixelFromCoordinate(avatarOverlay.getPosition())
+  if (!pixel) return {}
+  // 头像宽48，右侧偏移8px，卡片宽220
+  return {
+    position: 'absolute',
+    left: `${pixel[0] + 32}px`, // 头像右侧8px间距
+    top: `${pixel[1] - 48}px`, // 顶部对齐头像
+    zIndex: 1001
+  }
+})
+
+const expandedDates = ref<string[]>([])
+
+// Track Data List 分组逻辑
+const groupedTrackData = computed(() => {
+  const groups: Record<string, any[]> = {}
+  props.trackPoints.forEach((point: any, index: number) => {
+    // 假设每个点有 timestamp 字段，否则用模拟数据
+    let timestamp = point.timestamp
+    if (!timestamp) {
+      timestamp = new Date()
+      timestamp.setDate(timestamp.getDate() - Math.floor(index / 5))
+      timestamp.setHours(8 + (index % 5) * 3)
+      timestamp.setMinutes((index % 3) * 20)
+    }
+    const dateKey = (timestamp instanceof Date ? timestamp : new Date(timestamp)).toISOString().split('T')[0]
+    const pointWithData = {
+      ...point,
+      timestamp,
+      location: point.location || `Location ${index + 1}`,
+      index
+    }
+    if (!groups[dateKey]) {
+      groups[dateKey] = []
+    }
+    groups[dateKey].push(pointWithData)
+  })
+  return groups
+})
+
+function toggleDateGroup(date: string) {
+  const index = expandedDates.value.indexOf(date)
+  if (index > -1) {
+    expandedDates.value.splice(index, 1)
+  } else {
+    expandedDates.value.push(date)
+  }
+}
+
+function formatDate(dateString: string) {
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+}
+
+function formatTime(timestamp: Date) {
+  return new Date(timestamp).toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  })
+}
+
+function focusOnPoint(point: any) {
+  if (!map) return;
+  const coordinates = (props.trackPoints || []).map((p: any) => fromLonLat([p.lon, p.lat]));
+  const index = coordinates.findIndex(coord => coord[0] === point.lon && coord[1] === point.lat);
+  if (index !== -1) {
+    currentIndex = index;
+    isPlaying.value = false;
+    if (animationId) {
+      cancelAnimationFrame(animationId);
+      animationId = null;
+    }
+    if (movingPointFeature && movingPointFeature.getGeometry()) {
+      const geometry = movingPointFeature.getGeometry() as Point;
+      geometry.setCoordinates(coordinates[currentIndex]);
+    }
+  }
+}
 </script>
 
 <style scoped>
@@ -1342,5 +1296,121 @@ defineExpose({
     0 4px 16px rgba(16, 185, 129, 0.4),
     0 0 0 1px rgba(255, 255, 255, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.ol-zoom,
+.ol-control,
+.ol-unselectable {
+  display: none !important;
+}
+
+.avatar-dialog-mask {
+  position: fixed;
+  left: 0; top: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.25);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.avatar-dialog {
+  background: rgba(255,255,255,0.18);
+  border-radius: 14px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+  padding: 18px 24px 12px 24px;
+  min-width: 220px;
+  max-width: 80vw;
+  position: relative;
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.25);
+  transition: all 0.2s;
+}
+.avatar-dialog.glass {
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.25);
+}
+.avatar-dialog h4 {
+  margin: 0 0 10px 0;
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: center;
+}
+.avatar-dialog-row {
+  display: flex;
+  gap: 8px;
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+}
+.avatar-dialog-row .label {
+  color: #666;
+  min-width: 54px;
+  text-align: right;
+}
+.avatar-dialog-close {
+  margin: 0 auto;
+  display: block;
+  margin-top: 10px;
+  padding: 4px 18px;
+  border: none;
+  border-radius: 6px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.avatar-dialog-close:hover {
+  background: #1d4ed8;
+}
+
+.avatar-float-info {
+  min-width: 180px;
+  max-width: 260px;
+  background: rgba(255,255,255,0.18);
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+  padding: 14px 18px 10px 18px;
+  position: absolute;
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.18);
+  transition: all 0.2s;
+  pointer-events: auto;
+}
+.avatar-float-info h4 {
+  margin: 0 0 8px 0;
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: left;
+}
+.avatar-float-info .avatar-dialog-row {
+  display: flex;
+  gap: 8px;
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+}
+.avatar-float-info .avatar-dialog-row .label {
+  color: #666;
+  min-width: 54px;
+  text-align: right;
+}
+.avatar-float-info .avatar-dialog-close {
+  margin: 0 0 0 auto;
+  display: block;
+  margin-top: 8px;
+  padding: 3px 14px;
+  border: none;
+  border-radius: 6px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.avatar-float-info .avatar-dialog-close:hover {
+  background: #1d4ed8;
 }
 </style> 
