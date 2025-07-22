@@ -346,7 +346,7 @@ onMounted(() => {
 }
 
 .filter-label {
-  font-size: 0.625rem;
+  font-size: 8rem;
   color: var(--text-secondary);
   margin-bottom: 0.5rem;
   display: block;

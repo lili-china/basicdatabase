@@ -15,79 +15,92 @@
             <!-- 搜索和筛选区域 -->
             <div class="search-section">
               <div class="search-filters">
-                <!-- 运营商筛选行 -->
-                <div class="letter-filter-row">
-                  <label class="filter-label">Operator Filter</label>
-                  <div class="letter-filters">
-                    <button 
-                      class="letter-btn" 
-                      :class="{ active: pageQuery.selectedLetter === '' }"
-                      @click="selectLetter('')"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 16H28M12 20H28M12 24H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        <circle cx="28" cy="24" r="3" fill="currentColor"/>
-                      </svg>
-                      <span>All</span>
-                    </button>
-                    <button 
-                      class="letter-btn" 
-                      :class="{ active: pageQuery.selectedLetter === 'A' }"
-                      @click="selectLetter('A')"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                      <span>A</span>
-                    </button>
-                    <button 
-                      class="letter-btn" 
-                      :class="{ active: pageQuery.selectedLetter === 'B' }"
-                      @click="selectLetter('B')"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M4 19V5C4 4.44772 4.44772 4 5 4H12C13.1046 4 14 4.89543 14 6C14 7.10457 13.1046 8 12 8H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M6 8H12C13.1046 8 14 8.89543 14 10C14 11.1046 13.1046 12 12 12H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M6 12H12C13.1046 12 14 12.8954 14 14C14 15.1046 13.1046 16 12 16H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                      <span>B</span>
-                    </button>
-                    <button 
-                      class="letter-btn" 
-                      :class="{ active: pageQuery.selectedLetter === 'C' }"
-                      @click="selectLetter('C')"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M8 12C8 9.79 9.79 8 12 8C14.21 8 16 9.79 16 12C16 14.21 14.21 16 12 16C9.79 16 8 14.21 8 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                      <span>C</span>
-                    </button>
-                    <button 
-                      class="letter-btn" 
-                      :class="{ active: pageQuery.selectedLetter === 'D' }"
-                      @click="selectLetter('D')"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M4 6H20V18H4V6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M4 6L12 12L20 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                      <span>D</span>
-                    </button>
-                    <button 
-                      class="letter-btn" 
-                      :class="{ active: pageQuery.selectedLetter === 'E' }"
-                      @click="selectLetter('E')"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M4 6H20V8H4V6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M4 12H20V14H4V12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M4 18H20V20H4V18Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                      <span>E</span>
-                    </button>
+                <!-- 筛选行 -->
+                <div class="filter-row">
+                  <!-- 运营商筛选 -->
+                  <div class="filter-section">
+                    <label class="filter-label">Operator Filter</label>
+                    <div class="letter-filters">
+                      <button 
+                        class="letter-btn" 
+                        :class="{ active: pageQuery.selectedLetter === '' }"
+                        @click="selectLetter('')"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                          <path d="M12 16H28M12 20H28M12 24H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                          <circle cx="28" cy="24" r="3" fill="currentColor"/>
+                        </svg>
+                        <span>All</span>
+                      </button>
+                      <button 
+                        class="letter-btn" 
+                        :class="{ active: pageQuery.selectedLetter === 'A' }"
+                        @click="selectLetter('A')"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                          <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>A</span>
+                      </button>
+                      <button 
+                        class="letter-btn" 
+                        :class="{ active: pageQuery.selectedLetter === 'B' }"
+                        @click="selectLetter('B')"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                          <path d="M4 19V5C4 4.44772 4.44772 4 5 4H12C13.1046 4 14 4.89543 14 6C14 7.10457 13.1046 8 12 8H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M6 8H12C13.1046 8 14 8.89543 14 10C14 11.1046 13.1046 12 12 12H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M6 12H12C13.1046 12 14 12.8954 14 14C14 15.1046 13.1046 16 12 16H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>B</span>
+                      </button>
+                      <button 
+                        class="letter-btn" 
+                        :class="{ active: pageQuery.selectedLetter === 'C' }"
+                        @click="selectLetter('C')"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                          <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M8 12C8 9.79 9.79 8 12 8C14.21 8 16 9.79 16 12C16 14.21 14.21 16 12 16C9.79 16 8 14.21 8 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>C</span>
+                      </button>
+                      <button 
+                        class="letter-btn" 
+                        :class="{ active: pageQuery.selectedLetter === 'D' }"
+                        @click="selectLetter('D')"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                          <path d="M4 6H20V18H4V6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M4 6L12 12L20 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>D</span>
+                      </button>
+                      <button 
+                        class="letter-btn" 
+                        :class="{ active: pageQuery.selectedLetter === 'E' }"
+                        @click="selectLetter('E')"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                          <path d="M4 6H20V8H4V6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M4 12H20V14H4V12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M4 18H20V20H4V18Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>E</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- 状态筛选 -->
+                  <div class="filter-section">
+                    <label class="filter-label">Status Filter</label>
+                    <el-radio-group v-model="pageQuery.selectedStatus" size="medium">
+                      <el-radio-button label="">All</el-radio-button>
+                      <el-radio-button label="available">Available</el-radio-button>
+                      <el-radio-button label="unavailable">Unavailable</el-radio-button>
+                    </el-radio-group>
                   </div>
                 </div>
 
@@ -125,33 +138,24 @@
                     />
                   </div>
 
-                  <!-- Status单独一行用radio-group -->
-                  <div class="filter-group">
-                    <label class="filter-label">Status</label>
-                    <el-radio-group v-model="pageQuery.selectedStatus" size="small">
-                      <el-radio-button label="">All Status</el-radio-button>
-                      <el-radio-button label="active">Active</el-radio-button>
-                      <el-radio-button label="inactive">Inactive</el-radio-button>
-                      <el-radio-button label="pending">Pending</el-radio-button>
-                      <el-radio-button label="suspended">Suspended</el-radio-button>
-                    </el-radio-group>
-                  </div>
-
                   <!-- 操作按钮 -->
-                  <div class="filter-actions">
-                    <el-button type="primary" @click="performSearch" class="search-btn">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="search-icon">
-                        <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                      Search
-                    </el-button>
-                    <el-button @click="resetFilters" class="reset-btn">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="reset-icon">
-                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M3 3v5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                      Reset
-                    </el-button>
+                  <div class="filter-group">
+                    <label class="filter-label">Actions</label>
+                    <div class="filter-actions">
+                      <el-button type="primary" @click="performSearch" class="search-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="search-icon">
+                          <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Search
+                      </el-button>
+                      <el-button @click="resetFilters" class="reset-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="reset-icon">
+                          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M3 3v5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Reset
+                      </el-button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -701,22 +705,12 @@ const router = useRouter()
   font-weight: 500;
 }
 
-.status-tag.active {
+.status-tag.available {
   background: rgba(34, 197, 94, 0.1);
   color: #22c55e;
 }
 
-.status-tag.inactive {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
-}
-
-.status-tag.pending {
-  background: rgba(245, 158, 11, 0.1);
-  color: #f59e0b;
-}
-
-.status-tag.suspended {
+.status-tag.unavailable {
   background: rgba(239, 68, 68, 0.1);
   color: #ef4444;
 }
@@ -771,7 +765,7 @@ const router = useRouter()
 }
 
 .filter-label {
-  font-size: 0.625rem;
+  font-size: 0.8rem;
   color: var(--text-secondary);
   margin-bottom: 0.5rem;
   display: block;
@@ -785,21 +779,39 @@ const router = useRouter()
   display: flex;
   gap: 0.75rem;
   flex-shrink: 0;
-  min-width: 200px;
+  height: 32px;
+  align-items: center;
 }
 
-/* 字母筛选样式 */
-.letter-filter-row {
+/* 筛选行样式 */
+.filter-row {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+/* 筛选区域样式 */
+.filter-section {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  margin-bottom: 1rem;
+  min-width: 200px;
+}
+
+/* 状态筛选组样式 */
+.filter-section .el-radio-group {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .letter-filters {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .letter-btn {
@@ -848,6 +860,7 @@ const router = useRouter()
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  font-size: 0.875rem;
 }
 
 .search-icon {
@@ -861,6 +874,7 @@ const router = useRouter()
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  font-size: 0.875rem;
 }
 
 .reset-icon {
