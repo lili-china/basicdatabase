@@ -220,7 +220,19 @@
                     <span class="status-tag" :class="isp.status">{{ isp.status }}</span>
                   </div>
                   <div class="isp-actions">
-                    <el-button size="small" @click.stop="goToDetail(isp)">View</el-button>
+                    <el-button
+                      size="small"
+                      class="view-btn"
+                      :loading="viewLoadingId === isp.id"
+                      @click.stop="handleViewClick(isp)"
+                      aria-label="View details"
+                      tabindex="0"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="margin-right:4px;vertical-align:middle;">
+                        <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      View
+                    </el-button>
                   </div>
                 </div>
               </div>
@@ -532,6 +544,16 @@ onMounted(() => {
 })
 
 const router = useRouter()
+
+const viewLoadingId = ref<number|string|null>(null)
+function handleViewClick(isp: any) {
+  if (viewLoadingId.value) return
+  viewLoadingId.value = isp.id
+  setTimeout(() => {
+    goToDetail(isp)
+    viewLoadingId.value = null
+  }, 400)
+}
 </script>
 
 <style scoped>
@@ -749,6 +771,29 @@ const router = useRouter()
   display: flex;
   gap: 0.5rem;
   flex-shrink: 0;
+  margin-left: auto;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.isp-item:hover .isp-actions {
+  opacity: 1;
+}
+.view-btn {
+  background: var(--accent-primary);
+  color: #fff;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(59,130,246,0.10);
+  display: flex;
+  align-items: center;
+  padding: 0 1.2em;
+}
+.view-btn:hover {
+  background: #1d4ed8;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(59,130,246,0.15);
 }
 
 /* 搜索区域样式 */
