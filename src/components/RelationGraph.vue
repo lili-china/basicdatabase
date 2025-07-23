@@ -1,379 +1,234 @@
 <template>
-  <div class="relation-graph-container">
-    <div class="graph-header">
-      <h3>{{ title }}</h3>
-      <div class="graph-controls">
-        <el-button @click="resetGraph" size="small" type="primary">
-          Reset
-        </el-button>
-        <el-button @click="exportGraph" size="small" type="success">
-          Export
-        </el-button>
-        <el-button @click="toggleFullscreen" size="small" type="info">
-          {{ isFullscreen ? 'Exit' : 'Fullscreen' }}
-        </el-button>
-      </div>
-    </div>
-    
-    <div 
-      ref="graphContainer" 
-      class="graph-container"
-      :class="{ 'fullscreen': isFullscreen }"
-    >
-      <canvas 
-        ref="canvas" 
-        class="graph-canvas"
-        @mousedown="handleMouseDown"
-        @mousemove="handleMouseMove"
-        @mouseup="handleMouseUp"
-        @wheel="handleWheel"
-      ></canvas>
+  <div style="background:transparent;">
+    <div style="height:calc(100vh);background:transparent;">
+      <RelationGraph
+
+        ref="graphRef"
+        :options="graphOptions"
+        :on-node-click="onNodeClick"
+        :on-line-click="onLineClick"
+        style="background:transparent;"
+      >
+        <template #graph-plug>
+          <div class="c-my-panel">
+            <div class="c-option-name" style="line-height: 25px;padding:10px;">
+              This layout uses a third-party layout algorithm: Sigma, and you can still use powerful features such as slot support in relation-graph, perfect integration. Sigma force-directed graph layout is a classic layout algorithm.
+            </div>
+          </div>
+        </template>
+      </RelationGraph>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
+<script lang="ts" setup>
+import { ref, onMounted } from 'vue';
+import RelationGraph, { RGJsonData } from 'relation-graph/vue3';
+import { RelationGraphComponent, RGOptions, RGNode, RGLine, RGLink, RGUserEvent } from 'relation-graph/vue3';
+import Graph from "graphology";
+import circular from "graphology-layout/circular";
+import forceAtlas2 from "graphology-layout-forceatlas2";
 
-interface Node {
-  id: string
-  text: string
-  x: number
-  y: number
-  data?: any
-}
-
-interface Link {
-  from: string
-  to: string
-  text?: string
-}
-
-interface GraphData {
-  nodes: Node[]
-  links: Link[]
-}
-
-interface Props {
-  data?: GraphData
-  title?: string
-  width?: string | number
-  height?: string | number
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  title: 'Relationship Graph',
-  width: '100%',
-  height: '600px'
-})
-
-const emit = defineEmits<{
-  nodeClick: [node: Node]
-  linkClick: [link: Link]
-  graphReady: [graph: any]
-}>()
-
-const graphContainer = ref<HTMLElement>()
-const canvas = ref<HTMLCanvasElement>()
-const isFullscreen = ref(false)
-let ctx: CanvasRenderingContext2D | null = null
-let animationId: number | null = null
-let isDragging = false
-let selectedNode: Node | null = null
-let mouseX = 0
-let mouseY = 0
-let offsetX = 0
-let offsetY = 0
-let scale = 1
-
-const graphData = ref<GraphData>({ nodes: [], links: [] })
-
-// Initialize canvas
-const initCanvas = () => {
-  if (!canvas.value) return
-  
-  ctx = canvas.value.getContext('2d')
-  if (!ctx) return
-  
-  resizeCanvas()
-  drawGraph()
-}
-
-// Resize canvas
-const resizeCanvas = () => {
-  if (!canvas.value || !graphContainer.value) return
-  
-  const rect = graphContainer.value.getBoundingClientRect()
-  canvas.value.width = rect.width
-  canvas.value.height = rect.height
-}
-
-// Draw graph
-const drawGraph = () => {
-  if (!ctx || !canvas.value) return
-  
-  // Clear canvas
-  ctx.clearRect(0, 0, canvas.value.width, canvas.value.height)
-  
-  // Apply transformations
-  ctx.save()
-  ctx.translate(offsetX, offsetY)
-  ctx.scale(scale, scale)
-  
-  // Draw links
-  graphData.value.links.forEach(link => {
-    const fromNode = graphData.value.nodes.find(n => n.id === link.from)
-    const toNode = graphData.value.nodes.find(n => n.id === link.to)
-    
-    if (fromNode && toNode && ctx) {
-      ctx.beginPath()
-      ctx.moveTo(fromNode.x, fromNode.y)
-      ctx.lineTo(toNode.x, toNode.y)
-      ctx.strokeStyle = '#666666'
-      ctx.lineWidth = 2
-      ctx.stroke()
-      
-      // Draw link text
-      if (link.text && ctx) {
-        const midX = (fromNode.x + toNode.x) / 2
-        const midY = (fromNode.y + toNode.y) / 2
-        ctx.fillStyle = '#333333'
-        ctx.font = '12px Arial'
-        ctx.textAlign = 'center'
-        ctx.fillText(link.text, midX, midY - 10)
-      }
-    }
-  })
-  
-  // Draw nodes
-  graphData.value.nodes.forEach(node => {
-    if (!ctx) return
-    
-    // Node circle
-    ctx.beginPath()
-    ctx.arc(node.x, node.y, 30, 0, 2 * Math.PI)
-    ctx.fillStyle = '#4CAF50'
-    ctx.fill()
-    ctx.strokeStyle = '#2E7D32'
-    ctx.lineWidth = 2
-    ctx.stroke()
-    
-    // Node text
-    ctx.fillStyle = '#ffffff'
-    ctx.font = '12px Arial'
-    ctx.textAlign = 'center'
-    ctx.fillText(node.text, node.x, node.y + 4)
-  })
-  
-  ctx.restore()
-}
-
-// Mouse event handlers
-const handleMouseDown = (e: MouseEvent) => {
-  if (!canvas.value) return
-  
-  const rect = canvas.value.getBoundingClientRect()
-  mouseX = (e.clientX - rect.left - offsetX) / scale
-  mouseY = (e.clientY - rect.top - offsetY) / scale
-  
-  // Check if clicking on a node
-  const foundNode = graphData.value.nodes.find(node => {
-    const distance = Math.sqrt((node.x - mouseX) ** 2 + (node.y - mouseY) ** 2)
-    return distance <= 30
-  })
-  selectedNode = foundNode || null
-  
-  if (selectedNode) {
-    isDragging = true
-    emit('nodeClick', selectedNode)
-  }
-}
-
-const handleMouseMove = (e: MouseEvent) => {
-  if (!canvas.value) return
-  
-  const rect = canvas.value.getBoundingClientRect()
-  const newMouseX = (e.clientX - rect.left - offsetX) / scale
-  const newMouseY = (e.clientY - rect.top - offsetY) / scale
-  
-  if (isDragging && selectedNode) {
-    selectedNode.x = newMouseX
-    selectedNode.y = newMouseY
-    drawGraph()
-  }
-}
-
-const handleMouseUp = () => {
-  isDragging = false
-  selectedNode = null
-}
-
-const handleWheel = (e: WheelEvent) => {
-  e.preventDefault()
-  
-  const delta = e.deltaY > 0 ? 0.9 : 1.1
-  scale = Math.max(0.5, Math.min(2, scale * delta))
-  
-  drawGraph()
-}
-
-// Update graph data
-const updateGraph = (data: GraphData) => {
-  graphData.value = data
-  drawGraph()
-}
-
-// Reset graph
-const resetGraph = () => {
-  offsetX = 0
-  offsetY = 0
-  scale = 1
-  drawGraph()
-}
-
-// Export graph
-const exportGraph = () => {
-  const data = graphData.value
-  const blob = new Blob([JSON.stringify(data, null, 2)], {
-    type: 'application/json'
-  })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'relation-graph.json'
-  a.click()
-  URL.revokeObjectURL(url)
-}
-
-// Toggle fullscreen
-const toggleFullscreen = () => {
-  isFullscreen.value = !isFullscreen.value
-  nextTick(() => {
-    resizeCanvas()
-    drawGraph()
-  })
-}
-
-// Watch for data changes
-watch(() => props.data, (newData) => {
-  if (newData) {
-    updateGraph(newData)
-  }
-}, { deep: true })
-
-// Expose methods to parent
-defineExpose({
-  updateGraph,
-  resetGraph,
-  exportGraph
-})
+const graphRef = ref<RelationGraphComponent>();
+const graphOptions: RGOptions = {
+    debug: false,
+    lineUseTextPath: true,
+    layout: {
+        layoutName: 'fixed'
+    },
+    defaultNodeShape: 0,
+    defaultLineShape: 1,
+    defaultJunctionPoint: 'border',
+    defaultNodeBorderWidth: 0,
+    defaultNodeWidth: 30,
+    defaultNodeHeight: 30,
+    defaultLineColor: 'rgba(0, 186, 189, 1)',
+    defaultNodeColor: 'rgba(0, 206, 209, 1)'
+};
 
 onMounted(async () => {
-  await nextTick()
-  initCanvas()
-  
-  if (props.data) {
-    updateGraph(props.data)
-  }
-  
-  emit('graphReady', { updateGraph, resetGraph, exportGraph })
-})
+    await useGraphologyLayout();
+    setTimeout(() => {
+      document.querySelectorAll('.relation-graph-container canvas').forEach((el) => {
+        (el as HTMLCanvasElement).style.background = 'transparent';
+      });
+    }, 500);
+});
 
-onUnmounted(() => {
-  if (animationId) {
-    cancelAnimationFrame(animationId)
-  }
-})
+const useGraphologyLayout = async () => {
+    let __graph_json_data: RGJsonData = {
+        rootId: 'root',
+        nodes: [
+            { id: 'root', text: '节点' },
+            { id: 'N2', text: '新节点N2' },
+            { id: 'N3', text: '新节点N3' },
+            { id: 'N4', text: '新节点N4' },
+            { id: 'N5', text: '新节点N5' },
+            { id: 'N6', text: '新节点N6' },
+            { id: 'N7', text: '新节点N7' },
+            { id: 'N8', text: '新节点N8' },
+            { id: 'N9', text: '新节点N9' },
+            { id: 'N10', text: '新节点N10' },
+            { id: 'N11', text: '新节点N11' },
+            { id: 'N12', text: '新节点N12' },
+            { id: 'N13', text: '新节点N13' },
+            { id: 'N14', text: '新节点N14' },
+            { id: 'N15', text: '新节点N15' },
+            { id: 'N16', text: '新节点N16' },
+            { id: 'N17', text: '新节点N17' },
+            { id: 'N18', text: '新节点N18' },
+            { id: 'N19', text: '新节点N19' },
+            { id: 'N20', text: '新节点N20' },
+            { id: 'N21', text: '新节点N21' },
+            { id: 'N22', text: '新节点N22' },
+            { id: 'N23', text: '新节点N23' },
+            { id: 'N24', text: '新节点N24' },
+            { id: 'N25', text: '新节点N25' },
+            { id: 'N26', text: '新节点N26' },
+            { id: 'N27', text: 'New-N27' },
+            { id: 'N28', text: 'New-N28' },
+            { id: 'N29', text: 'New-N29' },
+            { id: 'N30', text: 'New-N30' },
+            { id: 'N31', text: 'New-N31' },
+            { id: 'N32', text: 'New-N32' },
+            { id: 'N33', text: 'New-N33' },
+            { id: 'N34', text: 'New-N34' },
+            { id: 'N35', text: 'New-N35' },
+            { id: 'N36', text: 'New-N36' },
+            { id: 'N37', text: 'New-N37' },
+            { id: 'N38', text: 'New-N38' },
+            { id: 'N39', text: 'New-N39' }
+        ],
+        lines: [
+            { from: 'N3', to: 'N2', text: '新连线1' },
+            { from: 'N2', to: 'root', text: '新连线1' },
+            { from: 'root', to: 'N4', text: '新连线2' },
+            { from: 'N4', to: 'N5', text: '新连线3' },
+            { from: 'N6', to: 'N7', text: '新连线2' },
+            { from: 'N7', to: 'root', text: '新连线3' },
+            { from: 'N8', to: 'N9', text: '新连线4' },
+            { from: 'N9', to: 'root', text: '新连线5' },
+            { from: 'N10', to: 'N11', text: '新连线6' },
+            { from: 'N11', to: 'root', text: '新连线7' },
+            { from: 'N13', to: 'N12', text: '新连线8' },
+            { from: 'N12', to: 'root', text: '新连线9' },
+            { from: 'N18', to: 'N17', text: '新连线10' },
+            { from: 'N17', to: 'N14', text: '新连线11' },
+            { from: 'N15', to: 'N14', text: '新连线12' },
+            { from: 'N16', to: 'N15', text: '新连线13' },
+            { from: 'N12', to: 'N14', text: '新连线14' },
+            { from: 'N20', to: 'N19', text: '新连线15' },
+            { from: 'N21', to: 'N19', text: '新连线16' },
+            { from: 'N19', to: 'N15', text: '新连线17' },
+            { from: 'N26', to: 'N22', text: '新连线18' },
+            { from: 'N24', to: 'N25', text: '新连线19' },
+            { from: 'N24', to: 'N22', text: '新连线20' },
+            { from: 'N22', to: 'N23', text: '新连线21' },
+            { from: 'N23', to: 'N14', text: '新连线22' },
+            { from: 'root', to: 'N30', text: '新连线1' },
+            { from: 'root', to: 'N27', text: '新连线2' },
+            { from: 'N30', to: 'N33', text: '新连线3' },
+            { from: 'N30', to: 'N29', text: '新连线4' },
+            { from: 'N27', to: 'N28', text: '新连线5' },
+            { from: 'N27', to: 'N31', text: '新连线6' },
+            { from: 'N27', to: 'N32', text: '新连线7' },
+            { from: 'N4', to: 'N34', text: '新连线8' },
+            { from: 'N28', to: 'N35', text: '新连线9' },
+            { from: 'N28', to: 'N36', text: '新连线12' },
+            { from: 'N28', to: 'N37', text: '新连线13' },
+            { from: 'N36', to: 'N39', text: '新连线14' },
+            { from: 'N36', to: 'N38', text: '新连线15' }
+        ]
+    };
+
+    __graph_json_data.nodes.forEach(node => {
+        node.text = 'N';
+    });
+
+    const graph = new Graph();
+    const graphInstance = graphRef.value!.getInstance();
+    await graphInstance.setJsonData(__graph_json_data);
+
+    graphInstance.getNodes().forEach(node => {
+        graph.addNode(node.id, {
+            text: node.text,
+            width: node.el.offsetWidth,
+            height: node.el.offsetHeight
+
+        });
+    });
+
+    graphInstance.getLinks().forEach(link => {
+        link.relations.forEach((line) => {
+            graph.addEdge(link.fromNode.id, link.toNode.id, {
+                id: line.id,
+                weight: 1
+
+            });
+        });
+    });
+
+    circular.assign(graph);
+    forceAtlas2.assign(graph, 50);
+
+    graph.nodes().forEach(nodeId => {
+        const node = graph.getNodeAttributes(nodeId);
+        const rgNode = graphInstance.getNodeById(nodeId);
+        rgNode.x = node.x * 10;
+        rgNode.y = node.y * 10;
+    });
+};
+
+const onNodeClick = (nodeObject: RGNode, $event: RGUserEvent) => {
+    console.log('onNodeClick:', nodeObject);
+};
+
+const onLineClick = (lineObject: RGLine, linkObject: RGLink, $event: RGUserEvent) => {
+    console.log('onLineClick:', lineObject);
+};
 </script>
 
-<style scoped>
-.relation-graph-container {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  overflow: hidden;
-}
+<style lang="scss">
 
-.graph-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  background: rgba(255, 255, 255, 0.05);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
+</style>
 
-.graph-header h3 {
-  margin: 0;
-  color: #333;
-  font-size: 18px;
-  font-weight: 600;
-}
-
-.graph-controls {
-  display: flex;
-  gap: 8px;
-}
-
-.graph-container {
-  flex: 1;
-  position: relative;
-  width: v-bind(width);
-  height: v-bind(height);
-  transition: all 0.3s ease;
-}
-
-.graph-container.fullscreen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-}
-
-.graph-canvas {
-  width: 100%;
-  height: 100%;
-  cursor: grab;
-}
-
-.graph-canvas:active {
-  cursor: grabbing;
-}
-
-/* Glassmorphism effect for buttons */
-:deep(.el-button) {
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: #333;
-  transition: all 0.3s ease;
-}
-
-:deep(.el-button:hover) {
-  background: rgba(255, 255, 255, 0.3);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-  .graph-header {
-    flex-direction: column;
-    gap: 12px;
-    align-items: flex-start;
+<style lang="scss" scoped>
+.c-my-panel{
+  width: 400px;
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  border-radius: 10px;
+  z-index: 800;
+  background-color: #efefef;
+  border: #eeeeee solid 1px;
+  padding: 10px;
+  .c-option-name{
+    color: #666666;
+    font-size: 14px;
+    line-height: 40px;
+    padding-left:10px;
+    padding-right:10px;
   }
-  
-  .graph-controls {
-    width: 100%;
-    justify-content: flex-end;
+  .c-my-options {
+    text-align: center;
+    .c-my-option-item {
+      text-align: left;
+      color: #1da9f5;
+      cursor: pointer;
+      border-radius: 5px;
+      padding-left: 10px;
+      margin-top: 5px;
+      line-height: 25px;
+      &:hover{
+        background-color: rgba(29, 169, 245, 0.2);
+      }
+    }
   }
 }
-</style> 
+
+:deep(.rg-canvas-wrap), :deep(.rg-canvas), :deep(.relation-graph-container) {
+  background: transparent !important;
+}
+
+</style>

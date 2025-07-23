@@ -702,7 +702,7 @@ function queryTrack() {
   align-items: center;
   cursor: pointer;
   padding: 0;
-  margin: 0;
+  margin: 0 0 0.5rem 0;
   transition: all 0.3s ease;
 }
 
@@ -744,6 +744,10 @@ function queryTrack() {
   padding-bottom: 0;
   margin-top: 0;
   margin-bottom: 0;
+}
+
+.collapsible .section-header + .section-content {
+  margin-top: 0.5rem;
 }
 
 /* 固网位置信息样式 */
@@ -790,7 +794,7 @@ function queryTrack() {
 
 /* 日期范围过滤器样式 */
 .date-range-filter {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   padding: 1rem;
   background: var(--bg-primary);
   border-radius: 8px;

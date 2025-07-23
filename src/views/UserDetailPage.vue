@@ -168,6 +168,20 @@
             </svg>
           </div>
           <div class="section-content" :class="{ 'collapsed': !expandedSections.family }">
+            <div class="family-filter-row" style="display:flex;align-items:center;margin-bottom:12px;">
+              <el-select v-if="showFamilySelect" v-model="selectedFamily" placeholder="筛选家庭成员" style="width: 180px;">
+                <el-option v-for="item in familyListAll" :key="item.id" :label="item.name" :value="item.id" />
+              </el-select>
+              <svg @click.stop="toggleFamilySelect" style="margin-left: 10px; cursor: pointer; vertical-align: middle;" width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                <path d="M12 16c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              <img v-if="!showFamilySelect && selectedFamilyAvatar" :src="selectedFamilyAvatar" alt="家庭成员头像" style="width:36px;height:36px;border-radius:8px;margin-left:10px;vertical-align:middle;" @click.stop="toggleFamilySelect" />
+              <el-button size="small" style="margin-left:16px;" @click="showFamilyGraph = !showFamilyGraph">
+                {{ showFamilyGraph ? '隐藏家庭关系图' : '显示家庭关系图' }}
+              </el-button>
+            </div>
+            <RelationGraph v-if="showFamilyGraph" :data="familyGraphData" style="margin-bottom:16px;" />
             <el-table :data="familyList" border stripe class="family-table">
               <el-table-column label="Avatar">
                 <template #default="scope">
@@ -316,6 +330,7 @@ import { currentTheme, toggleTheme } from '@/utils/themeManager'
 import { flyToTarget } from '@/utils/flyToTarget'
 import '@/style/common-fly-effect.css'
 import { validateCurrentSession } from '@/utils/sessionValidator'
+import RelationGraph from '@/components/RelationGraph.vue'
 
 // 用户数据（静态2个用户，头像、id、基础信息等）
 const usersAll = [
@@ -540,6 +555,51 @@ function handleIdListClick(id: string) {
 
 const mainAvatar = ref(currentUser.value.avatar)
 watch(currentUser, (u) => { mainAvatar.value = u.avatar })
+
+const familyFilter = ref('')
+const showFamilyList = ref(true)
+const showFamilyAvatar = ref(false)
+const filteredFamilyList = computed(() => {
+  if (!familyFilter.value) return familyList.value
+  return familyList.value.filter(f => f.id === familyFilter.value)
+})
+const selectedFamilyMember = computed(() => {
+  if (!familyFilter.value) return null
+  return familyListAll.value.find(f => f.id === familyFilter.value)
+})
+function toggleFamilyList(e?: Event) {
+  showFamilyList.value = !showFamilyList.value
+  showFamilyAvatar.value = !showFamilyList.value
+}
+
+const showFamilySelect = ref(true)
+const selectedFamily = ref<string | null>(null)
+const selectedFamilyAvatar = computed(() => {
+  if (!selectedFamily.value) return null
+  const member = familyListAll.value.find(f => f.id === selectedFamily.value)
+  return member ? member.avatar : null
+})
+function toggleFamilySelect() {
+  showFamilySelect.value = !showFamilySelect.value
+}
+
+const showFamilyGraph = ref(false)
+const familyGraphData = computed(() => {
+  // 以当前用户为中心，家庭成员为节点
+  const user = currentUser.value
+  if (!user) return { nodes: [], links: [] }
+  const nodes = [
+    { id: user.id, text: user.name, x: 300, y: 200 }
+  ]
+  const links = []
+  if (user.family && user.family.length) {
+    user.family.forEach((f, idx) => {
+      nodes.push({ id: f.id, text: f.name, x: 150 + idx*120, y: 400 })
+      links.push({ from: user.id, to: f.id, text: f.relation })
+    })
+  }
+  return { nodes, links }
+})
 </script>
 
 <style scoped>
@@ -975,5 +1035,18 @@ html, body {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+.family-toggle-icon {
+  color: var(--accent-primary);
+  transition: color 0.2s;
+}
+.family-toggle-icon:hover {
+  color: #1d4ed8;
+}
+.family-avatar-img {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(59,130,246,0.10);
+  background: #f3f4f6;
+  border: 2px solid var(--accent-primary, #2563eb);
 }
 </style> 
