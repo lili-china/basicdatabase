@@ -20,11 +20,11 @@
                   <!-- 运营商筛选 -->
                   <div class="filter-section">
                     <label class="filter-label">Operator Filter</label>
-                    <div class="letter-filters">
+                    <div class="operator-filters">
                       <button 
-                        class="letter-btn" 
-                        :class="{ active: pageQuery.selectedLetter === '' }"
-                        @click="selectLetter('')"
+                        class="operator-btn" 
+                        :class="{ active: pageQuery.selectedOperator === '' }"
+                        @click="selectOperator('')"
                       >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                           <path d="M12 16H28M12 20H28M12 24H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -33,62 +33,67 @@
                         <span>All</span>
                       </button>
                       <button 
-                        class="letter-btn" 
-                        :class="{ active: pageQuery.selectedLetter === 'A' }"
-                        @click="selectLetter('A')"
+                        class="operator-btn" 
+                        :class="{ active: pageQuery.selectedOperator === 'Omantel' }"
+                        @click="selectOperator('Omantel')"
+                        data-operator="Omantel"
                       >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                           <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                           <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                           <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                        <span>A</span>
+                        <span>Omantel</span>
                       </button>
                       <button 
-                        class="letter-btn" 
-                        :class="{ active: pageQuery.selectedLetter === 'B' }"
-                        @click="selectLetter('B')"
+                        class="operator-btn" 
+                        :class="{ active: pageQuery.selectedOperator === 'Ooredoo' }"
+                        @click="selectOperator('Ooredoo')"
+                        data-operator="Ooredoo"
                       >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                           <path d="M4 19V5C4 4.44772 4.44772 4 5 4H12C13.1046 4 14 4.89543 14 6C14 7.10457 13.1046 8 12 8H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                           <path d="M6 8H12C13.1046 8 14 8.89543 14 10C14 11.1046 13.1046 12 12 12H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                           <path d="M6 12H12C13.1046 12 14 12.8954 14 14C14 15.1046 13.1046 16 12 16H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                        <span>B</span>
+                        <span>Ooredoo</span>
                       </button>
                       <button 
-                        class="letter-btn" 
-                        :class="{ active: pageQuery.selectedLetter === 'C' }"
-                        @click="selectLetter('C')"
+                        class="operator-btn" 
+                        :class="{ active: pageQuery.selectedOperator === 'Vodafone' }"
+                        @click="selectOperator('Vodafone')"
+                        data-operator="Vodafone"
                       >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                           <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                           <path d="M8 12C8 9.79 9.79 8 12 8C14.21 8 16 9.79 16 12C16 14.21 14.21 16 12 16C9.79 16 8 14.21 8 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                        <span>C</span>
+                        <span>Vodafone</span>
                       </button>
                       <button 
-                        class="letter-btn" 
-                        :class="{ active: pageQuery.selectedLetter === 'D' }"
-                        @click="selectLetter('D')"
+                        class="operator-btn" 
+                        :class="{ active: pageQuery.selectedOperator === 'FRiENDi' }"
+                        @click="selectOperator('FRiENDi')"
+                        data-operator="FRiENDi"
                       >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                           <path d="M4 6H20V18H4V6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                           <path d="M4 6L12 12L20 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                        <span>D</span>
+                        <span>FRiENDi</span>
                       </button>
                       <button 
-                        class="letter-btn" 
-                        :class="{ active: pageQuery.selectedLetter === 'E' }"
-                        @click="selectLetter('E')"
+                        class="operator-btn" 
+                        :class="{ active: pageQuery.selectedOperator === 'Awasr' }"
+                        @click="selectOperator('Awasr')"
+                        data-operator="Awasr"
                       >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                           <path d="M4 6H20V8H4V6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                           <path d="M4 12H20V14H4V12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                           <path d="M4 18H20V20H4V18Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                        <span>E</span>
+                        <span>Awasr</span>
                       </button>
                     </div>
                   </div>
@@ -278,7 +283,36 @@ const pageSize = ref(20)
 const totalItems = ref(0)
 
 // 使用mock数据
-const ispData = ref(mockISPs)
+const ispData = ref([
+  ...mockISPs,
+  // 添加一条Awasr测试数据
+  {
+    id: 999,
+    realName: 'Ahmed Al-Mahri',
+    identityNo: '1234567890',
+    phoneNum: '+968 91234567',
+    nationality: 'Omani',
+    birthDate: '1985-03-15',
+    address: 'Al Ghubrah, Muscat, Oman',
+    name: 'Awasr',
+    serviceType: 'Fixed Fiber Internet',
+    maxSpeed: '1 Gbps',
+    coverage: 'Muscat Metropolitan Area',
+    location: 'Al Ghubrah, Muscat, Oman',
+    description: 'High-speed fiber internet service with 24/7 support',
+    registrationDate: '2023-01-15',
+    expiryDate: '2025-01-15',
+    status: 'available',
+    photo: 'https://via.placeholder.com/80x80/ea580c/ffffff?text=AA',
+    // 固网特有属性
+    networkType: 'Fiber Optic',
+    installationDate: '2023-01-10',
+    lastMaintenance: '2024-01-15',
+    bandwidth: '1000 Mbps',
+    ipAddress: '192.168.1.100',
+    routerModel: 'Awasr Fiber Router v2.0'
+  }
+])
 
 // 计算筛选后的ISP列表
 const filteredISPs = computed(() => {
@@ -287,7 +321,7 @@ const filteredISPs = computed(() => {
   // 运营商筛选
   if (pageQuery.value.selectedOperator) {
     filtered = filtered.filter(isp => 
-      isp.name.toLowerCase().includes(pageQuery.value.selectedOperator.toLowerCase())
+      isp.name && isp.name.toLowerCase().includes(pageQuery.value.selectedOperator.toLowerCase())
     )
   }
 
@@ -344,6 +378,12 @@ const performSearch = () => {
 // 字母筛选方法
 const selectLetter = (letter: string) => {
   pageQuery.value.selectedLetter = letter
+  currentPage.value = 1
+}
+
+// 运营商筛选方法
+const selectOperator = (operator: string) => {
+  pageQuery.value.selectedOperator = operator
   currentPage.value = 1
 }
 
@@ -408,27 +448,56 @@ const getContactPhoto = (name: string) => {
 // ISP详情功能
 const goToDetail = (isp: any) => {
   selectedISP.value = isp
-  // 查找最近通话联系人
-  const record = mockCallRecords.find(r => r.userId === isp.identityNo)
-  const contacts = record ? record.contacts.slice(0, 20) : []
-  // 聚合同一联系人
-  const contactMap: Record<string, any> = {}
-  contacts.forEach(c => {
-    const key = c.name + '_' + c.phone
-    if (!contactMap[key]) {
-      contactMap[key] = {
-        name: c.name,
-        phone: c.phone,
-        photo: getContactPhoto(c.name),
-        count: 1,
-        records: [{ direction: c.direction, time: c.time }]
+  
+  // 如果是Awasr运营商，提供固网相关的联系人数据
+  if (isp.name === 'Awasr') {
+    recentContacts.value = [
+      {
+        name: 'Technical Support',
+        phone: '+968 8000 1234',
+        photo: 'https://via.placeholder.com/40x40/ea580c/ffffff?text=TS',
+        count: 3,
+        records: [
+          { direction: 'Incoming', time: '2024-01-15 10:30' },
+          { direction: 'Outgoing', time: '2024-01-20 14:15' },
+          { direction: 'Incoming', time: '2024-02-01 09:45' }
+        ]
+      },
+      {
+        name: 'Customer Service',
+        phone: '+968 8000 5678',
+        photo: 'https://via.placeholder.com/40x40/ea580c/ffffff?text=CS',
+        count: 2,
+        records: [
+          { direction: 'Outgoing', time: '2024-01-10 16:20' },
+          { direction: 'Incoming', time: '2024-01-25 11:30' }
+        ]
       }
-    } else {
-      contactMap[key].count++
-      contactMap[key].records.push({ direction: c.direction, time: c.time })
-    }
-  })
-  recentContacts.value = Object.values(contactMap)
+    ]
+  } else {
+    // 查找最近通话联系人
+    const record = mockCallRecords.find(r => r.userId === isp.identityNo)
+    const contacts = record ? record.contacts.slice(0, 20) : []
+    // 聚合同一联系人
+    const contactMap: Record<string, any> = {}
+    contacts.forEach(c => {
+      const key = c.name + '_' + c.phone
+      if (!contactMap[key]) {
+        contactMap[key] = {
+          name: c.name,
+          phone: c.phone,
+          photo: getContactPhoto(c.name),
+          count: 1,
+          records: [{ direction: c.direction, time: c.time }]
+        }
+      } else {
+        contactMap[key].count++
+        contactMap[key].records.push({ direction: c.direction, time: c.time })
+      }
+    })
+    recentContacts.value = Object.values(contactMap)
+  }
+  
   showDetail.value = true
 }
 
@@ -852,6 +921,82 @@ const router = useRouter()
 .letter-btn span {
   font-size: 0.75rem;
   font-weight: 600;
+}
+
+.operator-filters {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.operator-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-card);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 100px;
+  max-width: 120px;
+  color: var(--text-secondary);
+}
+
+.operator-btn:hover {
+  background: var(--accent-secondary);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
+}
+
+.operator-btn.active {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* 运营商特定颜色 */
+.operator-btn[data-operator="Omantel"]:hover {
+  border-color: #2563eb;
+  color: #2563eb;
+}
+
+.operator-btn[data-operator="Ooredoo"]:hover {
+  border-color: #dc2626;
+  color: #dc2626;
+}
+
+.operator-btn[data-operator="Vodafone"]:hover {
+  border-color: #059669;
+  color: #059669;
+}
+
+.operator-btn[data-operator="FRiENDi"]:hover {
+  border-color: #7c3aed;
+  color: #7c3aed;
+}
+
+.operator-btn[data-operator="Awasr"]:hover {
+  border-color: #ea580c;
+  color: #ea580c;
+}
+
+.operator-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.operator-btn span {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.2;
 }
 
 .search-btn {

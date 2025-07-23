@@ -211,7 +211,6 @@ let movingPointGlowGrowing = true
 let movingPointBlinkTimer: number | null = null
 const currentLayer = ref('osm')
 const playbackSpeed = ref(0.5)
-const totalPoints = ref(0)
 const isPanelHidden = ref(false)
 const showDataList = ref(false)
 const avatarUrl = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'
@@ -280,10 +279,27 @@ function updateAvatarOverlayPosition() {
   }
 }
 
+/**
+ * 同步头像覆盖层位置
+ * 
+ * 功能说明：
+ * - 更新地图上头像的位置
+ * - 支持直接传入坐标或从移动点获取坐标
+ * - 确保头像跟随移动点显示
+ * 
+ * 参数说明：
+ * @param coordinates - 可选的坐标数组 [x, y]，如果提供则直接使用
+ * 
+ * 使用场景：
+ * 1. 传入坐标：直接设置头像位置（如动画播放时）
+ * 2. 不传坐标：从移动点获取坐标（如初始化时）
+ */
 function syncAvatarOverlay(coordinates?: number[]) {
   if (avatarOverlay && coordinates) {
+    // 直接使用传入的坐标
     avatarOverlay.setPosition(coordinates)
   } else if (avatarOverlay && movingPointFeature) {
+    // 从移动点获取坐标
     updateAvatarOverlayPosition()
   }
 }
@@ -349,9 +365,30 @@ const progressPercentage = computed(() => {
   return (progress.value / currentTotalPoints) * 100
 })
 
+/**
+ * 动画移动点
+ * 
+ * 功能说明：
+ * - 实现轨迹播放动画的核心函数
+ * - 在两点之间进行插值计算，实现平滑移动
+ * - 同步更新移动点和头像位置
+ * - 基于 currentTrackPoints 数据进行播放
+ * 
+ * 动画逻辑：
+ * 1. 检查播放状态和必要组件
+ * 2. 获取当前轨迹的坐标数组
+ * 3. 检查是否到达终点
+ * 4. 计算插值坐标并更新位置
+ * 5. 递归调用实现连续动画
+ */
 const animateMovingPoint = () => {
+  // 检查播放状态和必要组件
   if (!isPlaying.value || !map || !movingPointFeature) return
+  
+  // 获取当前轨迹的坐标数组（基于 currentTrackPoints）
   const coordinates = (currentTrackPoints.value || []).map((point: any) => fromLonLat([point.lon, point.lat]))
+  
+  // 检查是否到达终点
   if (currentIndex >= coordinates.length - 1) {
     currentIndex = coordinates.length - 1
     progress.value = coordinates.length
@@ -471,36 +508,80 @@ const togglePanel = (mode?: number) => {
   }
 }
 
-// 模拟后端数据结构
+/**
+ * 关键数据源说明
+ * 
+ * 1. allLocationList: 所有轨迹点的完整数据集
+ *    - 包含所有天数的轨迹点数据
+ *    - 用于"显示全部轨迹"功能
+ *    - 数据结构: [{ lon, lat, timestamp, location, ... }]
+ * 
+ * 2. dateDataList: 按日期分组的轨迹数据
+ *    - 用于数据列表面板的分组显示
+ *    - 每个分组包含该日期的所有轨迹点
+ *    - 数据结构: [{ date: 'YYYY-MM-DD', allLocationList: [...] }]
+ * 
+ * 3. currentTrackPoints: 当前地图显示的轨迹点
+ *    - 这是地图实际渲染的数据源
+ *    - 可以是全部数据、某天数据或单个点
+ *    - 所有动画和交互都基于这个数据源
+ *    - 数据结构: [{ lon, lat, timestamp, location, ... }]
+ */
 const allLocationList = ref<any[]>([])
 const dateDataList = ref<any[]>([])
 
-// 当前显示的轨迹点
+// 当前显示的轨迹点 - 地图渲染和动画的数据源
 const currentTrackPoints = ref<any[]>([])
 
-// 生成模拟数据（3天，每天不同轨迹点）
+/**
+ * 生成模拟轨迹数据
+ * 
+ * 功能说明：
+ * - 生成3天的模拟轨迹数据，用于演示和测试
+ * - 每天生成不同数量的轨迹点，模拟真实的GPS轨迹数据
+ * - 同时填充 allLocationList 和 dateDataList 两个数据源
+ * 
+ * 数据结构：
+ * - 每个轨迹点包含: { lon, lat, timestamp, location }
+ * - lon/lat: 经纬度坐标
+ * - timestamp: 时间戳
+ * - location: 位置描述
+ * 
+ * 生成规则：
+ * - Day1: 5个点，基础坐标 + 递增偏移
+ * - Day2: 6个点，基础坐标 + 0.5偏移 + 递增偏移  
+ * - Day3: 7个点，基础坐标 + 1.0偏移 + 递增偏移
+ */
 function generateMockData() {
-  // 生成三天的经纬度点
+  // 基础坐标点 (经度: 56, 纬度: 22)
   const base = [56, 22]
+  
+  // 生成第一天数据 (5个点)
   const day1 = Array.from({ length: 5 }, (_, i) => ({
-    lon: base[0] + i * 0.05,
-    lat: base[1] + i * 0.03,
-    timestamp: new Date(Date.now() - 2 * 86400000),
+    lon: base[0] + i * 0.05,  // 经度递增 0.05
+    lat: base[1] + i * 0.03,  // 纬度递增 0.03
+    timestamp: new Date(Date.now() - 2 * 86400000), // 2天前
     location: `Day1-${i+1}`
   }))
+  
+  // 生成第二天数据 (6个点)
   const day2 = Array.from({ length: 6 }, (_, i) => ({
-    lon: base[0] + 0.5 + i * 0.04,
-    lat: base[1] + 0.2 + i * 0.02,
-    timestamp: new Date(Date.now() - 1 * 86400000),
+    lon: base[0] + 0.5 + i * 0.04,  // 基础偏移 0.5 + 递增 0.04
+    lat: base[1] + 0.2 + i * 0.02,  // 基础偏移 0.2 + 递增 0.02
+    timestamp: new Date(Date.now() - 1 * 86400000), // 1天前
     location: `Day2-${i+1}`
   }))
+  
+  // 生成第三天数据 (7个点)
   const day3 = Array.from({ length: 7 }, (_, i) => ({
-    lon: base[0] + 1 + i * 0.03,
-    lat: base[1] + 0.5 + i * 0.01,
-    timestamp: new Date(),
+    lon: base[0] + 1 + i * 0.03,    // 基础偏移 1.0 + 递增 0.03
+    lat: base[1] + 0.5 + i * 0.01,  // 基础偏移 0.5 + 递增 0.01
+    timestamp: new Date(),            // 今天
     location: `Day3-${i+1}`
   }))
-  allLocationList.value = [...day1, ...day2, ...day3]
+  
+  // 填充数据源
+  allLocationList.value = [...day1, ...day2, ...day3]  // 所有数据合并
   dateDataList.value = [
     { date: new Date(Date.now() - 2 * 86400000).toISOString().split('T')[0], allLocationList: day1 },
     { date: new Date(Date.now() - 1 * 86400000).toISOString().split('T')[0], allLocationList: day2 },
@@ -563,7 +644,14 @@ const resetToStart = () => {
   }
 }
 
-// 切换显示全部轨迹
+/**
+ * 显示全部轨迹
+ * 
+ * 功能说明：
+ * - 将 currentTrackPoints 设置为所有轨迹数据
+ * - 重新渲染地图并适应视图
+ * - 用于"显示全部"按钮
+ */
 function showAllTrack() {
   currentTrackPoints.value = allLocationList.value
   renderMap()
@@ -571,7 +659,17 @@ function showAllTrack() {
     fitTrackExtent()
   })
 }
-// 切换显示某一天轨迹
+
+/**
+ * 显示指定日期的轨迹
+ * 
+ * 功能说明：
+ * - 根据日期查找对应的轨迹数据
+ * - 将 currentTrackPoints 设置为该日期的轨迹
+ * - 重新渲染地图并适应视图
+ * 
+ * @param day - 日期字符串，格式: 'YYYY-MM-DD'
+ */
 function showDayTrack(day: string) {
   const dayData = dateDataList.value.find((d: any) => d.date === day)
   if (dayData) {
@@ -582,11 +680,27 @@ function showDayTrack(day: string) {
     })
   }
 }
-// 点击数据行，显示该分组下所有点，并跳到该点
+/**
+ * 聚焦到指定轨迹点
+ * 
+ * 功能说明：
+ * - 点击数据行时调用，用于聚焦到特定的轨迹点
+ * - 支持三种调用方式：数组、分组+点、单个点
+ * - 会自动更新地图显示和移动点位置
+ * 
+ * 参数说明：
+ * @param point - 轨迹点数据或轨迹点数组
+ * @param group - 可选的分组数据，包含该点的日期分组信息
+ * 
+ * 调用场景：
+ * 1. 传入数组：直接显示该数组的所有轨迹点
+ * 2. 传入点+分组：显示该分组的所有点，并定位到指定点
+ * 3. 传入单个点：显示该点（兼容老用法）
+ */
 function focusOnPoint(point: any, group?: any) {
   if (!map) return;
   
-  // 如果传入的是数组，直接使用该数组
+  // 场景1: 传入数组，直接使用该数组作为轨迹数据
   if (Array.isArray(point)) {
     currentTrackPoints.value = point;
     renderMap();
@@ -673,10 +787,27 @@ function focusOnPoint(point: any, group?: any) {
   }
 }
 
+/**
+ * 渲染地图
+ * 
+ * 功能说明：
+ * - 重新创建和渲染整个地图
+ * - 基于 currentTrackPoints 数据渲染轨迹
+ * - 清理旧的地图组件并创建新的
+ * - 设置移动点和头像覆盖层
+ * 
+ * 渲染流程：
+ * 1. 清理旧地图和图层
+ * 2. 从 currentTrackPoints 生成坐标数组
+ * 3. 创建轨迹线和轨迹点
+ * 4. 创建地图实例和图层
+ * 5. 创建移动点和头像覆盖层
+ * 6. 适应视图范围
+ */
 const renderMap = () => {
   if (!mapContainer.value) return
 
-  // 清理旧地图和图层
+  // 步骤1: 清理旧地图和图层
   if (map) {
     // 清理 avatarOverlay
     if (avatarOverlay) {
@@ -708,29 +839,37 @@ const renderMap = () => {
   }
   movingPointFeature = null
 
-  // 只用 currentTrackPoints 渲染
+  // 步骤2: 从 currentTrackPoints 生成坐标数组
   const coordinates = (currentTrackPoints.value || []).map((point: any) => 
     fromLonLat([point.lon, point.lat])
   )
+  // 步骤3: 创建轨迹线和轨迹点
   const trackPoints: Feature[] = []
   const trackFeature = new Feature({
     geometry: new LineString(coordinates)
   })
   trackFeature.setStyle(createTrackStyle())
+  
+  // 为每个坐标点创建轨迹点特征
   coordinates.forEach((coord: any, index: number) => {
     const pointFeature = new Feature({
       geometry: new Point(coord)
     })
     pointFeature.setId(index)
+    // 设置不同样式：起点、终点、中间点
     if (index === 0) pointFeature.setStyle(new Style({ image: new Icon({ src: startIconSvg, anchor: [0.5, 0.5], scale: 1 }) }))
     else if (index === coordinates.length - 1) pointFeature.setStyle(new Style({ image: new Icon({ src: endIconSvg, anchor: [0.5, 0.5], scale: 1 }) }))
     else pointFeature.setStyle(createPointStyle(false, false))
     trackPoints.push(pointFeature)
   })
+  
+  // 合并所有特征并创建图层
   const features: Feature[] = [trackFeature, ...trackPoints]
   trackSource = new VectorSource({ features })
   trackLayer = new VectorLayer({ source: trackSource })
   trackLayer.set('name', 'track')
+  
+  // 步骤4: 创建地图实例和图层
   baseLayer = new TileLayer({ source: new XYZ({ url: MAP_URL, maxZoom: 18 }), visible: true })
   baseLayer.set('name', 'base')
   map = new Map({
@@ -741,11 +880,15 @@ const renderMap = () => {
       zoom: 10
     })
   })
+  // 步骤5: 创建移动点和头像覆盖层
   if (coordinates.length > 0) {
+    // 创建移动点特征
     movingPointFeature = new Feature({
       geometry: new Point(coordinates[0])
     })
     movingPointFeature.setStyle(createMovingPointStyle())
+    
+    // 创建移动点图层
     movingPointSource = new VectorSource({
       features: [movingPointFeature]
     })
@@ -755,7 +898,7 @@ const renderMap = () => {
     movingPointLayer.set('name', 'movingPoint')
     map.addLayer(movingPointLayer)
     
-    // 重新创建 avatarOverlay
+    // 创建头像覆盖层
     createAvatarOverlay()
     
     // 设置初始位置
@@ -764,6 +907,7 @@ const renderMap = () => {
       syncAvatarOverlay(geometry.getCoordinates());
     }
     
+    // 步骤6: 适应视图范围
     if (trackSource) {
       const extent = trackSource.getExtent()
       map.getView().fit(extent, {

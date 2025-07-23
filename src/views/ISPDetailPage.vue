@@ -90,7 +90,8 @@
             </div>
           </div>
         </div>
-        <div class="detail-section collapsible">
+        <!-- 非Awasr运营商显示通话记录 -->
+        <div v-if="!isAwasrOperator" class="detail-section collapsible">
           <div class="section-header" @click="toggleSection('caller')">
             <h4>Caller & Called (Top 20)</h4>
             <svg class="collapse-icon" :class="{ 'collapsed': !expandedSections.caller }" width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -98,6 +99,21 @@
             </svg>
           </div>
           <div class="section-content" :class="{ 'collapsed': !expandedSections.caller }">
+            <!-- 日期范围选择器 -->
+            <div class="date-range-filter">
+              <el-date-picker
+                v-model="callerDateRange"
+                type="daterange"
+                range-separator="To"
+                start-placeholder="Start date"
+                end-placeholder="End date"
+                format="YYYY-MM-DD"
+                value-format="YYYY-MM-DD"
+                @change="filterCallerData"
+                style="width: 100%; max-width: 400px;"
+              />
+              <el-button @click="queryCaller" size="small" type="primary" plain style="margin-left: 0.5rem;">Query</el-button>
+            </div>
             <div v-if="!selectedContact" class="contact-card-list">
               <div v-for="contact in contacts as Array<any>" :key="contact.phone" class="contact-card" @click="selectContact(contact)">
                 <img :src="contact.photo" alt="头像" class="contact-avatar" />
@@ -146,7 +162,8 @@
             </div>
           </div>
         </div>
-        <div class="detail-section collapsible">
+        <!-- 非Awasr运营商显示热力图 -->
+        <div v-if="!isAwasrOperator" class="detail-section collapsible">
           <div class="section-header" @click="toggleSection('heatmap')">
             <h4>Activity Heatmap (Current Month)</h4>
             <svg class="collapse-icon" :class="{ 'collapsed': !expandedSections.heatmap }" width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -154,10 +171,27 @@
             </svg>
           </div>
           <div class="section-content" :class="{ 'collapsed': !expandedSections.heatmap }">
+            <!-- 日期范围选择器 -->
+            <div class="date-range-filter">
+              <el-date-picker
+                v-model="heatmapDateRange"
+                type="daterange"
+                range-separator="To"
+                start-placeholder="Start date"
+                end-placeholder="End date"
+                format="YYYY-MM-DD"
+                value-format="YYYY-MM-DD"
+                @change="filterHeatmapData"
+                style="width: 100%; max-width: 400px;"
+              />
+              <el-button @click="queryHeatmap" size="small" type="primary" plain style="margin-left: 0.5rem;">Query</el-button>
+            </div>
             <MapHeatmap v-if="expandedSections.heatmap" :points="activityPoints" />
           </div>
         </div>
-        <div class="detail-section collapsible">
+        
+        <!-- 非Awasr运营商显示轨迹图 -->
+        <div v-if="!isAwasrOperator" class="detail-section collapsible">
           <div class="section-header" @click="toggleSection('track')">
             <h4>Activity Track (Current Month)</h4>
             <svg class="collapse-icon" :class="{ 'collapsed': !expandedSections.track }" width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -165,7 +199,60 @@
             </svg>
           </div>
           <div class="section-content" :class="{ 'collapsed': !expandedSections.track }">
+            <!-- 日期范围选择器 -->
+            <div class="date-range-filter">
+              <el-date-picker
+                v-model="trackDateRange"
+                type="daterange"
+                range-separator="To"
+                start-placeholder="Start date"
+                end-placeholder="End date"
+                format="YYYY-MM-DD"
+                value-format="YYYY-MM-DD"
+                @change="filterTrackData"
+                style="width: 100%; max-width: 400px;"
+              />
+              <el-button @click="queryTrack" size="small" type="primary" plain style="margin-left: 0.5rem;">Query</el-button>
+            </div>
             <MapTrack v-if="expandedSections.track" ref="mapTrackRef" :trackPoints="trackPoints" />
+          </div>
+        </div>
+        
+        <!-- Awasr运营商显示固网位置信息 -->
+        <div v-if="isAwasrOperator" class="detail-section collapsible">
+          <div class="section-header" @click="toggleSection('location')">
+            <h4>Fixed Network Location</h4>
+            <svg class="collapse-icon" :class="{ 'collapsed': !expandedSections.location }" width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="section-content" :class="{ 'collapsed': !expandedSections.location }">
+            <div class="location-info">
+              <div class="location-details">
+                <div class="detail-item">
+                  <span class="detail-label">Installation Address:</span>
+                  <span class="detail-value">{{ isp.address }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Service Area:</span>
+                  <span class="detail-value">{{ isp.location || 'Muscat, Oman' }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Network Type:</span>
+                  <span class="detail-value">Fixed Fiber</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Connection Status:</span>
+                  <span class="detail-value">
+                    <span class="status-tag active">Connected</span>
+                  </span>
+                </div>
+              </div>
+              <LocationMarker 
+                :location="fixedLocation" 
+                :zoom="14"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -177,9 +264,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import MapHeatmap from '@/components/MapHeatmap.vue'
 import MapTrack from '@/components/MapTrack.vue'
+import LocationMarker from '@/components/LocationMarker.vue'
 
 const props = defineProps({
   isp: Object,
@@ -210,6 +298,11 @@ const props = defineProps({
   }
 })
 const emit = defineEmits(['back'])
+
+// 判断是否为Awasr运营商
+const isAwasrOperator = computed(() => {
+  return props.isp && props.isp.name === 'Awasr'
+})
 
 // 新增：选中的联系人
 const selectedContact = ref<any>(null)
@@ -257,11 +350,24 @@ const activityPoints = ref(randomOmanPoints(10))
 const trackPoints = ref(randomOmanTrackPoints(15))
 const mapTrackRef = ref()
 
+// 日期范围选择器
+const callerDateRange = ref<[string, string] | null>(null)
+const heatmapDateRange = ref<[string, string] | null>(null)
+const trackDateRange = ref<[string, string] | null>(null)
+
 // 折叠面板状态管理
 const expandedSections = ref({
   caller: true,
   heatmap: true,
-  track: true
+  track: true,
+  location: true
+})
+
+// 固网位置信息
+const fixedLocation = ref({
+  lon: 58.5453,
+  lat: 23.5880,
+  name: 'Muscat, Oman'
 })
 
 function toggleSection(section: string) {
@@ -277,6 +383,69 @@ function isExpired(dateString: string) {
   const expiryDate = new Date(dateString)
   const today = new Date()
   return expiryDate < today
+}
+
+// 过滤函数
+function filterCallerData() {
+  if (!callerDateRange.value) return
+  
+  const [startDate, endDate] = callerDateRange.value
+  console.log('Filtering caller data for date range:', startDate, 'to', endDate)
+  // 这里可以添加实际的过滤逻辑
+}
+
+function filterHeatmapData() {
+  if (!heatmapDateRange.value) return
+  
+  const [startDate, endDate] = heatmapDateRange.value
+  console.log('Filtering heatmap data for date range:', startDate, 'to', endDate)
+  // 重新生成热力图数据
+  activityPoints.value = randomOmanPoints(10)
+}
+
+function filterTrackData() {
+  if (!trackDateRange.value) return
+  
+  const [startDate, endDate] = trackDateRange.value
+  console.log('Filtering track data for date range:', startDate, 'to', endDate)
+  // 重新生成轨迹数据
+  trackPoints.value = randomOmanTrackPoints(15)
+}
+
+// 查询函数
+function queryCaller() {
+  if (!callerDateRange.value) {
+    console.log('No date range selected for caller query')
+    return
+  }
+  
+  const [startDate, endDate] = callerDateRange.value
+  console.log('Querying caller data for date range:', startDate, 'to', endDate)
+  // 这里可以添加实际的查询逻辑
+}
+
+function queryHeatmap() {
+  if (!heatmapDateRange.value) {
+    console.log('No date range selected for heatmap query')
+    return
+  }
+  
+  const [startDate, endDate] = heatmapDateRange.value
+  console.log('Querying heatmap data for date range:', startDate, 'to', endDate)
+  // 重新生成热力图数据
+  activityPoints.value = randomOmanPoints(10)
+}
+
+function queryTrack() {
+  if (!trackDateRange.value) {
+    console.log('No date range selected for track query')
+    return
+  }
+  
+  const [startDate, endDate] = trackDateRange.value
+  console.log('Querying track data for date range:', startDate, 'to', endDate)
+  // 重新生成轨迹数据
+  trackPoints.value = randomOmanTrackPoints(15)
 }
 </script>
 
@@ -575,5 +744,83 @@ function isExpired(dateString: string) {
   padding-bottom: 0;
   margin-top: 0;
   margin-bottom: 0;
+}
+
+/* 固网位置信息样式 */
+.location-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.location-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+}
+
+.location-details .detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--bg-primary);
+  border-radius: 8px;
+  border: 1px solid var(--border-card);
+}
+
+.location-details .detail-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.location-details .detail-value {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  font-weight: 600;
+  text-align: right;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 日期范围过滤器样式 */
+.date-range-filter {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: var(--bg-primary);
+  border-radius: 8px;
+  border: 1px solid var(--border-card);
+}
+
+.date-range-filter .el-date-editor {
+  width: 100%;
+  max-width: 400px;
+}
+
+.date-range-filter .el-input__wrapper {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 6px;
+}
+
+.date-range-filter .el-input__inner {
+  color: var(--text-primary);
+}
+
+.date-range-filter .el-range-separator {
+  color: var(--text-secondary);
+}
+
+.date-range-filter .el-range-input {
+  color: var(--text-primary);
+}
+
+.date-range-filter .el-range__close-icon {
+  color: var(--text-secondary);
 }
 </style> 
