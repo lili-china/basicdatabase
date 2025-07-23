@@ -315,6 +315,7 @@ import ContentWaveBackground from '../components/ContentWaveBackground.vue'
 import { currentTheme, toggleTheme } from '@/utils/themeManager'
 import { flyToTarget } from '@/utils/flyToTarget'
 import '@/style/common-fly-effect.css'
+import { validateCurrentSession } from '@/utils/sessionValidator'
 
 // 用户数据（静态2个用户，头像、id、基础信息等）
 const usersAll = [
@@ -444,7 +445,11 @@ function handleClickOutside(e: MouseEvent) {
     showIdPanel.value = false
   }
 }
-onMounted(() => {
+onMounted(async () => {
+  const result = await validateCurrentSession()
+  if (!result.isValid) {
+    window.location.href = '/errorPage?reason=invalid-sessionid'
+  }
   document.addEventListener('mousedown', handleClickOutside)
 })
 onBeforeUnmount(() => {

@@ -27,9 +27,7 @@ const isLoading = ref(true)
 const needsSessionValidation = (path: string) => {
   // login页面没有sessionId时不验证
   if (path.startsWith('/login')) {
-    const url = new URL(window.location.href)
-    const sessionId = url.searchParams.get('sessionId') || localStorage.getItem('sessionId')
-    return !!sessionId // 有sessionId才验证
+    return false // 永远不校验
   }
   return !path.startsWith('/error') && !path.startsWith('/errorPage') && !path.startsWith('/user-confirm')
 }

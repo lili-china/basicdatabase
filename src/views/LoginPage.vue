@@ -176,6 +176,21 @@ const errorMessage = ref('')
 const showLoginForm = ref(true)
 
 onMounted(async () => {
+  // 检查 URL 是否有 sessionId
+  const urlParams = new URLSearchParams(window.location.search)
+  const sessionId = urlParams.get('sessionId')
+  if (sessionId) {
+    // 校验 sessionId
+    const result = await validateCurrentSession()
+    if (result.isValid) {
+      // 校验通过，自动跳转
+      router.replace('/user-confirm')
+      return
+    }
+    // 校验不通过，停留在登录页
+    showLoginForm.value = true
+    return
+  }
   // 只有当前页面不是 /login 时才校验 session
   if (window.location.pathname !== '/login') {
     const result = await validateCurrentSession()
