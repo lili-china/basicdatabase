@@ -60,7 +60,7 @@ import ISPDetailPage from '@/components/isp-database/ISPDetailPage.vue'
 这些组件依赖于以下公用组件（不在此文件夹中）：
 - `NavigationBar` - 导航栏组件
 - `WaveBackground` - 波浪背景组件  
-- `UserDetailDialog` - 用户详情对话框
+- `personDetailPage` - 用户详情对话框
 
 ## 技术栈
 

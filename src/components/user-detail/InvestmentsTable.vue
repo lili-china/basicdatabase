@@ -43,7 +43,7 @@
     </div>
 
     <div class="table-container">
-      <el-table :data="investments" style="width: 100%">
+      <el-table :data="investments || []" style="width: 100%">
         <el-table-column prop="type" label="Investment Type" min-width="120" />
         <el-table-column prop="amount" label="Amount" min-width="120" />
         <el-table-column prop="institution" label="Institution" min-width="150" />

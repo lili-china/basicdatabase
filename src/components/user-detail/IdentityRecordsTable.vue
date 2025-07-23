@@ -38,7 +38,7 @@
     </div>
 
     <div class="table-container">
-      <el-table :data="paginatedRecords" style="width: 100%">
+      <el-table :data="paginatedRecords || []" style="width: 100%">
         <el-table-column prop="date" label="Date" min-width="100" />
         <el-table-column prop="type" label="Change Type" min-width="120" />
         <el-table-column prop="oldValue" label="Old Value" min-width="120" />

@@ -43,7 +43,7 @@
     </div>
 
     <div class="table-container">
-      <el-table :data="socialAccounts" style="width: 100%">
+      <el-table :data="socialAccounts || []" style="width: 100%">
         <el-table-column prop="platform" label="Platform" min-width="120" />
         <el-table-column prop="username" label="Username" min-width="150" />
         <el-table-column prop="url" label="URL" min-width="200" />

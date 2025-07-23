@@ -176,15 +176,19 @@ const errorMessage = ref('')
 const showLoginForm = ref(true)
 
 onMounted(async () => {
-  // 检查sessionId
-  const result = await validateCurrentSession()
-  // 只有当前页面不是 /login 时才自动跳转
-  if (result.isValid && window.location.pathname !== '/login') {
-    showLoginForm.value = false
-    router.push('/dashboard')
-    return
+  // 只有当前页面不是 /login 时才校验 session
+  if (window.location.pathname !== '/login') {
+    const result = await validateCurrentSession()
+    if (result.isValid) {
+      showLoginForm.value = false
+      router.push('/dashboard')
+      return
+    }
+    showLoginForm.value = true
+  } else {
+    // login 页面永远允许访问
+    showLoginForm.value = true
   }
-  showLoginForm.value = true
 })
 
 // 处理登录
@@ -280,10 +284,12 @@ const handleLogin = () => {
   background: var(--bg-card);
   backdrop-filter: blur(30px);
   border-radius: 24px;
-  padding: 3rem 2.5rem;
+  padding: 2rem 1.5rem;
   border: 1px solid var(--border-card);
   box-shadow: var(--shadow-card);
   overflow: hidden;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 /* 装饰性背景元素 */
@@ -336,7 +342,7 @@ const handleLogin = () => {
 
 .login-header {
   text-align: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.2rem;
   position: relative;
 }
 
@@ -399,7 +405,7 @@ const handleLogin = () => {
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
   position: relative;
 }
 
@@ -620,7 +626,7 @@ const handleLogin = () => {
 }
 
 .login-footer {
-  margin-top: 2rem;
+  margin-top: 1rem;
   text-align: center;
   font-size: 0.875rem;
   color: var(--text-secondary);

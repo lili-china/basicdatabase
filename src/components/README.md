@@ -1,8 +1,8 @@
-# UserDetailDialog Component
+# personDetailPage 组件
 
 ## 概述
 
-`UserDetailDialog` 是一个可复用的用户详情对话框组件，用于显示用户的详细信息，包括基本信息、变更记录、家庭成员、投资信息等。
+`personDetailPage` 是一个可复用的用户详情对话框组件，用于显示用户的详细信息，包括基本信息、变更记录、家庭成员、投资信息等。
 
 ## 功能特性
 
@@ -24,7 +24,7 @@
     <button @click="showDialog = true">查看用户详情</button>
     
     <!-- 用户详情对话框 -->
-    <UserDetailDialog
+    <personDetailPage
       v-model="showDialog"
       :user="selectedUser"
     />
@@ -33,7 +33,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import UserDetailDialog from '@/components/UserDetailDialog.vue'
+import personDetailPage from '@/components/personDetailPage.vue'
 
 const showDialog = ref(false)
 const selectedUser = ref({

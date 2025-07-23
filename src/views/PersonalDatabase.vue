@@ -149,12 +149,6 @@
           </div>
         </div>
         
-        <!-- 用户详情对话框 -->
-        <UserDetailDialog
-          v-model="dialogVisible"
-          :user="selectedUser"
-        />
-        
         <!-- Element UI 分页 -->
         <div class="pagination-section">
           <el-pagination
@@ -174,7 +168,6 @@
 import { ref, computed } from 'vue'
 import WaveBackground from '../components/WaveBackground.vue'
 import NavigationBar from '../components/NavigationBar.vue'
-import UserDetailDialog from '../components/UserDetailDialog.vue'
 import { generateMockUsers } from '../utils/mockData'
 
 // 使用mock数据
@@ -271,8 +264,7 @@ const handleCurrentChange = (page: number) => {
 
 // 显示用户详情
 const showUserDetail = (user: any) => {
-  selectedUser.value = user
-  dialogVisible.value = true
+  window.open(`/user-detail/${user.id}`, '_blank')
 }
 
 

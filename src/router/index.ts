@@ -114,6 +114,11 @@ const router = createRouter({
       name: 'MapLayerDemo',
       component: MapLayerDemo
     },
+    {
+      path: '/user-profile/:id',
+      name: 'UserProfilePage',
+      component: () => import('../views/UserDetailPage.vue')
+    },
 
   ]
 })

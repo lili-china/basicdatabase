@@ -44,7 +44,7 @@
     </div>
 
     <div class="table-container">
-      <el-table :data="paginatedRecords" style="width: 100%">
+      <el-table :data="paginatedRecords || []" style="width: 100%">
         <el-table-column prop="date" label="Date" min-width="100" />
         <el-table-column prop="vehicleType" label="Vehicle Type" min-width="120" />
         <el-table-column prop="licensePlate" label="License Plate" min-width="120" />
@@ -187,11 +187,7 @@ const filteredRecords = computed(() => {
 })
 
 // 分页后的记录
-const paginatedRecords = computed(() => {
-  const start = (currentPage.value - 1) * pageSize.value
-  const end = start + pageSize.value
-  return filteredRecords.value.slice(start, end)
-})
+const paginatedRecords = []
 
 // 搜索处理
 const handleSearch = () => {

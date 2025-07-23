@@ -179,7 +179,7 @@
                   <div class="isp-info">
                     <div class="isp-basic">
                       <h3 class="isp-name">{{ isp.realName }}</h3>
-                      <p class="isp-id clickable" @click.stop="showUserDetailDialog(isp)">ID: {{ isp.identityNo }}</p>
+                      <p class="isp-id clickable" @click.stop="openUserProfile(isp)">ID: {{ isp.identityNo }}</p>
                     </div>
                     <div class="isp-highlight">
                       <div class="highlight-item operator">
@@ -244,11 +244,6 @@
         </div>
       </div>
     </WaveBackground>
-    <!-- UserDetailDialog组件 -->
-    <UserDetailDialog
-      v-model="userDetailDialogVisible"
-      :user="selectedUserForDialog"
-    />
   </div>
 </template>
 
@@ -257,7 +252,6 @@ import { ref, computed, onMounted } from 'vue'
 import { getSessionIdFromUrl } from '@/utils/sessionValidator'
 import WaveBackground from '../components/WaveBackground.vue'
 import NavigationBar from '../components/NavigationBar.vue'
-import UserDetailDialog from '../components/UserDetailDialog.vue'
 import { mockISPs } from '../utils/mockData'
 import { mockCallRecords } from '../utils/mockData'
 import { useRouter } from 'vue-router'
@@ -414,10 +408,6 @@ const handleCurrentChange = (page: number) => {
   })
 }
 
-// UserDetailDialog状态
-const userDetailDialogVisible = ref(false)
-const selectedUserForDialog = ref<any>(null)
-
 // ISP详情弹窗状态
 const showDetail = ref(false)
 const selectedISP = ref<any>(null)
@@ -502,37 +492,8 @@ const goToDetail = (isp: any) => {
 }
 
 // 用户详情功能
-const showUserDetailDialog = (isp: any) => {
-  // 将ISP数据转换为UserDetailDialog需要的格式
-  const userData = {
-    id: isp.identityNo,
-    name: isp.realName,
-    position: isp.name, // 运营商作为职位
-    email: `${isp.realName.toLowerCase().replace(' ', '.')}@${isp.name.toLowerCase()}.com`,
-    phone: isp.phoneNum,
-    gender: 'Unknown',
-    age: calculateAge(isp.birthDate),
-    nationality: isp.nationality,
-    avatar: isp.photo,
-    avatars: isp.avatars || [isp.photo], // 使用avatars数组，如果没有则使用单张照片
-    birthDate: isp.birthDate,
-    idCardNumber: isp.identityNo,
-    emergencyContact: 'Emergency Contact',
-    emergencyPhone: isp.phoneNum,
-    address: isp.address,
-    department: isp.name,
-    status: isp.status,
-    hireDate: isp.registrationDate,
-    workYears: Math.floor((new Date().getTime() - new Date(isp.registrationDate).getTime()) / (1000 * 60 * 60 * 24 * 365)),
-    manager: 'Manager',
-    bloodType: 'Unknown',
-    maritalStatus: 'Unknown',
-    educationLevel: 'Unknown',
-    skills: 'ISP Management, Network Administration'
-  }
-  
-  selectedUserForDialog.value = userData
-  userDetailDialogVisible.value = true
+const openUserProfile = (isp: any) => {
+  window.open(`/user-profile/${isp.identityNo}`, '_blank')
 }
 
 // 计算年龄

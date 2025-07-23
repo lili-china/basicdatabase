@@ -1,7 +1,7 @@
 <template>
-  <div class="info-section">
-    <h3>Basic Information</h3>
-    <div class="basic-info">
+  <div class="basic-info-section">
+    <h3 class="section-title">Basic Information</h3>
+    <div class="basic-info-content">
       <div class="user-avatar-section">
         <div class="avatar-carousel">
           <div 
@@ -44,111 +44,46 @@
         </div>
       </div>
       <div class="basic-details">
-        <!-- 基本信息 -->
-        <div class="detail-group">
-          <h4 class="group-title">Personal Information</h4>
-          <div class="detail-row">
-            <span class="label">ID:</span>
-            <span class="value">{{ user.id }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">Name:</span>
-            <span class="value">{{ user.name }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">Gender:</span>
-            <span class="value">{{ user.gender }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">Age:</span>
-            <span class="value">{{ user.age }} years old</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">Birth Date:</span>
-            <span class="value">{{ user.birthDate }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">Nationality:</span>
-            <span class="value">{{ user.nationality }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">ID Card Number:</span>
-            <span class="value">{{ user.idCardNumber }}</span>
+        <div class="detail-section">
+          <h4>Personal Information</h4>
+          <div class="detail-grid">
+            <div class="detail-item"><span class="detail-label">ID:</span><span class="detail-value">{{ user.id }}</span></div>
+            <div class="detail-item"><span class="detail-label">Name:</span><span class="detail-value">{{ user.name }}</span></div>
+            <div class="detail-item"><span class="detail-label">Gender:</span><span class="detail-value">{{ user.gender }}</span></div>
+            <div class="detail-item"><span class="detail-label">Age:</span><span class="detail-value">{{ user.age }} years old</span></div>
+            <div class="detail-item"><span class="detail-label">Birth Date:</span><span class="detail-value">{{ user.birthDate }}</span></div>
+            <div class="detail-item"><span class="detail-label">Nationality:</span><span class="detail-value">{{ user.nationality }}</span></div>
+            <div class="detail-item"><span class="detail-label">ID Card Number:</span><span class="detail-value">{{ user.idCardNumber }}</span></div>
           </div>
         </div>
-
-        <!-- 联系信息 -->
-        <div class="detail-group">
-          <h4 class="group-title">Contact Information</h4>
-          <div class="detail-row">
-            <span class="label">Email:</span>
-            <span class="value">{{ user.email }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">Phone:</span>
-            <span class="value">{{ user.phone }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">Emergency Contact:</span>
-            <span class="value">{{ user.emergencyContact }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">Emergency Phone:</span>
-            <span class="value">{{ user.emergencyPhone }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">Address:</span>
-            <span class="value">{{ user.address }}</span>
+        <div class="detail-section">
+          <h4>Contact Information</h4>
+          <div class="detail-grid">
+            <div class="detail-item"><span class="detail-label">Email:</span><span class="detail-value">{{ user.email }}</span></div>
+            <div class="detail-item"><span class="detail-label">Phone:</span><span class="detail-value">{{ user.phone }}</span></div>
+            <div class="detail-item"><span class="detail-label">Emergency Contact:</span><span class="detail-value">{{ user.emergencyContact }}</span></div>
+            <div class="detail-item"><span class="detail-label">Emergency Phone:</span><span class="detail-value">{{ user.emergencyPhone }}</span></div>
+            <div class="detail-item"><span class="detail-label">Address:</span><span class="detail-value">{{ user.address }}</span></div>
           </div>
         </div>
-
-        <!-- 工作信息 -->
-        <div class="detail-group">
-          <h4 class="group-title">Work Information</h4>
-          <div class="detail-row">
-            <span class="label">Position:</span>
-            <span class="value">{{ user.position }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">Department:</span>
-            <span class="value">{{ user.department }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">Employee Status:</span>
-            <span class="value status-badge" :class="user.status">{{ user.status }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">Hire Date:</span>
-            <span class="value">{{ user.hireDate }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">Work Years:</span>
-            <span class="value">{{ user.workYears }} years</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">Manager:</span>
-            <span class="value">{{ user.manager }}</span>
+        <div class="detail-section">
+          <h4>Work Information</h4>
+          <div class="detail-grid">
+            <div class="detail-item"><span class="detail-label">Position:</span><span class="detail-value">{{ user.position }}</span></div>
+            <div class="detail-item"><span class="detail-label">Department:</span><span class="detail-value">{{ user.department }}</span></div>
+            <div class="detail-item"><span class="detail-label">Employee Status:</span><span class="detail-value status-badge" :class="user.status">{{ user.status }}</span></div>
+            <div class="detail-item"><span class="detail-label">Hire Date:</span><span class="detail-value">{{ user.hireDate }}</span></div>
+            <div class="detail-item"><span class="detail-label">Work Years:</span><span class="detail-value">{{ user.workYears }} years</span></div>
+            <div class="detail-item"><span class="detail-label">Manager:</span><span class="detail-value">{{ user.manager }}</span></div>
           </div>
         </div>
-
-        <!-- 其他信息 -->
-        <div class="detail-group">
-          <h4 class="group-title">Additional Information</h4>
-          <div class="detail-row">
-            <span class="label">Blood Type:</span>
-            <span class="value">{{ user.bloodType }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">Marital Status:</span>
-            <span class="value">{{ user.maritalStatus }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">Education Level:</span>
-            <span class="value">{{ user.educationLevel }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">Skills:</span>
-            <span class="value">{{ user.skills }}</span>
+        <div class="detail-section">
+          <h4>Additional Information</h4>
+          <div class="detail-grid">
+            <div class="detail-item"><span class="detail-label">Blood Type:</span><span class="detail-value">{{ user.bloodType }}</span></div>
+            <div class="detail-item"><span class="detail-label">Marital Status:</span><span class="detail-value">{{ user.maritalStatus }}</span></div>
+            <div class="detail-item"><span class="detail-label">Education Level:</span><span class="detail-value">{{ user.educationLevel }}</span></div>
+            <div class="detail-item"><span class="detail-label">Skills:</span><span class="detail-value">{{ user.skills }}</span></div>
           </div>
         </div>
       </div>
@@ -205,36 +140,33 @@ const setCurrentAvatar = (index: number) => {
 </script>
 
 <style scoped>
-.info-section {
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background: var(--bg-tertiary);
+.basic-info-section {
+  background: var(--bg-card);
   border-radius: 12px;
-  border: 1px solid var(--border-primary);
+  padding: 2rem 2vw;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(59,130,246,0.06);
+  border: 1px solid var(--border-card);
 }
-
-.info-section h3 {
+.section-title {
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--text-primary);
-  margin: 0 0 1rem 0;
-  border-bottom: 2px solid var(--accent-secondary);
+  margin: 0 0 1.5rem 0;
+  border-bottom: 2px solid var(--accent-primary);
   padding-bottom: 0.5rem;
 }
-
-.basic-info {
+.basic-info-content {
   display: flex;
-  gap: 2rem;
+  gap: 2.5rem;
   align-items: flex-start;
 }
-
 .user-avatar-section {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.5rem;
   flex-shrink: 0;
 }
-
 .avatar-carousel {
   display: flex;
   gap: 0.5rem;
@@ -243,11 +175,10 @@ const setCurrentAvatar = (index: number) => {
   max-height: 200px;
   overflow-y: auto;
   padding: 0.5rem;
-  background: var(--bg-secondary);
+  background: var(--bg-primary);
   border-radius: 8px;
-  border: 1px solid var(--border-primary);
+  border: 1px solid var(--border-card);
 }
-
 .avatar-item {
   position: relative;
   width: 50px;
@@ -259,23 +190,19 @@ const setCurrentAvatar = (index: number) => {
   transition: all 0.3s ease;
   flex-shrink: 0;
 }
-
 .avatar-item:hover {
   border-color: var(--accent-primary);
   transform: scale(1.05);
 }
-
 .avatar-item.active {
   border-color: var(--accent-primary);
   box-shadow: 0 0 0 2px var(--accent-secondary);
 }
-
 .avatar-image {
   width: 100%;
   height: 100%;
   border-radius: 6px;
 }
-
 .main-avatar {
   position: relative;
   width: 120px;
@@ -285,13 +212,11 @@ const setCurrentAvatar = (index: number) => {
   border: 4px solid var(--accent-secondary);
   box-shadow: var(--shadow-secondary);
 }
-
 .main-avatar-image {
   width: 100%;
   height: 100%;
   border-radius: 12px;
 }
-
 .avatar-badge {
   position: absolute;
   top: -2px;
@@ -307,7 +232,6 @@ const setCurrentAvatar = (index: number) => {
   font-weight: 600;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
-
 .avatar-number {
   position: absolute;
   bottom: -2px;
@@ -318,9 +242,8 @@ const setCurrentAvatar = (index: number) => {
   padding: 1px 3px;
   border-radius: 3px;
   font-weight: 600;
-  border: 1px solid var(--border-primary);
+  border: 1px solid var(--border-card);
 }
-
 .avatar-info {
   position: absolute;
   bottom: 0;
@@ -334,66 +257,66 @@ const setCurrentAvatar = (index: number) => {
   flex-direction: column;
   gap: 0.25rem;
 }
-
 .photo-count {
   font-weight: 600;
 }
-
 .current-photo {
   opacity: 0.9;
   font-size: 0.625rem;
 }
-
 .basic-details {
   flex: 1;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 1.5rem;
 }
-
-.detail-group {
-  background: var(--bg-secondary);
-  border-radius: 8px;
-  padding: 1rem;
-  border: 1px solid var(--border-primary);
+.detail-section {
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid var(--border-card);
+  margin-bottom: 1.5rem;
 }
-
-.group-title {
-  font-size: 1rem;
+.detail-section:last-child {
+  margin-bottom: 0;
+}
+.detail-section h4 {
+  font-size: 1.125rem;
   font-weight: 600;
   color: var(--text-primary);
-  margin: 0 0 0.75rem 0;
+  margin: 0 0 1rem 0;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--border-primary);
+  border-bottom: 2px solid var(--accent-primary);
 }
-
-.detail-row {
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+.detail-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 0.75rem;
+  background: var(--bg-primary);
+  border-radius: 8px;
+  border: 1px solid var(--border-card);
 }
-
-.detail-row:last-child {
-  border-bottom: none;
-}
-
-.detail-row .label {
-  color: var(--text-secondary);
+.detail-label {
   font-size: 0.875rem;
+  color: var(--text-secondary);
   font-weight: 500;
 }
-
-.detail-row .value {
-  color: var(--text-primary);
+.detail-value {
   font-size: 0.875rem;
+  color: var(--text-primary);
   font-weight: 600;
   text-align: right;
-  max-width: 60%;
-  word-break: break-word;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-
 .status-badge {
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
@@ -401,94 +324,35 @@ const setCurrentAvatar = (index: number) => {
   font-weight: 600;
   text-transform: uppercase;
 }
-
 .status-badge.active {
   background: #10b981;
   color: white;
 }
-
 .status-badge.inactive {
   background: #ef4444;
   color: white;
 }
-
 .status-badge.pending {
   background: #f59e0b;
   color: white;
 }
-
 .status-badge.on-leave {
   background: #8b5cf6;
   color: white;
 }
-
-/* 自定义Element Plus图片预览样式 */
-:deep(.el-image-viewer__wrapper) {
-  z-index: 99999;
-}
-
-:deep(.el-image-viewer__btn) {
-  color: white;
-  background: rgba(0, 0, 0, 0.5);
-}
-
-:deep(.el-image-viewer__btn:hover) {
-  background: rgba(0, 0, 0, 0.8);
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .basic-info {
+@media (max-width: 900px) {
+  .basic-info-content {
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
   }
-  
-  .avatar-carousel {
-    max-width: 100%;
-    justify-content: center;
-    max-height: 150px;
+  .user-avatar-section {
+    flex-direction: row;
+    gap: 1.5rem;
+    justify-content: flex-start;
   }
-  
   .main-avatar {
     width: 100px;
     height: 100px;
-    align-self: center;
   }
-  
-  .basic-details {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-  
-  .detail-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.25rem;
-  }
-  
-  .detail-row .value {
-    text-align: left;
-    max-width: 100%;
-  }
-}
-
-/* 滚动条样式 */
-.avatar-carousel::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-.avatar-carousel::-webkit-scrollbar-track {
-  background: var(--bg-primary);
-  border-radius: 3px;
-}
-
-.avatar-carousel::-webkit-scrollbar-thumb {
-  background: var(--border-primary);
-  border-radius: 3px;
-}
-
-.avatar-carousel::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-primary);
 }
 </style> 

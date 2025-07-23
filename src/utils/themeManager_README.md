@@ -121,7 +121,7 @@ import { currentTheme } from './utils/themeManager'
 - ✅ Analytics - 分析页面
 - ✅ Settings - 设置页面
 - ✅ ErrorPage - 错误页面
-- ✅ UserDetailDialog - 用户详情对话框
+- ✅ personDetailPage - 用户详情对话框
 - ✅ VehicleDetailDialog - 车辆详情对话框
 
 ### Element Plus 组件兼容性

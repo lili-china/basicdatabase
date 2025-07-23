@@ -161,7 +161,7 @@
       <!-- 车辆变更记录 -->
       <div class="info-section">
         <h3>Vehicle Change Records</h3>
-        <el-table :data="changeRecords" style="width: 100%">
+        <el-table :data="changeRecords || []" style="width: 100%">
           <el-table-column prop="date" label="Date" width="120" />
           <el-table-column prop="changeType" label="Change Type" width="150" />
           <el-table-column prop="oldValue" label="Old Value" />
@@ -189,7 +189,7 @@
       <!-- 维护记录 -->
       <div class="info-section">
         <h3>Maintenance Records</h3>
-        <el-table :data="maintenanceRecords" style="width: 100%">
+        <el-table :data="maintenanceRecords || []" style="width: 100%">
           <el-table-column prop="date" label="Date" width="120" />
           <el-table-column prop="serviceType" label="Service Type" width="150" />
           <el-table-column prop="description" label="Description" />
@@ -209,7 +209,7 @@
       <!-- 使用记录 -->
       <div class="info-section">
         <h3>Usage Records</h3>
-        <el-table :data="usageRecords" style="width: 100%">
+        <el-table :data="usageRecords || []" style="width: 100%">
           <el-table-column prop="date" label="Date" width="120" />
           <el-table-column prop="driver" label="Driver" width="120">
             <template #default="scope">
