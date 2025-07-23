@@ -108,21 +108,20 @@
         <div v-if="showDataList" class="data-section">
           <div class="data-header">
             <h4 class="section-title">Track Data List</h4>
+            <button @click="showAllTrack" class="focus-btn" style="margin-left:16px;">All</button>
           </div>
-          
           <div class="data-list-body">
-            <div v-for="(group, date) in groupedTrackData" :key="date" class="date-group">
-              <div class="date-header" @click="toggleDateGroup(date)">
-                <div class="date-info">
-                  <span class="date-text">{{ formatDate(date) }}</span>
-                  <span class="point-count">{{ group.length }} points</span>
+            <div v-for="group in dateDataList" :key="group.date" class="date-group">
+              <div class="date-header">
+                <div class="date-info" @click="focusOnPoint(group.allLocationList, group)">
+                  <span class="date-text">{{ formatDate(group.date) }}</span>
+                  <span class="point-count">{{ group.allLocationList.length }} points</span>
                 </div>
-                <svg class="expand-icon" :class="{ 'expanded': expandedDates.includes(date) }" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <svg class="expand-icon" :class="{ 'expanded': expandedDates.includes(group.date) }" width="16" height="16" viewBox="0 0 24 24" fill="none" @click.stop="toggleDateGroup(group.date)">
                   <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </div>
-              
-              <div v-if="expandedDates.includes(date)" class="date-details">
+              <div v-if="expandedDates.includes(group.date)" class="date-details">
                 <div class="detail-table">
                   <div class="table-header">
                     <div class="header-cell">Time</div>
@@ -130,12 +129,12 @@
                     <div class="header-cell">Coordinates</div>
                     <div class="header-cell">Actions</div>
                   </div>
-                  <div v-for="(point, index) in group" :key="index" class="table-row">
+                  <div v-for="(point, index) in group.allLocationList" :key="index" class="table-row">
                     <div class="table-cell">{{ formatTime(point.timestamp) }}</div>
                     <div class="table-cell">{{ point.location || 'Unknown' }}</div>
                     <div class="table-cell">{{ point.lon.toFixed(6) }}, {{ point.lat.toFixed(6) }}</div>
                     <div class="table-cell">
-                      <button @click="focusOnPoint(point)" class="focus-btn" title="Focus on this point">
+                      <button @click.stop="focusOnPoint(point, group)" class="focus-btn" title="Focus on this point">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                           <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="2"/>
                           <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/>
@@ -222,7 +221,7 @@ const avatarDialogData = ref({ id: '', name: '', nationality: '', phone: '' })
 
 function handleAvatarClick() {
   const idx = Math.round(currentIndex);
-  const point = props.trackPoints?.[idx];
+  const point = props.trackPoints?.[idx] as any;
   if (point) {
     avatarDialogData.value = {
       id: point.id || '',
@@ -236,38 +235,57 @@ function handleAvatarClick() {
 
 function createAvatarOverlay() {
   if (!map) return;
-  let avatarDiv: HTMLDivElement;
+  
+  // 如果已存在，先移除旧的
   if (avatarOverlay) {
-    avatarDiv = avatarOverlay.getElement() as HTMLDivElement;
-    if (avatarDiv) {
-      avatarDiv.onclick = handleAvatarClick;
-      avatarDiv.style.pointerEvents = 'auto';
+    try {
+      (map as any).removeOverlay(avatarOverlay);
+    } catch (e) {
+      // 忽略移除错误
     }
-    return;
+    avatarOverlay = null;
   }
-  avatarDiv = document.createElement('div');
+  
+  // 创建新的 avatarOverlay
+  const avatarDiv = document.createElement('div');
   avatarDiv.className = 'moving-avatar';
   avatarDiv.innerHTML = `<img src="${avatarUrl}" alt="avatar" style="width:48px;height:48px;object-fit:cover;display:block;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.18);border:2px solid #fff;cursor:pointer;" />`;
   avatarDiv.style.pointerEvents = 'auto';
   avatarDiv.onclick = handleAvatarClick;
+  
   avatarOverlay = new Overlay({
     element: avatarDiv,
     positioning: 'bottom-center',
     offset: [0, 0],
     stopEvent: false
   });
+  
   map.addOverlay(avatarOverlay);
+  
+  // 立即设置初始位置
+  if (movingPointFeature && movingPointFeature.getGeometry()) {
+    const geometry = movingPointFeature.getGeometry() as Point;
+    syncAvatarOverlay(geometry.getCoordinates());
+  }
 }
 
 function updateAvatarOverlayPosition() {
   if (!avatarOverlay || !movingPointFeature) return
   const geom = movingPointFeature.getGeometry() as Point
-  avatarOverlay.setPosition(geom.getCoordinates())
+  if (geom) {
+    const coords = geom.getCoordinates()
+    if (coords) {
+      avatarOverlay.setPosition(coords)
+    }
+  }
 }
 
-function syncAvatarOverlay() {
-  updateAvatarOverlayPosition()
-  requestAnimationFrame(syncAvatarOverlay)
+function syncAvatarOverlay(coordinates?: number[]) {
+  if (avatarOverlay && coordinates) {
+    avatarOverlay.setPosition(coordinates)
+  } else if (avatarOverlay && movingPointFeature) {
+    updateAvatarOverlayPosition()
+  }
 }
 
 const createPointStyle = (isStart: boolean = false, isEnd: boolean = false) => {
@@ -326,13 +344,14 @@ const createTrackStyle = () => {
 
 const progress = ref<number>(0)
 const progressPercentage = computed(() => {
-  if (totalPoints.value === 0) return 0
-  return (progress.value / totalPoints.value) * 100
+  const currentTotalPoints = currentTrackPoints.value.length
+  if (currentTotalPoints === 0) return 0
+  return (progress.value / currentTotalPoints) * 100
 })
 
 const animateMovingPoint = () => {
   if (!isPlaying.value || !map || !movingPointFeature) return
-  const coordinates = (props.trackPoints || []).map((point: any) => fromLonLat([point.lon, point.lat]))
+  const coordinates = (currentTrackPoints.value || []).map((point: any) => fromLonLat([point.lon, point.lat]))
   if (currentIndex >= coordinates.length - 1) {
     currentIndex = coordinates.length - 1
     progress.value = coordinates.length
@@ -357,6 +376,8 @@ const animateMovingPoint = () => {
   if (movingPointFeature && movingPointFeature.getGeometry()) {
     const geometry = movingPointFeature.getGeometry() as Point
     geometry.setCoordinates(interpolatedCoord)
+    // 更新 avatarOverlay 位置
+    syncAvatarOverlay(interpolatedCoord)
   }
   if (segmentProgress >= 1) {
     currentIndex++
@@ -368,7 +389,8 @@ const animateMovingPoint = () => {
 
 const startAnimation = () => {
   if (isPlaying.value || !map || !movingPointFeature) return
-  if (currentIndex >= totalPoints.value - 1) {
+  const currentTotalPoints = currentTrackPoints.value.length
+  if (currentIndex >= currentTotalPoints - 1) {
     currentIndex = 0
     progress.value = 0
     segmentElapsed = 0
@@ -449,7 +471,46 @@ const togglePanel = (mode?: number) => {
   }
 }
 
+// 模拟后端数据结构
+const allLocationList = ref<any[]>([])
+const dateDataList = ref<any[]>([])
+
+// 当前显示的轨迹点
+const currentTrackPoints = ref<any[]>([])
+
+// 生成模拟数据（3天，每天不同轨迹点）
+function generateMockData() {
+  // 生成三天的经纬度点
+  const base = [56, 22]
+  const day1 = Array.from({ length: 5 }, (_, i) => ({
+    lon: base[0] + i * 0.05,
+    lat: base[1] + i * 0.03,
+    timestamp: new Date(Date.now() - 2 * 86400000),
+    location: `Day1-${i+1}`
+  }))
+  const day2 = Array.from({ length: 6 }, (_, i) => ({
+    lon: base[0] + 0.5 + i * 0.04,
+    lat: base[1] + 0.2 + i * 0.02,
+    timestamp: new Date(Date.now() - 1 * 86400000),
+    location: `Day2-${i+1}`
+  }))
+  const day3 = Array.from({ length: 7 }, (_, i) => ({
+    lon: base[0] + 1 + i * 0.03,
+    lat: base[1] + 0.5 + i * 0.01,
+    timestamp: new Date(),
+    location: `Day3-${i+1}`
+  }))
+  allLocationList.value = [...day1, ...day2, ...day3]
+  dateDataList.value = [
+    { date: new Date(Date.now() - 2 * 86400000).toISOString().split('T')[0], allLocationList: day1 },
+    { date: new Date(Date.now() - 1 * 86400000).toISOString().split('T')[0], allLocationList: day2 },
+    { date: new Date().toISOString().split('T')[0], allLocationList: day3 }
+  ]
+}
+
 onMounted(() => {
+  generateMockData()
+  currentTrackPoints.value = allLocationList.value
   movingPointGlowGrowing = true
   movingPointGlowRadius.value = 14
   movingPointGlowAlpha.value = 0.25
@@ -467,15 +528,17 @@ onMounted(() => {
   }, 60)
   nextTick(() => {
     renderMap()
-    createAvatarOverlay()
-    syncAvatarOverlay()
   })
 })
 
 onUnmounted(() => {
   if (movingPointBlinkTimer) clearInterval(movingPointBlinkTimer)
   if (avatarOverlay && map) {
-    map.removeOverlay(avatarOverlay)
+    try {
+      (map as any).removeOverlay(avatarOverlay)
+    } catch (e) {
+      // 忽略移除覆盖层时的错误
+    }
     avatarOverlay = null
   }
 })
@@ -490,17 +553,163 @@ const stopAnimation = () => {
 }
 
 const resetToStart = () => {
-  const coordinates = (props.trackPoints || []).map((point: any) => fromLonLat([point.lon, point.lat]))
+  const coordinates = (currentTrackPoints.value || []).map((point: any) => fromLonLat([point.lon, point.lat]))
   if (coordinates.length > 0 && movingPointFeature && movingPointFeature.getGeometry()) {
     const geometry = movingPointFeature.getGeometry() as Point
     geometry.setCoordinates(coordinates[0])
     currentIndex = 0
+    // 更新 avatarOverlay 位置
+    syncAvatarOverlay(coordinates[0])
+  }
+}
+
+// 切换显示全部轨迹
+function showAllTrack() {
+  currentTrackPoints.value = allLocationList.value
+  renderMap()
+  nextTick(() => {
+    fitTrackExtent()
+  })
+}
+// 切换显示某一天轨迹
+function showDayTrack(day: string) {
+  const dayData = dateDataList.value.find((d: any) => d.date === day)
+  if (dayData) {
+    currentTrackPoints.value = dayData.allLocationList
+    renderMap()
+    nextTick(() => {
+      fitTrackExtent()
+    })
+  }
+}
+// 点击数据行，显示该分组下所有点，并跳到该点
+function focusOnPoint(point: any, group?: any) {
+  if (!map) return;
+  
+  // 如果传入的是数组，直接使用该数组
+  if (Array.isArray(point)) {
+    currentTrackPoints.value = point;
+    renderMap();
+    nextTick(() => {
+      fitTrackExtent();
+      // 确保 avatarOverlay 位置正确
+      setTimeout(() => {
+        if (movingPointFeature && movingPointFeature.getGeometry()) {
+          const geometry = movingPointFeature.getGeometry() as Point;
+          syncAvatarOverlay(geometry.getCoordinates());
+        }
+      }, 100);
+    });
+    return;
+  }
+  
+  // 如果有分组，显示该分组下所有点，并确保展开该分组
+  if (group && group.allLocationList) {
+    // 确保该分组是展开状态
+    if (!expandedDates.value.includes(group.date)) {
+      expandedDates.value.push(group.date);
+    }
+    
+    currentTrackPoints.value = group.allLocationList;
+    renderMap();
+    // 找到该点在分组中的索引
+    const coordinates = group.allLocationList.map((p: any) => fromLonLat([p.lon, p.lat]));
+    const idx = coordinates.findIndex((coord: number[]) => 
+      coord[0] === fromLonLat([point.lon, point.lat])[0] && 
+      coord[1] === fromLonLat([point.lon, point.lat])[1]
+    );
+    if (idx !== -1) {
+      currentIndex = idx;
+      isPlaying.value = false;
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+        animationId = null;
+      }
+      // 设置移动点位置
+      if (movingPointFeature && movingPointFeature.getGeometry()) {
+        const geometry = movingPointFeature.getGeometry() as Point;
+        geometry.setCoordinates(coordinates[currentIndex]);
+        // 立即更新 avatarOverlay 位置
+        syncAvatarOverlay(coordinates[currentIndex]);
+      }
+    }
+    nextTick(() => {
+      fitTrackExtent();
+      // 确保 avatarOverlay 位置正确
+      setTimeout(() => {
+        if (movingPointFeature && movingPointFeature.getGeometry()) {
+          const geometry = movingPointFeature.getGeometry() as Point;
+          syncAvatarOverlay(geometry.getCoordinates());
+        }
+      }, 100);
+    });
+  } else {
+    // 兼容老用法
+    currentTrackPoints.value = [point];
+    renderMap();
+    currentIndex = 0;
+    isPlaying.value = false;
+    if (animationId) {
+      cancelAnimationFrame(animationId);
+      animationId = null;
+    }
+    if (movingPointFeature && movingPointFeature.getGeometry()) {
+      const geometry = movingPointFeature.getGeometry() as Point;
+      const coords = fromLonLat([point.lon, point.lat]);
+      geometry.setCoordinates(coords);
+      // 立即更新 avatarOverlay 位置
+      syncAvatarOverlay(coords);
+    }
+    nextTick(() => {
+      fitTrackExtent();
+      // 确保 avatarOverlay 位置正确
+      setTimeout(() => {
+        if (movingPointFeature && movingPointFeature.getGeometry()) {
+          const geometry = movingPointFeature.getGeometry() as Point;
+          syncAvatarOverlay(geometry.getCoordinates());
+        }
+      }, 100);
+    });
   }
 }
 
 const renderMap = () => {
   if (!mapContainer.value) return
-  const coordinates: any[] = (props.trackPoints || []).map((point: any) => 
+
+  // 清理旧地图和图层
+  if (map) {
+    // 清理 avatarOverlay
+    if (avatarOverlay) {
+      try {
+        (map as any).removeOverlay(avatarOverlay);
+      } catch (e) {
+        // 忽略移除错误
+      }
+      avatarOverlay = null;
+    }
+    map.setTarget(undefined)
+    map = null
+  }
+  if (trackLayer) {
+    trackLayer.setSource(null)
+    trackLayer = null
+  }
+  if (trackSource) {
+    trackSource.clear()
+    trackSource = null
+  }
+  if (movingPointLayer) {
+    movingPointLayer.setSource(null)
+    movingPointLayer = null
+  }
+  if (movingPointSource) {
+    movingPointSource.clear()
+    movingPointSource = null
+  }
+  movingPointFeature = null
+
+  // 只用 currentTrackPoints 渲染
+  const coordinates = (currentTrackPoints.value || []).map((point: any) => 
     fromLonLat([point.lon, point.lat])
   )
   const trackPoints: Feature[] = []
@@ -545,7 +754,16 @@ const renderMap = () => {
     })
     movingPointLayer.set('name', 'movingPoint')
     map.addLayer(movingPointLayer)
-    totalPoints.value = coordinates.length
+    
+    // 重新创建 avatarOverlay
+    createAvatarOverlay()
+    
+    // 设置初始位置
+    if (movingPointFeature && movingPointFeature.getGeometry()) {
+      const geometry = movingPointFeature.getGeometry() as Point;
+      syncAvatarOverlay(geometry.getCoordinates());
+    }
+    
     if (trackSource) {
       const extent = trackSource.getExtent()
       map.getView().fit(extent, {
@@ -555,21 +773,26 @@ const renderMap = () => {
     }
   }
   map.on('singleclick', (evt: any) => {
-    map.forEachFeatureAtPixel(evt.pixel, (feature: any) => {
-      const id = feature.getId()
-      if (typeof id === 'number') {
-        if (movingPointFeature && movingPointFeature.getGeometry()) {
-          const geometry = movingPointFeature.getGeometry() as Point
-          geometry.setCoordinates(coordinates[id])
+    if (map) {
+      const coordinates = (currentTrackPoints.value || []).map((point: any) => fromLonLat([point.lon, point.lat]))
+      map.forEachFeatureAtPixel(evt.pixel, (feature: any) => {
+        const id = feature.getId()
+        if (typeof id === 'number') {
+          if (movingPointFeature && movingPointFeature.getGeometry()) {
+            const geometry = movingPointFeature.getGeometry() as Point
+            geometry.setCoordinates(coordinates[id])
+            // 更新 avatarOverlay 位置
+            syncAvatarOverlay(coordinates[id])
+          }
+          currentIndex = id
+          isPlaying.value = false
+          if (animationId) {
+            cancelAnimationFrame(animationId)
+            animationId = null
+          }
         }
-        currentIndex = id
-        isPlaying.value = false
-        if (animationId) {
-          cancelAnimationFrame(animationId)
-          animationId = null
-        }
-      }
-    })
+      })
+    }
   })
 }
 
@@ -596,8 +819,7 @@ watch(() => props.trackPoints, () => {
     movingPointSource = null
   }
   movingPointFeature = null
-  if (avatarOverlay && map) {
-    map.removeOverlay(avatarOverlay)
+  if (avatarOverlay) {
     avatarOverlay = null
   }
   renderMap()
@@ -608,10 +830,11 @@ defineExpose({
   stopAnimation
 })
 // 弹窗浮动定位样式
-import { computed } from 'vue'
 const avatarFloatStyle = computed(() => {
   if (!avatarOverlay || !avatarOverlay.getPosition() || !map) return {}
-  const pixel = map.getPixelFromCoordinate(avatarOverlay.getPosition())
+  const position = avatarOverlay.getPosition()
+  if (!position) return {}
+  const pixel = map.getPixelFromCoordinate(position)
   if (!pixel) return {}
   // 头像宽48，右侧偏移8px，卡片宽220
   return {
@@ -651,12 +874,16 @@ const groupedTrackData = computed(() => {
   return groups
 })
 
+// 修改 toggleDateGroup，只处理展开/折叠，不切换地图数据
 function toggleDateGroup(date: string) {
+  // 切换展开/折叠状态
   const index = expandedDates.value.indexOf(date)
-  if (index > -1) {
-    expandedDates.value.splice(index, 1)
-  } else {
+  if (index === -1) {
+    // 展开
     expandedDates.value.push(date)
+  } else {
+    // 折叠
+    expandedDates.value.splice(index, 1)
   }
 }
 
@@ -678,22 +905,13 @@ function formatTime(timestamp: Date) {
   })
 }
 
-function focusOnPoint(point: any) {
-  if (!map) return;
-  const coordinates = (props.trackPoints || []).map((p: any) => fromLonLat([p.lon, p.lat]));
-  const index = coordinates.findIndex(coord => coord[0] === point.lon && coord[1] === point.lat);
-  if (index !== -1) {
-    currentIndex = index;
-    isPlaying.value = false;
-    if (animationId) {
-      cancelAnimationFrame(animationId);
-      animationId = null;
-    }
-    if (movingPointFeature && movingPointFeature.getGeometry()) {
-      const geometry = movingPointFeature.getGeometry() as Point;
-      geometry.setCoordinates(coordinates[currentIndex]);
-    }
-  }
+function fitTrackExtent() {
+  if (!map || !trackSource) return
+  const extent = trackSource.getExtent()
+  map.getView().fit(extent, {
+    padding: [50, 50, 50, 50],
+    duration: 800
+  })
 }
 </script>
 
@@ -1107,6 +1325,14 @@ function focusOnPoint(point: any) {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.date-info:hover {
+  background: rgba(37, 99, 235, 0.05);
 }
 
 .date-text {
@@ -1123,6 +1349,15 @@ function focusOnPoint(point: any) {
 .expand-icon {
   transition: transform 0.3s ease;
   color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.expand-icon:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--text-primary);
 }
 
 .expand-icon.expanded {
@@ -1412,5 +1647,11 @@ function focusOnPoint(point: any) {
 }
 .avatar-float-info .avatar-dialog-close:hover {
   background: #1d4ed8;
+}
+
+.moving-avatar {
+  position: relative;
+  z-index: 1000;
+  pointer-events: auto;
 }
 </style> 
