@@ -57,123 +57,68 @@
     <ContentWaveBackground :animationPaused="wavePaused">
       <div class="isp-detail-content isp-detail-page-content">
         <!-- Basic Information 不可折叠 -->
-        <div class="detail-section basic-info-section">
-          <div class="basic-info-header">
-            <div class="avatar-section">
-              <div class="main-avatar-container">
-                <img :src="mainAvatar" alt="头像" class="main-avatar" />
-                <div class="avatar-status">
-                  <span class="status-indicator active"></span>
+        <div class="detail-section basic-info-section horizontal-card single-col-info">
+          <div class="avatar-block">
+            <img :src="mainAvatar" alt="Avatar" class="main-avatar" />
+            <div class="avatar-history" v-if="currentUser.identity && currentUser.identity.length">
+              <div class="history-label">Photo History</div>
+              <div class="history-thumbs">
+                <div
+                  v-for="item in currentUser.identity"
+                  :key="item.id"
+                  class="history-thumb"
+                  :class="{ active: mainAvatar === item.avatar }"
+                  @click="mainAvatar = item.avatar"
+                >
+                  <img :src="item.avatar" alt="History Photo" />
                 </div>
-              </div>
-              <div class="avatar-history" v-if="currentUser.identity && currentUser.identity.length">
-                <div class="history-label">历史证件照</div>
-                <div class="history-thumbs">
-                  <div
-                    v-for="item in currentUser.identity"
-                    :key="item.id"
-                    class="history-thumb"
-                    :class="{ active: mainAvatar === item.avatar }"
-                    @click="mainAvatar = item.avatar"
-                  >
-                    <img :src="item.avatar" alt="历史证件照" />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="user-info-summary">
-              <h2 class="user-name">{{ currentUser.name }}</h2>
-              <div class="user-meta">
-                <span class="user-id">{{ currentUser.id }}</span>
-                <span class="user-position">{{ currentUser.position }}</span>
-                <span class="user-department">{{ currentUser.department }}</span>
-              </div>
-              <div class="user-status">
-                <span class="status-badge active">Active</span>
-                <span class="status-text">在职员工</span>
               </div>
             </div>
           </div>
-          
-          <div class="info-cards">
-            <div class="info-card personal-info">
-              <div class="card-header">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="card-icon">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2"/>
-                </svg>
-                <h3>个人信息</h3>
-              </div>
-              <div class="card-content">
-                <div class="info-row">
-                  <span class="info-label">性别</span>
-                  <span class="info-value">{{ currentUser.gender }}</span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">年龄</span>
-                  <span class="info-value">{{ currentUser.age }}岁</span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">国籍</span>
-                  <span class="info-value">{{ currentUser.nationality }}</span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">出生日期</span>
-                  <span class="info-value">{{ currentUser.birth }}</span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">地址</span>
-                  <span class="info-value">{{ currentUser.address }}</span>
-                </div>
-              </div>
+          <div class="info-block info-block-bordered">
+            <div class="info-header-row">
+              <h2 class="user-name">{{ currentUser.name }}</h2>
+              <span class="user-id">ID: {{ currentUser.id }}</span>
+              <span class="status-badge active">Active Resident</span>
             </div>
-            
-            <div class="info-card contact-info">
-              <div class="card-header">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="card-icon">
-                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <h3>联系方式</h3>
+            <div class="multi-col-info-list">
+              <div class="multi-col-info-row">
+                <span class="multi-col-info-label">Gender</span>
+                <span class="multi-col-info-value">{{ currentUser.gender }}</span>
               </div>
-              <div class="card-content">
-                <div class="info-row">
-                  <span class="info-label">手机号码</span>
-                  <span class="info-value">{{ currentUser.phone }}</span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">邮箱地址</span>
-                  <span class="info-value">{{ currentUser.email }}</span>
-                </div>
+              <div class="multi-col-info-row">
+                <span class="multi-col-info-label">Age</span>
+                <span class="multi-col-info-value">{{ currentUser.age }}</span>
               </div>
-            </div>
-            
-            <div class="info-card employment-info">
-              <div class="card-header">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="card-icon">
-                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  <polyline points="3.27,6.96 12,12.01 20.73,6.96" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  <line x1="12" y1="22.08" x2="12" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <h3>工作信息</h3>
+              <div class="multi-col-info-row">
+                <span class="multi-col-info-label">Nationality</span>
+                <span class="multi-col-info-value">{{ currentUser.nationality }}</span>
               </div>
-              <div class="card-content">
-                <div class="info-row">
-                  <span class="info-label">职位</span>
-                  <span class="info-value">{{ currentUser.position }}</span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">部门</span>
-                  <span class="info-value">{{ currentUser.department }}</span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">入职日期</span>
-                  <span class="info-value">{{ currentUser.reg }}</span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">合同到期</span>
-                  <span class="info-value">{{ currentUser.exp }}</span>
-                </div>
+              <div class="multi-col-info-row">
+                <span class="multi-col-info-label">Birth Date</span>
+                <span class="multi-col-info-value">{{ currentUser.birth }}</span>
               </div>
+              <div class="multi-col-info-row">
+                <span class="multi-col-info-label">Address</span>
+                <span class="multi-col-info-value">{{ currentUser.address }}</span>
+              </div>
+              <div class="multi-col-info-row">
+                <span class="multi-col-info-label">Phone</span>
+                <span class="multi-col-info-value">{{ currentUser.phone }}</span>
+              </div>
+              <div class="multi-col-info-row">
+                <span class="multi-col-info-label">Email</span>
+                <span class="multi-col-info-value">{{ currentUser.email }}</span>
+              </div>
+              <div class="multi-col-info-row">
+                <span class="multi-col-info-label">Registration Date</span>
+                <span class="multi-col-info-value">{{ currentUser.reg }}</span>
+              </div>
+              <div class="multi-col-info-row">
+                <span class="multi-col-info-label">Expiry Date</span>
+                <span class="multi-col-info-value">{{ currentUser.exp }}</span>
+              </div>
+              <!-- 你可以随意添加更多 multi-col-info-row，不影响布局 -->
             </div>
           </div>
         </div>
@@ -628,6 +573,7 @@ const familyGraphData = computed(() => {
   }
   return { nodes, links }
 })
+
 </script>
 
 <style scoped>
@@ -1325,4 +1271,242 @@ html, body {
   background: #f3f4f6;
   border: 2px solid var(--accent-primary, #2563eb);
 }
+
+/* 横向卡片风格样式 */
+.horizontal-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 2.5rem;
+  padding: 2rem 2.5rem;
+  background: var(--bg-card);
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(59,130,246,0.08);
+}
+.avatar-block {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+.main-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 16px;
+  object-fit: cover;
+  border: 3px solid var(--accent-primary);
+  box-shadow: 0 2px 8px rgba(59,130,246,0.10);
+  background: var(--bg-primary);
+}
+.info-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+.info-header-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+.user-name {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+.user-id {
+  background: var(--accent-secondary);
+  color: var(--accent-primary);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+}
+.info-row-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem 2.5rem;
+}
+.info-row {
+  min-width: 180px;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-size: 1rem;
+}
+.info-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+  min-width: 90px;
+}
+.info-value {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+@media (max-width: 900px) {
+  .horizontal-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.2rem 1rem;
+    gap: 1.2rem;
+  }
+  .main-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+  }
+  .info-row-group {
+    gap: 0.7rem 1.2rem;
+  }
+}
+.info-block-bordered {
+  border: 1.5px solid var(--border-card);
+  border-radius: 14px;
+  background: var(--bg-primary);
+  padding: 2rem 2rem 1.5rem 2rem;
+  box-shadow: 0 2px 8px rgba(59,130,246,0.06);
+}
+@media (max-width: 900px) {
+  .info-block-bordered {
+    padding: 1.2rem 1rem 1rem 1rem;
+  }
+}
+
+/* info-block 分组美化 */
+.info-section-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+.info-section-card {
+  background: var(--bg-card);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(59,130,246,0.06);
+  padding: 1.2rem 1.5rem 1rem 1.5rem;
+  border: 1px solid var(--border-card);
+}
+.info-section-title {
+  font-size: 1.08rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+  margin-bottom: 0.7rem;
+  letter-spacing: 0.5px;
+}
+.info-section-card .info-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+}
+.info-section-card .info-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+  min-width: 110px;
+}
+.info-section-card .info-value {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+@media (max-width: 900px) {
+  .info-section-card {
+    padding: 1rem 0.7rem 0.7rem 0.7rem;
+  }
+  .info-section-title {
+    font-size: 1rem;
+  }
+}
+
+/* 单列信息列表样式 */
+.single-col-info .info-block {
+  padding-top: 0.5rem;
+}
+.single-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-top: 0.5rem;
+}
+.single-info-row {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--border-primary);
+  padding: 0.65rem 0;
+  font-size: 1rem;
+}
+.single-info-row:last-child {
+  border-bottom: none;
+}
+.single-info-label {
+  min-width: 120px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 0.98rem;
+}
+.single-info-value {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 1rem;
+  word-break: break-all;
+}
+@media (max-width: 900px) {
+  .single-col-info.horizontal-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.2rem 1rem;
+    gap: 1.2rem;
+  }
+  .single-info-label {
+    min-width: 90px;
+  }
+}
+
+/* 多列信息列表样式 */
+.multi-col-info-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 0.5rem 2.5rem;
+  margin-top: 0.5rem;
+}
+.multi-col-info-row {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--border-primary);
+  padding: 0.65rem 0;
+  font-size: 1rem;
+}
+.multi-col-info-label {
+  min-width: 90px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 0.98rem;
+  margin-right: 0.5rem;
+}
+.multi-col-info-value {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 1rem;
+  word-break: break-all;
+}
+@media (max-width: 900px) {
+  .multi-col-info-list {
+    grid-template-columns: 1fr;
+    gap: 0.5rem 0;
+  }
+  .multi-col-info-label {
+    min-width: 80px;
+  }
+}
+
+/* el-descriptions 样式微调 */
 </style> 

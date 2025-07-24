@@ -264,7 +264,7 @@ const handleCurrentChange = (page: number) => {
 
 // 显示用户详情
 const showUserDetail = (user: any) => {
-  window.open(`/user-detail/${user.id}`, '_blank')
+  window.open(`/user-profile/${user.id}`, '_blank')
 }
 
 
