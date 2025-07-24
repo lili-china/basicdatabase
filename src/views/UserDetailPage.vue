@@ -58,77 +58,122 @@
       <div class="isp-detail-content isp-detail-page-content">
         <!-- Basic Information 不可折叠 -->
         <div class="detail-section basic-info-section">
-          <h4>Basic Information</h4>
-          <div class="isp-detail-avatar-row">
-            <img :src="mainAvatar" alt="头像" class="isp-detail-avatar main-avatar" />
-          </div>
-          <div class="avatar-history-row" v-if="currentUser.identity && currentUser.identity.length">
-            <div
-              v-for="item in currentUser.identity"
-              :key="item.id"
-              class="avatar-history-thumb"
-              :class="{ active: mainAvatar === item.avatar }"
-              @click="mainAvatar = item.avatar"
-            >
-              <img :src="item.avatar" alt="历史证件照" />
-            </div>
-          </div>
-          <div class="detail-grid">
-            <div class="detail-item">
-              <span class="detail-label">Real Name:</span>
-              <span class="detail-value">Sarah Johnson</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Identity Number:</span>
-              <span class="detail-value">EMP-2024-001</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Gender:</span>
-              <span class="detail-value">Female</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Age:</span>
-              <span class="detail-value">30</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Phone Number:</span>
-              <span class="detail-value">+1 555-1234</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Email:</span>
-              <span class="detail-value">sarah.johnson@email.com</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Nationality:</span>
-              <span class="detail-value">Canada</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Birth Date:</span>
-              <span class="detail-value">1994-03-15</span>
-              </div>
-            <div class="detail-item">
-              <span class="detail-label">Address:</span>
-              <span class="detail-value">Toronto, Canada</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Position:</span>
-              <span class="detail-value">UI/UX Designer</span>
+          <div class="basic-info-header">
+            <div class="avatar-section">
+              <div class="main-avatar-container">
+                <img :src="mainAvatar" alt="头像" class="main-avatar" />
+                <div class="avatar-status">
+                  <span class="status-indicator active"></span>
                 </div>
-            <div class="detail-item">
-              <span class="detail-label">Department:</span>
-              <span class="detail-value">Design</span>
               </div>
-            <div class="detail-item">
-              <span class="detail-label">Status:</span>
-              <span class="detail-value"><span class="status-tag active">Active</span></span>
+              <div class="avatar-history" v-if="currentUser.identity && currentUser.identity.length">
+                <div class="history-label">历史证件照</div>
+                <div class="history-thumbs">
+                  <div
+                    v-for="item in currentUser.identity"
+                    :key="item.id"
+                    class="history-thumb"
+                    :class="{ active: mainAvatar === item.avatar }"
+                    @click="mainAvatar = item.avatar"
+                  >
+                    <img :src="item.avatar" alt="历史证件照" />
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="detail-item">
-              <span class="detail-label">Registration Date:</span>
-              <span class="detail-value">2021-01-01</span>
+            <div class="user-info-summary">
+              <h2 class="user-name">{{ currentUser.name }}</h2>
+              <div class="user-meta">
+                <span class="user-id">{{ currentUser.id }}</span>
+                <span class="user-position">{{ currentUser.position }}</span>
+                <span class="user-department">{{ currentUser.department }}</span>
+              </div>
+              <div class="user-status">
+                <span class="status-badge active">Active</span>
+                <span class="status-text">在职员工</span>
+              </div>
+            </div>
           </div>
-            <div class="detail-item">
-              <span class="detail-label">Expiry Date:</span>
-              <span class="detail-value">2026-01-01</span>
+          
+          <div class="info-cards">
+            <div class="info-card personal-info">
+              <div class="card-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="card-icon">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                <h3>个人信息</h3>
+              </div>
+              <div class="card-content">
+                <div class="info-row">
+                  <span class="info-label">性别</span>
+                  <span class="info-value">{{ currentUser.gender }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">年龄</span>
+                  <span class="info-value">{{ currentUser.age }}岁</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">国籍</span>
+                  <span class="info-value">{{ currentUser.nationality }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">出生日期</span>
+                  <span class="info-value">{{ currentUser.birth }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">地址</span>
+                  <span class="info-value">{{ currentUser.address }}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="info-card contact-info">
+              <div class="card-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="card-icon">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <h3>联系方式</h3>
+              </div>
+              <div class="card-content">
+                <div class="info-row">
+                  <span class="info-label">手机号码</span>
+                  <span class="info-value">{{ currentUser.phone }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">邮箱地址</span>
+                  <span class="info-value">{{ currentUser.email }}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="info-card employment-info">
+              <div class="card-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="card-icon">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <polyline points="3.27,6.96 12,12.01 20.73,6.96" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <line x1="12" y1="22.08" x2="12" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <h3>工作信息</h3>
+              </div>
+              <div class="card-content">
+                <div class="info-row">
+                  <span class="info-label">职位</span>
+                  <span class="info-value">{{ currentUser.position }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">部门</span>
+                  <span class="info-value">{{ currentUser.department }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">入职日期</span>
+                  <span class="info-value">{{ currentUser.reg }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">合同到期</span>
+                  <span class="info-value">{{ currentUser.exp }}</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -220,21 +265,7 @@
             </svg>
           </div>
           <div class="section-content" :class="{ 'collapsed': !expandedSections.investment }">
-            <el-table :data="investmentList" border stripe class="investment-table">
-              <el-table-column prop="name" label="Investment Name" />
-              <el-table-column prop="type" label="Type" />
-              <el-table-column prop="amount" label="Amount" />
-              <el-table-column prop="currency" label="Currency" />
-              <el-table-column prop="start" label="Start Date" />
-              <el-table-column prop="status" label="Status" />
-              <el-table-column prop="remark" label="Remark" />
-            </el-table>
-            <el-pagination
-              v-model:current-page="investmentPage"
-              :page-size="investmentPageSize"
-              :total="investmentListAll.length"
-              layout="total, prev, pager, next"
-              style="margin-top: 10px;" />
+            <InvestmentsTable :userId="currentUser.id" />
           </div>
         </div>
         <div class="detail-section collapsible">
@@ -331,6 +362,7 @@ import { flyToTarget } from '@/utils/flyToTarget'
 import '@/style/common-fly-effect.css'
 import { validateCurrentSession } from '@/utils/sessionValidator'
 import RelationGraph from '@/components/RelationGraph.vue'
+import InvestmentsTable from '@/components/user-detail/InvestmentsTable.vue'
 
 // 用户数据（静态2个用户，头像、id、基础信息等）
 const usersAll = [
@@ -495,11 +527,7 @@ const familyPage = ref(1)
 const familyPageSize = 3
 const familyList = computed(() => familyListAll.value.slice((familyPage.value-1)*familyPageSize, familyPage.value*familyPageSize))
 
-// 投资信息分页
-const investmentListAll = computed(() => currentUser.value.investment || [])
-const investmentPage = ref(1)
-const investmentPageSize = 3
-const investmentList = computed(() => investmentListAll.value.slice((investmentPage.value-1)*investmentPageSize, investmentPage.value*investmentPageSize))
+
 
 // 手机号注册信息分页
 const phoneRegListAll = computed(() => currentUser.value.phone)
@@ -649,6 +677,253 @@ html, body {
   border: 1px solid var(--border-card);
   box-shadow: 0 2px 8px rgba(59,130,246,0.06);
   margin-bottom: 2rem;
+}
+
+/* Basic Information 新样式 */
+.basic-info-section {
+  padding: 2rem;
+}
+
+.basic-info-header {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  align-items: flex-start;
+}
+
+.avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.main-avatar-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.main-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--accent-primary);
+  box-shadow: 0 8px 32px rgba(59,130,246,0.15);
+  background: var(--bg-primary);
+}
+
+.avatar-status {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+}
+
+.status-indicator {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 3px solid var(--bg-card);
+  display: block;
+}
+
+.status-indicator.active {
+  background: #22c55e;
+}
+
+.avatar-history {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.history-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.history-thumbs {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.history-thumb {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.history-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.history-thumb.active,
+.history-thumb:hover {
+  border-color: var(--accent-primary);
+  transform: scale(1.05);
+}
+
+.user-info-summary {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.user-name {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.user-meta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.user-id {
+  background: var(--accent-secondary);
+  color: var(--accent-primary);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.user-position,
+.user-department {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.user-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.active {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+}
+
+.status-text {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.info-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.info-card {
+  background: var(--bg-primary);
+  border-radius: 12px;
+  border: 1px solid var(--border-card);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.info-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(59,130,246,0.1);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-card);
+}
+
+.card-icon {
+  color: var(--accent-primary);
+}
+
+.card-header h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.card-content {
+  padding: 1.25rem;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.info-value {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  font-weight: 600;
+  text-align: right;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .basic-info-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .user-meta {
+    justify-content: center;
+  }
+  
+  .info-cards {
+    grid-template-columns: 1fr;
+  }
 }
 .detail-section h4 {
   font-size: 1.125rem;
@@ -814,6 +1089,7 @@ html, body {
   transform: rotate(-90deg);
 }
 .section-content {
+  margin-top: 1.5rem;
   overflow: hidden;
   transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
   opacity: 1;

@@ -267,7 +267,7 @@ import NavigationBar from '../components/NavigationBar.vue'
 import { mockISPs } from '../utils/mockData'
 import { mockCallRecords } from '../utils/mockData'
 import { useRouter } from 'vue-router'
-import ISPDetailPage from './ISPDetailPage.vue'
+import ISPDetailPage from '@/components/isp-database/ISPDetailPage.vue'
 
 // 当前session ID
 const currentSessionId = ref<string | null>(null)

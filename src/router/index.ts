@@ -62,7 +62,7 @@ const router = createRouter({
     {
       path: '/isp-detail/:id',
       name: 'isp-detail',
-      component: () => import('@/views/ISPDetailPage.vue')
+      component: () => import('@/components/isp-database/ISPDetailPage.vue')
     },
     {
       path: '/analytics',

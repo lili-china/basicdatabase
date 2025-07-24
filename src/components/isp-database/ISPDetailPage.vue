@@ -600,6 +600,7 @@ function queryTrack() {
   flex-wrap: wrap;
   gap: 1rem;
   margin-top: 1rem;
+  justify-content: flex-start;
 }
 .contact-card {
   background: var(--bg-card, #fff);
@@ -609,11 +610,32 @@ function queryTrack() {
   padding: 1rem 1.5rem;
   display: flex;
   align-items: center;
-  min-width: 180px;
+  min-width: 220px;
   max-width: 320px;
+  flex: 1 1 260px;
   gap: 1rem;
   transition: box-shadow 0.2s, transform 0.2s;
-  flex: 1 1 220px;
+}
+@media (max-width: 900px) {
+  .contact-card-list {
+    gap: 1rem;
+  }
+  .contact-card {
+    min-width: 160px;
+    max-width: 100%;
+    flex: 1 1 100%;
+  }
+}
+@media (max-width: 600px) {
+  .contact-card-list {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .contact-card {
+    min-width: 0;
+    max-width: 100%;
+    flex: 1 1 100%;
+  }
 }
 .contact-card:hover {
   box-shadow: 0 4px 16px rgba(59,130,246,0.15);
@@ -702,8 +724,12 @@ function queryTrack() {
   align-items: center;
   cursor: pointer;
   padding: 0;
-  margin: 0 0 0.5rem 0;
+  margin: 0;
   transition: all 0.3s ease;
+}
+
+.collapsible .section-header + .section-content {
+  margin-top: 1rem;
 }
 
 .collapsible .section-header:hover {
@@ -744,10 +770,6 @@ function queryTrack() {
   padding-bottom: 0;
   margin-top: 0;
   margin-bottom: 0;
-}
-
-.collapsible .section-header + .section-content {
-  margin-top: 0.5rem;
 }
 
 /* 固网位置信息样式 */

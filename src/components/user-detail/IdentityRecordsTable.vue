@@ -124,6 +124,7 @@ const filteredRecords = computed(() => {
       const recordDate = new Date(record.date)
       const startDate = new Date(searchForm.dateRange[0])
       const endDate = new Date(searchForm.dateRange[1])
+      console.log(recordDate, startDate, endDate)
       dateMatch = recordDate >= startDate && recordDate <= endDate
     }
     
