@@ -24,7 +24,7 @@
               </div>
               <div class="stat-content">
                 <h3 class="stat-title">Personal Database</h3>
-                <div class="stat-value">{{ personalCount }}</div>
+                <div class="stat-value">{{ formatNumber(personalCount) }}</div>
                 <div class="stat-change">
                   <span class="change-indicator neutral">Total Records</span>
                 </div>
@@ -42,7 +42,7 @@
               </div>
               <div class="stat-content">
                 <h3 class="stat-title">Vehicle Database</h3>
-                <div class="stat-value">{{ vehicleCount }}</div>
+                <div class="stat-value">{{ formatNumber(vehicleCount) }}</div>
                 <div class="stat-change">
                   <span class="change-indicator neutral">Total Records</span>
                 </div>
@@ -59,7 +59,7 @@
               </div>
               <div class="stat-content">
                 <h3 class="stat-title">Enterprise Information</h3>
-                <div class="stat-value">{{ enterpriseCount }}</div>
+                <div class="stat-value">{{ formatNumber(enterpriseCount) }}</div>
                 <div class="stat-change">
                   <span class="change-indicator neutral">Total Records</span>
                 </div>
@@ -77,7 +77,7 @@
               </div>
               <div class="stat-content">
                 <h3 class="stat-title">Custom Database 1</h3>
-                <div class="stat-value">{{ custom1Count }}</div>
+                <div class="stat-value">{{ formatNumber(custom1Count) }}</div>
                 <div class="stat-change">
                   <span class="change-indicator neutral">No Data</span>
                 </div>
@@ -95,7 +95,7 @@
               </div>
               <div class="stat-content">
                 <h3 class="stat-title">Custom Database 2</h3>
-                <div class="stat-value">{{ custom2Count }}</div>
+                <div class="stat-value">{{ formatNumber(custom2Count) }}</div>
                 <div class="stat-change">
                   <span class="change-indicator neutral">No Data</span>
                 </div>
@@ -113,7 +113,7 @@
               </div>
               <div class="stat-content">
                 <h3 class="stat-title">Custom Database 3</h3>
-                <div class="stat-value">{{ custom3Count }}</div>
+                <div class="stat-value">{{ formatNumber(custom3Count) }}</div>
                 <div class="stat-change">
                   <span class="change-indicator neutral">No Data</span>
                 </div>
@@ -190,6 +190,7 @@
 import { ref, onMounted } from 'vue'
 import { getSessionIdFromUrl } from '@/utils/sessionValidator'
 import { initScrollListener } from '@/utils/scrollManager'
+import { createBatchAnimator, Easing, formatNumber } from '@/utils/animationManager'
 import WaveBackground from '../components/WaveBackground.vue'
 import NavigationBar from '../components/NavigationBar.vue'
 
@@ -197,12 +198,20 @@ import NavigationBar from '../components/NavigationBar.vue'
 const currentSessionId = ref<string | null>(null)
 
 // 统计数据 - 这些值后期将从API获取
-const personalCount = ref(1250)
-const vehicleCount = ref(856)
-const enterpriseCount = ref(342)
+const personalCount = ref(0)
+const vehicleCount = ref(0)
+const enterpriseCount = ref(0)
 const custom1Count = ref(0)
 const custom2Count = ref(0)
 const custom3Count = ref(0)
+
+// 目标数值
+const targetPersonalCount = 1250
+const targetVehicleCount = 856
+const targetEnterpriseCount = 342
+const targetCustom1Count = 0
+const targetCustom2Count = 0
+const targetCustom3Count = 0
 
 // 滚动状态
 const isScrolled = initScrollListener()
@@ -210,6 +219,51 @@ const isScrolled = initScrollListener()
 // 组件挂载时获取session ID
 onMounted(() => {
   currentSessionId.value = getSessionIdFromUrl()
+  
+  // 启动数字动画
+  setTimeout(() => {
+    const batchAnimator = createBatchAnimator()
+    
+    // 添加所有数字动画
+    batchAnimator.addAnimator(0, targetPersonalCount, {
+      duration: 2000,
+      easing: Easing.easeOutQuart,
+      onUpdate: (value) => personalCount.value = value
+    })
+    
+    batchAnimator.addAnimator(0, targetVehicleCount, {
+      duration: 2000,
+      easing: Easing.easeOutQuart,
+      onUpdate: (value) => vehicleCount.value = value
+    })
+    
+    batchAnimator.addAnimator(0, targetEnterpriseCount, {
+      duration: 2000,
+      easing: Easing.easeOutQuart,
+      onUpdate: (value) => enterpriseCount.value = value
+    })
+    
+    batchAnimator.addAnimator(0, targetCustom1Count, {
+      duration: 2000,
+      easing: Easing.easeOutQuart,
+      onUpdate: (value) => custom1Count.value = value
+    })
+    
+    batchAnimator.addAnimator(0, targetCustom2Count, {
+      duration: 2000,
+      easing: Easing.easeOutQuart,
+      onUpdate: (value) => custom2Count.value = value
+    })
+    
+    batchAnimator.addAnimator(0, targetCustom3Count, {
+      duration: 2000,
+      easing: Easing.easeOutQuart,
+      onUpdate: (value) => custom3Count.value = value
+    })
+    
+    // 启动所有动画
+    batchAnimator.startAll()
+  }, 500) // 延迟500ms开始动画
   
   // TODO: 从API获取统计数据
   // fetchDashboardStats()
@@ -331,6 +385,23 @@ onMounted(() => {
   font-weight: 700;
   color: var(--text-primary);
   margin: 0 0 0.25rem 0;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.stat-value::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-primary), transparent);
+  transition: width 0.3s ease;
+}
+
+.stat-card:hover .stat-value::after {
+  width: 100%;
 }
 
 .stat-change {
