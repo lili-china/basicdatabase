@@ -167,7 +167,13 @@
             </div>
             <!-- ISP列表 -->
             <div class="isp-list">
-              <div v-for="isp in filteredISPs" :key="isp.id" class="isp-item" @click="showDetail = true; selectedISP = isp; goToDetail(isp)">
+              <div 
+                v-for="isp in filteredISPs" 
+                :key="isp.id" 
+                class="isp-item" 
+                :class="{ 'loading': viewLoadingId === isp.id }"
+                @click="handleRowClick(isp)"
+              >
                 <div class="isp-header">
                   <div class="isp-photo">
                     <img 
@@ -554,6 +560,15 @@ function handleViewClick(isp: any) {
     viewLoadingId.value = null
   }, 400)
 }
+
+function handleRowClick(isp: any) {
+  if (viewLoadingId.value) return
+  viewLoadingId.value = isp.id
+  setTimeout(() => {
+    goToDetail(isp)
+    viewLoadingId.value = null
+  }, 400)
+}
 </script>
 
 <style scoped>
@@ -582,6 +597,32 @@ function handleViewClick(isp: any) {
 .isp-item:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-secondary);
+}
+
+.isp-item.loading {
+  pointer-events: none;
+  opacity: 0.7;
+  position: relative;
+}
+
+.isp-item.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid var(--accent-primary);
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  z-index: 10;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .isp-header {
