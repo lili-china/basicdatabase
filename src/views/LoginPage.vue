@@ -158,7 +158,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import LoginWaveBackground from '../components/LoginWaveBackground.vue'
 import { currentTheme, toggleTheme } from '@/utils/themeManager'
-import { isAnimationPaused, toggleAnimation } from '@/utils/animationManager'
+import { isAnimationPaused, toggleAnimation } from '@/utils/animationController'
 import { validateCurrentSession } from '@/utils/sessionValidator'
 
 const router = useRouter()

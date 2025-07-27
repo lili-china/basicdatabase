@@ -222,7 +222,7 @@
 import { ref, onMounted, onUnmounted, watch, h, nextTick, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { currentTheme, toggleTheme } from '@/utils/themeManager'
-import { isAnimationPaused, toggleAnimation } from '@/utils/animationManager'
+import { isAnimationPaused, toggleAnimation } from '@/utils/animationController'
 import { getSessionIdFromUrl } from '@/utils/sessionValidator'
 
 const router = useRouter()

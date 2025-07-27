@@ -11,7 +11,7 @@
         <div class="detail-section">
           <h4>Basic Information</h4>
           <div class="isp-detail-avatar-row">
-            <img v-if="isp.photo" :src="isp.photo" alt="头像" class="isp-detail-avatar" />
+            <img v-if="isp.photo" :src="isp.photo" alt="avatar" class="isp-detail-avatar" />
           </div>
           <div class="detail-grid">
             <div class="detail-item">
@@ -67,6 +67,14 @@
               <span class="detail-label">Description:</span>
               <span class="detail-value">{{ isp.description }}</span>
             </div>
+            <div class="detail-item">
+              <span class="detail-label">Description:</span>
+              <span class="detail-value">{{ isp.description }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Description:</span>
+              <span class="detail-value">{{ isp.description }}</span>
+            </div>
           </div>
         </div>
         <div class="detail-section">
@@ -75,6 +83,18 @@
             <div class="detail-item">
               <span class="detail-label">Registration Date:</span>
               <span class="detail-value">{{ isp.registrationDate }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Expiry Date:</span>
+              <span class="detail-value" :class="{ 'expired': isExpired(isp.expiryDate) }">
+                {{ isp.expiryDate }}
+              </span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Expiry Date:</span>
+              <span class="detail-value" :class="{ 'expired': isExpired(isp.expiryDate) }">
+                {{ isp.expiryDate }}
+              </span>
             </div>
             <div class="detail-item">
               <span class="detail-label">Expiry Date:</span>
