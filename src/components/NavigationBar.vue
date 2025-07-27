@@ -48,6 +48,14 @@
           <span>Vehicle Database</span>
         </a>
         
+        <a @click="handleNavigation('/file-manager')" class="nav-item" :class="{ active: $route.path === '/file-manager' }">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2"/>
+            <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          <span>File Manager</span>
+        </a>
+        
         <!-- More下拉菜单 -->
         <div class="nav-more-dropdown" ref="moreDropdown"> 
           <button class="nav-more-btn" @click="toggleMoreMenu" :class="{ active: isMoreMenuOpen }">

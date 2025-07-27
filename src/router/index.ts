@@ -15,6 +15,7 @@ import SessionTest from '../views/SessionTest.vue'
 import ApiTest from '../views/ApiTest.vue'
 import LocationPage from '../views/LocationPage.vue'
 import MapLayerDemo from '../views/MapLayerDemo.vue'
+import FileManager from '../views/FileManager.vue'
 
 
 const router = createRouter({
@@ -118,6 +119,11 @@ const router = createRouter({
       path: '/user-profile/:id',
       name: 'UserProfilePage',
       component: () => import('../views/UserDetailPage.vue')
+    },
+    {
+      path: '/file-manager',
+      name: 'FileManager',
+      component: FileManager
     },
 
   ]
