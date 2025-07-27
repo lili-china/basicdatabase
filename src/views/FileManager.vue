@@ -169,10 +169,17 @@
 
             <!-- 列表视图 -->
             <div v-else class="list-view">
-              <el-table :data="currentItems" class="file-table" @row-click="handleItemClick" @row-contextmenu="showContextMenu">
+              <el-table 
+                :data="currentItems" 
+                class="file-table" 
+                @row-click="handleItemClick" 
+                @row-contextmenu="showContextMenu" 
+                @contextmenu="showContextMenu"
+                :row-class-name="getRowClassName"
+              >
                 <el-table-column prop="name" label="Name" min-width="200">
                   <template #default="{ row }">
-                    <div class="name-content">
+                    <div class="name-content" @contextmenu="showContextMenu($event, row)">
                       <svg v-if="row.type === 'folder'" viewBox="0 0 24 24" fill="none">
                         <path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-5l-2-2H5a2 2 0 0 0-2 2z" stroke="currentColor" stroke-width="2"/>
                       </svg>
@@ -191,17 +198,17 @@
                 </el-table-column>
                 <el-table-column label="Type" min-width="120">
                   <template #default="{ row }">
-                    {{ getFileType(row) }}
+                    <div @contextmenu="showContextMenu($event, row)">{{ getFileType(row) }}</div>
                   </template>
                 </el-table-column>
                 <el-table-column label="Modified" min-width="120">
                   <template #default="{ row }">
-                    {{ formatDate(row.modified) }}
+                    <div @contextmenu="showContextMenu($event, row)">{{ formatDate(row.modified) }}</div>
                   </template>
                 </el-table-column>
                 <el-table-column label="Owner" min-width="100">
                   <template #default="{ row }">
-                    {{ row.owner || 'Admin' }}
+                    <div @contextmenu="showContextMenu($event, row)">{{ row.owner || 'Admin' }}</div>
                   </template>
                 </el-table-column>
               </el-table>
@@ -358,6 +365,9 @@ const contextMenu = ref({
   item: null as any
 })
 
+// 选中的行
+const selectedRow = ref<any>(null)
+
 // 计算样式
 const contextMenuStyle = computed(() => ({
   left: contextMenu.value.x + 'px',
@@ -448,9 +458,16 @@ function handleItemClick(item: any) {
   }
 }
 
+// 获取行类名
+function getRowClassName({ row }: { row: any }) {
+  return selectedRow.value && selectedRow.value.id === row.id ? 'selected-row' : ''
+}
+
 // 显示右键菜单
 function showContextMenu(event: any, item: any) {
   event.preventDefault()
+  // 设置选中的行
+  selectedRow.value = item
   contextMenu.value.show = true
   contextMenu.value.x = event.clientX
   contextMenu.value.y = event.clientY
@@ -460,6 +477,8 @@ function showContextMenu(event: any, item: any) {
 // 隐藏右键菜单
 function hideContextMenu() {
   contextMenu.value.show = false
+  // 清除选中状态
+  selectedRow.value = null
 }
 
 // 显示输入对话框
@@ -1341,6 +1360,15 @@ onUnmounted(() => {
   margin-left: 0.5rem;
   width: 14px;
   height: 14px;
+}
+
+/* 选中行样式 */
+.selected-row {
+  background: var(--accent-secondary) !important;
+}
+
+.selected-row td {
+  background: var(--accent-secondary) !important;
 }
 
 .file-details {
