@@ -57,68 +57,83 @@
     <ContentWaveBackground :animationPaused="wavePaused">
       <div class="isp-detail-content isp-detail-page-content">
         <!-- Basic Information 不可折叠 -->
-        <div class="detail-section basic-info-section horizontal-card single-col-info">
-          <div class="avatar-block">
-            <img :src="mainAvatar" alt="Avatar" class="main-avatar" />
-            <div class="avatar-history" v-if="currentUser.identity && currentUser.identity.length">
-              <div class="history-label">Photo History</div>
-              <div class="history-thumbs">
-                <div
-                  v-for="item in currentUser.identity"
+        <div class="detail-section basic-info-section">
+          <h3 class="section-title">Basic Information</h3>
+          <div class="basic-info-content">
+            <div class="user-avatar-section">
+              <div class="avatar-carousel" v-if="currentUser.identity && currentUser.identity.length">
+                <div 
+                  v-for="(item, index) in currentUser.identity" 
                   :key="item.id"
-                  class="history-thumb"
+                  class="avatar-item"
                   :class="{ active: mainAvatar === item.avatar }"
                   @click="mainAvatar = item.avatar"
                 >
-                  <img :src="item.avatar" alt="History Photo" />
+                  <img :src="item.avatar" alt="History Photo" class="avatar-image" />
+                  <div class="avatar-badge" v-if="index === 0">
+                    <span>Primary</span>
+                  </div>
+                  <div class="avatar-number">{{ index + 1 }}</div>
+                </div>
+              </div>
+              <div class="main-avatar">
+                <img :src="mainAvatar" alt="Avatar" class="main-avatar-image" />
+                <div class="avatar-info" v-if="currentUser.identity && currentUser.identity.length">
+                  <span class="photo-count">{{ currentUser.identity.length }} photos</span>
+                  <span class="current-photo">Photo {{ getCurrentPhotoIndex() + 1 }}</span>
                 </div>
               </div>
             </div>
-          </div>
-          <div class="info-block info-block-bordered">
-            <div class="info-header-row">
-              <h2 class="user-name">{{ currentUser.name }}</h2>
-              <span class="user-id">ID: {{ currentUser.id }}</span>
-              <span class="status-badge active">Active Resident</span>
-            </div>
-            <div class="multi-col-info-list">
-              <div class="multi-col-info-row">
-                <span class="multi-col-info-label">Gender</span>
-                <span class="multi-col-info-value">{{ currentUser.gender }}</span>
+            <div class="basic-details">
+              <div class="detail-section">
+                <h4>Personal Information</h4>
+                <div class="detail-grid">
+                  <div class="detail-item">
+                    <span class="detail-label">ID:</span>
+                    <span class="detail-value">{{ currentUser.id }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Name:</span>
+                    <span class="detail-value">{{ currentUser.name }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Gender:</span>
+                    <span class="detail-value">{{ currentUser.gender }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Age:</span>
+                    <span class="detail-value">{{ currentUser.age }} years old</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Birth Date:</span>
+                    <span class="detail-value">{{ currentUser.birth }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Nationality:</span>
+                    <span class="detail-value">{{ currentUser.nationality }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Nationality:</span>
+                    <span class="detail-value">{{ currentUser.nationality }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Nationality:</span>
+                    <span class="detail-value">{{ currentUser.nationality }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Nationality:</span>
+                    <span class="detail-value">{{ currentUser.nationality }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Nationality:</span>
+                    <span class="detail-value">{{ currentUser.nationality }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Nationality:</span>
+                    <span class="detail-value">{{ currentUser.nationality }}</span>
+                  </div>
+                </div>
               </div>
-              <div class="multi-col-info-row">
-                <span class="multi-col-info-label">Age</span>
-                <span class="multi-col-info-value">{{ currentUser.age }}</span>
-              </div>
-              <div class="multi-col-info-row">
-                <span class="multi-col-info-label">Nationality</span>
-                <span class="multi-col-info-value">{{ currentUser.nationality }}</span>
-              </div>
-              <div class="multi-col-info-row">
-                <span class="multi-col-info-label">Birth Date</span>
-                <span class="multi-col-info-value">{{ currentUser.birth }}</span>
-              </div>
-              <div class="multi-col-info-row">
-                <span class="multi-col-info-label">Address</span>
-                <span class="multi-col-info-value">{{ currentUser.address }}</span>
-              </div>
-              <div class="multi-col-info-row">
-                <span class="multi-col-info-label">Phone</span>
-                <span class="multi-col-info-value">{{ currentUser.phone }}</span>
-              </div>
-              <div class="multi-col-info-row">
-                <span class="multi-col-info-label">Email</span>
-                <span class="multi-col-info-value">{{ currentUser.email }}</span>
-              </div>
-              <div class="multi-col-info-row">
-                <span class="multi-col-info-label">Registration Date</span>
-                <span class="multi-col-info-value">{{ currentUser.reg }}</span>
-              </div>
-              <div class="multi-col-info-row">
-                <span class="multi-col-info-label">Expiry Date</span>
-                <span class="multi-col-info-value">{{ currentUser.exp }}</span>
-              </div>
-              <!-- 你可以随意添加更多 multi-col-info-row，不影响布局 -->
             </div>
           </div>
         </div>
@@ -336,7 +351,7 @@ const usersAll = [
       { id: 'ID-001', avatar: 'https://randomuser.me/api/portraits/men/32.jpg', old: 'Sarah Johnson', new: 'Sarah Lee', date: '2023-05-10', type: 'Marriage', operator: 'Admin', remark: 'Marriage name change' },
       { id: 'ID-002', avatar: 'https://randomuser.me/api/portraits/women/44.jpg', old: 'Sarah Lee', new: 'Sarah Johnson', date: '2024-01-15', type: 'Divorce', operator: 'System', remark: 'Divorce name revert' }
     ],
-    phone: [
+    phoneRecords: [
       { id: 'PH-001', avatar: 'https://randomuser.me/api/portraits/men/32.jpg', phone: '+1 555-1234', regDate: '2020-06-15', operator: 'Bell', status: 'Active', remark: 'Main' },
       { id: 'PH-002', avatar: 'https://randomuser.me/api/portraits/women/44.jpg', phone: '+1 555-5678', regDate: '2019-11-20', operator: 'Rogers', status: 'Inactive', remark: 'Old' }
     ],
@@ -385,7 +400,7 @@ const usersAll = [
     identity: [
       { id: 'ID-003', avatar: 'https://randomuser.me/api/portraits/men/65.jpg', old: 'David Lee', new: 'David Smith', date: '2022-03-10', type: 'Legal', operator: 'Clerk', remark: 'Legal name update' }
     ],
-    phone: [
+    phoneRecords: [
       { id: 'PH-003', avatar: 'https://randomuser.me/api/portraits/men/65.jpg', phone: '+1 555-8888', regDate: '2021-07-10', operator: 'Bell', status: 'Active', remark: 'Main' }
     ]
   }
@@ -453,9 +468,9 @@ function getUserAvatarById(id: string) {
   if (user) return user.avatar
   // 也可能是 family/phone/identity等id
   for (const u of usersAll) {
-    if (u.family && u.family.some(f => f.id === id)) return u.family.find(f => f.id === id)?.avatar
-    if (u.identity && u.identity.some(f => f.id === id)) return u.identity.find(f => f.id === id)?.avatar
-    if (u.phone && u.phone.some(f => f.id === id)) return u.phone.find(f => f.id === id)?.avatar
+    if (u.family && u.family.some((f: any) => f.id === id)) return u.family.find((f: any) => f.id === id)?.avatar
+    if (u.identity && u.identity.some((f: any) => f.id === id)) return u.identity.find((f: any) => f.id === id)?.avatar
+    if (u.phoneRecords && u.phoneRecords.some((f: any) => f.id === id)) return u.phoneRecords.find((f: any) => f.id === id)?.avatar
   }
   return 'https://via.placeholder.com/40x40?text=ID'
 }
@@ -475,7 +490,7 @@ const familyList = computed(() => familyListAll.value.slice((familyPage.value-1)
 
 
 // 手机号注册信息分页
-const phoneRegListAll = computed(() => currentUser.value.phone)
+const phoneRegListAll = computed(() => currentUser.value.phoneRecords)
 const phonePage = ref(1)
 const phonePageSize = 3
 const phoneRegList = computed(() => phoneRegListAll.value.slice((phonePage.value-1)*phonePageSize, phonePage.value*phonePageSize))
@@ -564,7 +579,7 @@ const familyGraphData = computed(() => {
   const nodes = [
     { id: user.id, text: user.name, x: 300, y: 200 }
   ]
-  const links = []
+  const links: any[] = []
   if (user.family && user.family.length) {
     user.family.forEach((f, idx) => {
       nodes.push({ id: f.id, text: f.name, x: 150 + idx*120, y: 400 })
@@ -573,6 +588,12 @@ const familyGraphData = computed(() => {
   }
   return { nodes, links }
 })
+
+function getCurrentPhotoIndex() {
+  if (!currentUser.value.identity) return 0
+  const index = currentUser.value.identity.findIndex(item => item.avatar === mainAvatar.value)
+  return index >= 0 ? index : 0
+}
 
 </script>
 
@@ -1272,241 +1293,226 @@ html, body {
   border: 2px solid var(--accent-primary, #2563eb);
 }
 
-/* 横向卡片风格样式 */
-.horizontal-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 2.5rem;
-  padding: 2rem 2.5rem;
+/* Basic Information 新样式 */
+.basic-info-section {
   background: var(--bg-card);
-  border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(59,130,246,0.08);
+  border-radius: 12px;
+  padding: 2rem 2vw;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(59,130,246,0.06);
+  border: 1px solid var(--border-card);
 }
-.avatar-block {
-  flex-shrink: 0;
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 1.5rem 0;
+  border-bottom: 2px solid var(--accent-primary);
+  padding-bottom: 0.5rem;
+}
+.basic-info-content {
+  display: flex;
+  gap: 2.5rem;
+  align-items: flex-start;
+}
+.user-avatar-section {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
+  gap: 1.5rem;
+  flex-shrink: 0;
+}
+.avatar-carousel {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  max-width: 300px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 0.5rem;
+  background: var(--bg-primary);
+  border-radius: 8px;
+  border: 1px solid var(--border-card);
+}
+.avatar-item {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+.avatar-item:hover {
+  border-color: var(--accent-primary);
+  transform: scale(1.05);
+}
+.avatar-item.active {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px var(--accent-secondary);
+}
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  object-fit: cover;
 }
 .main-avatar {
-  width: 100px;
-  height: 100px;
+  position: relative;
+  width: 120px;
+  height: 120px;
   border-radius: 16px;
-  object-fit: cover;
-  border: 3px solid var(--accent-primary);
-  box-shadow: 0 2px 8px rgba(59,130,246,0.10);
-  background: var(--bg-primary);
+  overflow: hidden;
+  border: 4px solid var(--accent-secondary);
+  box-shadow: var(--shadow-secondary);
 }
-.info-block {
+.main-avatar-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  object-fit: cover;
+}
+.avatar-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  color: white;
+  font-size: 0.625rem;
+  padding: 2px 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.avatar-number {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  font-size: 0.625rem;
+  padding: 1px 3px;
+  border-radius: 3px;
+  font-weight: 600;
+  border: 1px solid var(--border-card);
+}
+.avatar-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+  color: white;
+  padding: 0.5rem;
+  font-size: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.photo-count {
+  font-weight: 600;
+}
+.current-photo {
+  opacity: 0.9;
+  font-size: 0.625rem;
+}
+.basic-details {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
-}
-.info-header-row {
-  display: flex;
-  align-items: center;
   gap: 1.5rem;
-  margin-bottom: 0.5rem;
 }
-.user-name {
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin: 0;
-}
-.user-id {
-  background: var(--accent-secondary);
-  color: var(--accent-primary);
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.95rem;
-  font-weight: 600;
-}
-.status-badge {
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  background: rgba(34, 197, 94, 0.1);
-  color: #22c55e;
-}
-.info-row-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.2rem 2.5rem;
-}
-.info-row {
-  min-width: 180px;
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  font-size: 1rem;
-}
-.info-label {
-  color: var(--text-secondary);
-  font-weight: 500;
-  min-width: 90px;
-}
-.info-value {
-  color: var(--text-primary);
-  font-weight: 600;
-}
-@media (max-width: 900px) {
-  .horizontal-card {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 1.2rem 1rem;
-    gap: 1.2rem;
-  }
-  .main-avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 12px;
-  }
-  .info-row-group {
-    gap: 0.7rem 1.2rem;
-  }
-}
-.info-block-bordered {
-  border: 1.5px solid var(--border-card);
-  border-radius: 14px;
-  background: var(--bg-primary);
-  padding: 2rem 2rem 1.5rem 2rem;
-  box-shadow: 0 2px 8px rgba(59,130,246,0.06);
-}
-@media (max-width: 900px) {
-  .info-block-bordered {
-    padding: 1.2rem 1rem 1rem 1rem;
-  }
-}
-
-/* info-block 分组美化 */
-.info-section-group {
-  display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
-}
-.info-section-card {
+.detail-section {
   background: var(--bg-card);
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(59,130,246,0.06);
-  padding: 1.2rem 1.5rem 1rem 1.5rem;
+  padding: 1.5rem;
+  border: 1px solid var(--border-card);
+  margin-bottom: 1.5rem;
+}
+.detail-section:last-child {
+  margin-bottom: 0;
+}
+.detail-section h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--accent-primary);
+}
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--bg-primary);
+  border-radius: 8px;
   border: 1px solid var(--border-card);
 }
-.info-section-title {
-  font-size: 1.08rem;
-  font-weight: 600;
-  color: var(--accent-primary);
-  margin-bottom: 0.7rem;
-  letter-spacing: 0.5px;
-}
-.info-section-card .info-row {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  font-size: 1rem;
-  margin-bottom: 0.3rem;
-}
-.info-section-card .info-label {
+.detail-label {
+  font-size: 0.875rem;
   color: var(--text-secondary);
   font-weight: 500;
-  min-width: 110px;
 }
-.info-section-card .info-value {
+.detail-value {
+  font-size: 0.875rem;
   color: var(--text-primary);
   font-weight: 600;
+  text-align: right;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-@media (max-width: 900px) {
-  .info-section-card {
-    padding: 1rem 0.7rem 0.7rem 0.7rem;
-  }
-  .info-section-title {
-    font-size: 1rem;
-  }
-}
-
-/* 单列信息列表样式 */
-.single-col-info .info-block {
-  padding-top: 0.5rem;
-}
-.single-info-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  margin-top: 0.5rem;
-}
-.single-info-row {
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid var(--border-primary);
-  padding: 0.65rem 0;
-  font-size: 1rem;
-}
-.single-info-row:last-child {
-  border-bottom: none;
-}
-.single-info-label {
-  min-width: 120px;
-  color: var(--text-secondary);
-  font-weight: 500;
-  font-size: 0.98rem;
-}
-.single-info-value {
-  color: var(--text-primary);
+.status-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
   font-weight: 600;
-  font-size: 1rem;
-  word-break: break-all;
+  text-transform: uppercase;
+}
+.status-badge.active {
+  background: #10b981;
+  color: white;
+}
+.status-badge.inactive {
+  background: #ef4444;
+  color: white;
+}
+.status-badge.pending {
+  background: #f59e0b;
+  color: white;
+}
+.status-badge.on-leave {
+  background: #8b5cf6;
+  color: white;
 }
 @media (max-width: 900px) {
-  .single-col-info.horizontal-card {
+  .basic-info-content {
     flex-direction: column;
-    align-items: flex-start;
-    padding: 1.2rem 1rem;
-    gap: 1.2rem;
+    gap: 1.5rem;
   }
-  .single-info-label {
-    min-width: 90px;
+  .user-avatar-section {
+    flex-direction: row;
+    gap: 1.5rem;
+    justify-content: flex-start;
+  }
+  .main-avatar {
+    width: 100px;
+    height: 100px;
   }
 }
 
-/* 多列信息列表样式 */
-.multi-col-info-list {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(180px, 1fr));
-  gap: 0.5rem 2.5rem;
-  margin-top: 0.5rem;
-}
-.multi-col-info-row {
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid var(--border-primary);
-  padding: 0.65rem 0;
-  font-size: 1rem;
-}
-.multi-col-info-label {
-  min-width: 90px;
-  color: var(--text-secondary);
-  font-weight: 500;
-  font-size: 0.98rem;
-  margin-right: 0.5rem;
-}
-.multi-col-info-value {
-  color: var(--text-primary);
-  font-weight: 600;
-  font-size: 1rem;
-  word-break: break-all;
-}
-@media (max-width: 900px) {
-  .multi-col-info-list {
-    grid-template-columns: 1fr;
-    gap: 0.5rem 0;
-  }
-  .multi-col-info-label {
-    min-width: 80px;
-  }
-}
+
 
 /* el-descriptions 样式微调 */
 </style> 
