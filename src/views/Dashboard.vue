@@ -206,9 +206,9 @@ const custom2Count = ref(0)
 const custom3Count = ref(0)
 
 // 目标数值
-const targetPersonalCount = 1250
-const targetVehicleCount = 856
-const targetEnterpriseCount = 342
+const targetPersonalCount = 12502312312
+const targetVehicleCount = 856123123123
+const targetEnterpriseCount = 34212312312
 const targetCustom1Count = 0
 const targetCustom2Count = 0
 const targetCustom3Count = 0
@@ -313,10 +313,36 @@ onMounted(() => {
 /* 统计卡片网格 */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
   max-width: 1400px;
   margin: 0 auto;
+}
+
+/* 响应式网格布局 */
+@media (max-width: 1200px) {
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .stat-card {
+    padding: 1rem;
+  }
 }
 
 .stat-card {
@@ -330,11 +356,19 @@ onMounted(() => {
   border: 1px solid var(--border-card);
   box-shadow: var(--shadow-card);
   transition: all 0.3s ease;
+  min-width: 0; /* 允许卡片收缩 */
+  overflow: hidden; /* 防止内容溢出 */
 }
 
 .stat-card:hover {
   transform: translateY(-5px);
   box-shadow: var(--shadow-secondary);
+}
+
+.stat-content {
+  flex: 1;
+  min-width: 0; /* 允许内容区域收缩 */
+  overflow: hidden; /* 防止内容溢出 */
 }
 
 .stat-icon {
@@ -387,6 +421,13 @@ onMounted(() => {
   margin: 0 0 0.25rem 0;
   transition: all 0.3s ease;
   position: relative;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .stat-value::after {
@@ -402,6 +443,31 @@ onMounted(() => {
 
 .stat-card:hover .stat-value::after {
   width: 100%;
+}
+
+/* 响应式字体大小 */
+@media (max-width: 1200px) {
+  .stat-value {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .stat-value {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .stat-value {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .stat-value {
+    font-size: 1rem;
+  }
 }
 
 .stat-change {
