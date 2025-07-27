@@ -47,7 +47,7 @@
             </button>
             
             <!-- 播放/暂停按钮 -->
-            <button @click="togglePlayPause" class="control-btn play-btn" :title="isPlaying ? '暂停' : '播放'">
+            <button @click="togglePlayPause" class="control-btn play-btn" :title="isPlaying ? 'Pause' : 'Play'">
               <svg v-if="!isPlaying" width="18" height="18" viewBox="0 0 24 24" fill="none">
                 <path d="M8 5v14l11-7z" fill="currentColor"/>
               </svg>

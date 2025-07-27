@@ -390,6 +390,8 @@ const fixedLocation = ref({
   name: 'Muscat, Oman'
 })
 
+
+
 function toggleSection(section: string) {
   expandedSections.value[section as keyof typeof expandedSections.value] = 
     !expandedSections.value[section as keyof typeof expandedSections.value]
@@ -492,6 +494,7 @@ function queryTrack() {
   margin: 0 auto;
   padding: 0 3vw;
   width: 100%;
+  position: relative;
 }
 .isp-detail-header {
   display: flex;
@@ -501,6 +504,8 @@ function queryTrack() {
   color: #888;
   gap: 0.5em;
 }
+
+
 .breadcrumb-back {
   display: flex;
   align-items: center;

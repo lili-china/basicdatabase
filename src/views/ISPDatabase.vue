@@ -192,9 +192,9 @@
                         <span class="highlight-label">Operator</span>
                         <span class="highlight-value">{{ isp.name }}</span>
                       </div>
-                      <div class="highlight-item phone">
+                      <div class="highlight-item phone" :class="{ 'phone_expired': isExpired(isp.expiryDate) }">
                         <span class="highlight-label">Phone</span>
-                        <span class="highlight-value">{{ isp.phoneNum }}</span>
+                        <span class="highlight-value"   >{{ isp.phoneNum }}</span>
                       </div>
                     </div>
                     <div class="isp-details">
@@ -532,9 +532,10 @@ const calculateAge = (birthDate: string) => {
 
 // 判断日期是否过期
 const isExpired = (dateString: string) => {
-  const expiryDate = new Date(dateString);
-  const today = new Date();
-  return expiryDate < today;
+  // const expiryDate = new Date(dateString);
+  // const today = new Date();
+  // return expiryDate < today;
+  return true;
 };
 
 // 处理图片加载失败
@@ -727,6 +728,12 @@ function handleRowClick(isp: any) {
 
 .highlight-item.phone .highlight-value {
   color: #22c55e;
+  font-weight: 800;
+  font-size: 0.875rem;
+}
+
+.highlight-value.phone_expired .highlight-value{
+  color: #4b504d;
   font-weight: 800;
   font-size: 0.875rem;
 }
