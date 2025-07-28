@@ -110,89 +110,8 @@
             </div>
           </div>
         </div>
-        <!-- 非Awasr运营商显示通话记录 -->
+        <!-- 当前设备使用信息 - 非Awasr运营商显示 -->
         <div v-if="!isAwasrOperator" class="detail-section collapsible">
-          <div class="section-header" @click="toggleSection('caller')">
-            <h4>Caller & Called (Top 20)</h4>
-            <svg class="collapse-icon" :class="{ 'collapsed': !expandedSections.caller }" width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <div class="section-content" :class="{ 'collapsed': !expandedSections.caller }">
-            <!-- Loading状态 -->
-            <div v-if="loadingStates.caller" class="section-loading">
-              <div class="loading-spinner"></div>
-              <div class="loading-text">Loading caller data...</div>
-            </div>
-            
-            <!-- 内容区域 -->
-            <div v-else>
-              <!-- 日期范围选择器 -->
-              <div class="date-range-filter">
-                <el-date-picker
-                  v-model="callerDateRange"
-                  type="daterange"
-                  range-separator="To"
-                  start-placeholder="Start date"
-                  end-placeholder="End date"
-                  format="YYYY-MM-DD"
-                  value-format="YYYY-MM-DD"
-                  @change="filterCallerData"
-                  style="width: 100%; max-width: 400px;"
-                />
-                <el-button @click="queryCaller" size="small" type="primary" plain style="margin-left: 0.5rem;">Query</el-button>
-              </div>
-            <div v-if="!selectedContact" class="contact-card-list">
-              <div v-for="contact in contacts as Array<any>" :key="contact.phone" class="contact-card" @click="selectContact(contact)">
-                <img :src="contact.photo" alt="头像" class="contact-avatar" />
-                <div class="contact-info">
-                  <div class="contact-name">{{ contact.name }}</div>
-                  <div class="contact-id">ID: {{ contact.phone }}</div> 
-                  <div class="contact-phone">+968 91312548</div>
-                  <div class="contact-count">Call times: {{ contact.count }}</div>
-                </div>
-              </div>
-              <div v-if="contacts.length === 0" style="color: #999; padding: 1rem 0;">No call records</div>
-            </div>
-            <div v-else class="contact-call-list">
-              <div class="contact-detail-header">
-                <span @click="backToContacts" class="breadcrumb-back">
-                  <svg class="breadcrumb-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </span>
-                <img :src="selectedContact.photo" alt="头像" class="contact-avatar" />
-                <div class="contact-info">
-                  <div class="contact-name">{{ selectedContact.name }}</div>
-                  <div class="contact-id">ID: {{ selectedContact.phone }}</div>
-                  <div class="contact-phone"> {{ selectedContact.phone }}</div>
-                </div>
-              </div>
-              <table class="call-table">
-                <thead>
-                  <tr>
-                    <th>Call Time</th>
-                    <th>Type</th>
-                    <th>Duration</th>
-                    <th>Other Phone</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(call, idx) in (selectedContact.calls || [])" :key="idx">
-                    <td>{{ call.time }}</td>
-                    <td>{{ call.type }}</td>
-                    <td>{{ call.duration }}</td>
-                    <td>{{ call.otherPhone }}</td>
-                  </tr>
-                  <tr v-if="!selectedContact.calls || selectedContact.calls.length === 0">
-                    <td colspan="4" style="color: #999; text-align: center;">No call records</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            </div>
-          </div>
-        </div>
-        <!-- 当前设备使用信息 -->
-        <div class="detail-section collapsible">
           <div class="section-header" @click="toggleSection('deviceInfo')">
             <h4>Device Information</h4>
             <svg class="collapse-icon" :class="{ 'collapsed': !expandedSections.deviceInfo }" width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -212,7 +131,7 @@
               <div class="device-info-section">
                 <div class="device-avatar">
                   <!-- 苹果设备图标 -->
-                  <svg v-if="!isAppleDevice" width="48" height="48" viewBox="0 0 24 24" fill="none">
+                  <svg v-if="isAppleDevice" width="48" height="48" viewBox="0 0 24 24" fill="none">
                     <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" fill="currentColor"/>
                   </svg>
                   <!-- 安卓设备图标 -->
@@ -268,6 +187,30 @@
                 </div>
               </div>
               
+            </div>
+          </div>
+        </div>
+        <!-- 非Awasr运营商显示通话记录 -->
+        <div v-if="!isAwasrOperator" class="detail-section collapsible">
+          <div class="section-header" @click="toggleSection('caller')">
+            <h4>Caller & Called (Top 20)</h4>
+            <svg class="collapse-icon" :class="{ 'collapsed': !expandedSections.caller }" width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="section-content" :class="{ 'collapsed': !expandedSections.caller }">
+            <!-- Loading状态 -->
+            <div v-if="loadingStates.caller" class="section-loading">
+              <div class="loading-spinner"></div>
+              <div class="loading-text">Loading caller data...</div>
+            </div>
+            
+            <!-- 内容区域 -->
+            <div v-else>
+              <CallerRecords 
+                :contacts="contacts" 
+                @loading-change="(loading: boolean) => loadingStates.caller = loading"
+              />
             </div>
           </div>
         </div>
@@ -379,7 +322,7 @@
         <!-- 非Awasr运营商显示热力图 -->
         <div v-if="!isAwasrOperator" class="detail-section collapsible">
           <div class="section-header" @click="toggleSection('heatmap')">
-            <h4>Activity Heatmap (Current Month)</h4>
+            <h4>Activity Heatmap</h4>
             <svg class="collapse-icon" :class="{ 'collapsed': !expandedSections.heatmap }" width="20" height="20" viewBox="0 0 24 24" fill="none">
               <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -416,7 +359,7 @@
         <!-- 非Awasr运营商显示轨迹图 -->
         <div v-if="!isAwasrOperator" class="detail-section collapsible">
           <div class="section-header" @click="toggleSection('track')">
-            <h4>Activity Track (Current Month)</h4>
+            <h4>Activity Track</h4>
             <svg class="collapse-icon" :class="{ 'collapsed': !expandedSections.track }" width="20" height="20" viewBox="0 0 24 24" fill="none">
               <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -505,56 +448,54 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed,onMounted } from 'vue'
 import MapHeatmap from '@/components/isp-database/MapHeatmap.vue'
 import MapTrack from '@/components/isp-database/MapTrack.vue'
 import LocationMarker from '@/components/isp-database/LocationMarker.vue'
+import CallerRecords from '@/components/isp-database/CallerRecords.vue'
 
+//第三方引用 需要添加查询手机号的接口
+onMounted(() => {
+  // 初始化时启动loading状态
+  loadingStates.value.deviceInfo = true
+  
+  // 模拟初始化数据加载
+  setTimeout(() => {
+    loadingStates.value.deviceInfo = false
+  }, 1000)
+})
+
+
+interface Contact {
+  phone: string
+  name: string
+  photo: string
+  count: number
+  calls?: Array<{
+    time: string
+    type: string
+    duration: string
+    otherPhone: string
+  }>
+}
 
 const props = defineProps({
   isp: Object,
   contacts: {
-    type: Array,
-    default: () => [
-      {
-        name: 'John Doe',
-        phone: '+968 91312548',
-        photo: '',
-        count: 5,
-        calls: [
-          { time: '2024-06-01 10:00', type: 'Outgoing', duration: '2:30', otherPhone: '+968 91234567' },
-          { time: '2024-06-02 14:20', type: 'Incoming', duration: '1:10', otherPhone: '+968 93456789' }
-        ]
-      },
-      {
-        name: 'Jane Smith',
-        phone: '+968 91234567',
-        photo: '',
-        count: 3,
-        calls: [
-          { time: '2024-06-03 09:15', type: 'Outgoing', duration: '3:05', otherPhone: '+968 91312548' },
-          { time: '2024-06-04 16:40', type: 'Incoming', duration: '0:55', otherPhone: '+968 93456789' }
-        ]
-      }
-    ]
+    type: Array as () => Contact[],
+    default: () => []
   }
 })
 const emit = defineEmits(['back'])
+
+
 
 // 判断是否为Awasr运营商
 const isAwasrOperator = computed(() => {
   return props.isp && props.isp.name === 'Awasr'
 })
 
-// 新增：选中的联系人
-const selectedContact = ref<any>(null)
-
-function selectContact(contact: any) {
-  selectedContact.value = contact
-}
-function backToContacts() {
-  selectedContact.value = null
-}
+// 通话记录相关的状态和函数已经移到CallerRecords组件中
 
 // 阿曼经纬度范围（大致）：
 // 经度 52.0 ~ 60.0，纬度 16.5 ~ 26.5
@@ -593,10 +534,8 @@ const trackPoints = ref(randomOmanTrackPoints(15))
 const mapTrackRef = ref()
 
 // 日期范围选择器
-const callerDateRange = ref<[string, string] | null>(null)
 const heatmapDateRange = ref<[string, string] | null>(null)
 const trackDateRange = ref<[string, string] | null>(null)
-const mobileTrafficDateRange = ref<[string, string] | null>(null)
 const mobileTrafficSearch = ref('')
 const mobileTrafficTimeRange = ref('today')
 
@@ -668,19 +607,6 @@ const deviceInfo = ref({
   status: 'active'
 })
 
-// 安卓设备示例（注释掉，如需测试可替换上面的deviceInfo）
-// const deviceInfo = ref({
-//   imei: '987654321098765',
-//   associatedPhone: '+968 91312548',
-//   model: 'Samsung Galaxy S24',
-//   manufacturer: 'Samsung Electronics',
-//   osVersion: 'Android 14',
-//   registrationDate: '2024-02-20',
-//   lastActive: '2024-06-15 18:30',
-//   status: 'active'
-// })
-
-
 
 // 判断是否为苹果设备
 const isAppleDevice = computed(() => {
@@ -690,11 +616,11 @@ const isAppleDevice = computed(() => {
 
 // 折叠面板状态管理
 const expandedSections = ref({
-  caller: true,
-  heatmap: true,
-  track: true,
+  caller: false,
+  heatmap: false,
+  track: false,
   location: true,
-  mobileTraffic: true,
+  mobileTraffic: false,
   deviceInfo: true
 })
 
@@ -735,7 +661,14 @@ function toggleSection(section: string) {
 }
 
 function goBack() {
-  emit('back')
+  // 启动loading状态
+  loadingStates.value.caller = true
+  
+  // 模拟API调用延迟
+  setTimeout(() => {
+    loadingStates.value.caller = false
+    emit('back')
+  }, 500)
 }
 
 function isExpired(dateString: string) {
@@ -744,22 +677,23 @@ function isExpired(dateString: string) {
   return expiryDate < today
 }
 
-// 过滤函数
-function filterCallerData() {
-  if (!callerDateRange.value) return
-  
-  const [startDate, endDate] = callerDateRange.value
-  console.log('Filtering caller data for date range:', startDate, 'to', endDate)
-  // 这里可以添加实际的过滤逻辑
-}
+// 通话记录过滤和查询功能已移到CallerRecords组件中
 
 function filterHeatmapData() {
   if (!heatmapDateRange.value) return
   
   const [startDate, endDate] = heatmapDateRange.value
   console.log('Filtering heatmap data for date range:', startDate, 'to', endDate)
-  // 重新生成热力图数据
-  activityPoints.value = randomOmanPoints(10)
+  
+  // 启动loading状态
+  loadingStates.value.heatmap = true
+  
+  // 模拟API调用延迟
+  setTimeout(() => {
+    loadingStates.value.heatmap = false
+    // 重新生成热力图数据
+    activityPoints.value = randomOmanPoints(10)
+  }, 1000)
 }
 
 function filterTrackData() {
@@ -767,29 +701,19 @@ function filterTrackData() {
   
   const [startDate, endDate] = trackDateRange.value
   console.log('Filtering track data for date range:', startDate, 'to', endDate)
-  // 重新生成轨迹数据
-  trackPoints.value = randomOmanTrackPoints(15)
-}
-
-// 查询函数
-function queryCaller() {
-  if (!callerDateRange.value) {
-    console.log('No date range selected for caller query')
-    return
-  }
-  
-  const [startDate, endDate] = callerDateRange.value
-  console.log('Querying caller data for date range:', startDate, 'to', endDate)
   
   // 启动loading状态
-  loadingStates.value.caller = true
+  loadingStates.value.track = true
   
   // 模拟API调用延迟
   setTimeout(() => {
-    loadingStates.value.caller = false
-    // 这里可以添加实际的查询逻辑
-  }, 1500)
+    loadingStates.value.track = false
+    // 重新生成轨迹数据
+    trackPoints.value = randomOmanTrackPoints(15)
+  }, 1000)
 }
+
+// 通话记录查询功能已移到CallerRecords组件中
 
 function queryHeatmap() {
   if (!heatmapDateRange.value) {
@@ -812,13 +736,17 @@ function queryHeatmap() {
 }
 
 function queryTrack() {
-  if (!trackDateRange.value) {
-    console.log('No date range selected for track query')
-    return
-  }
+  // if (!trackDateRange.value) {
+  //   console.log('No date range selected for track query')
+  //   return
+  // }
   
-  const [startDate, endDate] = trackDateRange.value
-  console.log('Querying track data for date range:', startDate, 'to', endDate)
+  if (trackDateRange.value) {
+    const [startDate, endDate] = trackDateRange.value
+    console.log('Querying track data for date range:', startDate, 'to', endDate)
+  } else {
+    console.log('Querying track data without date range')
+  }
   
   // 启动loading状态
   loadingStates.value.track = true
@@ -833,7 +761,15 @@ function queryTrack() {
 
 function filterMobileTrafficData() {
   console.log('Filtering mobile traffic data with search:', mobileTrafficSearch.value, 'and time range:', mobileTrafficTimeRange.value)
-  // 这里可以添加实际的过滤逻辑
+  
+  // 启动loading状态
+  loadingStates.value.mobileTraffic = true
+  
+  // 模拟API调用延迟
+  setTimeout(() => {
+    loadingStates.value.mobileTraffic = false
+    // 这里可以添加实际的过滤逻辑
+  }, 1000)
 }
 
 function queryMobileTraffic() {
@@ -851,9 +787,18 @@ function queryMobileTraffic() {
 
 function openThirdPartyApp() {
   console.log('Opening third party application...')
-  // 这里可以添加跳转到第三方应用的逻辑
-  // 例如：window.open('https://example.com', '_blank')
-  alert('Opening third party application...')
+  
+  // 启动loading状态
+  loadingStates.value.mobileTraffic = true
+  
+  // 模拟API调用延迟
+  setTimeout(() => {
+    loadingStates.value.mobileTraffic = false
+    // 这里可以添加跳转到第三方应用的逻辑
+    // 例如：window.open('https://example.com', '_blank')
+    alert('Opening third party application...')
+    window.open('https://www.google.com', '_blank')
+  }, 1000)
 }
 
 
@@ -1007,128 +952,7 @@ function openThirdPartyApp() {
   background: #f3f4f6;
   box-shadow: 0 2px 8px rgba(59,130,246,0.10);
 }
-.contact-card-list {
-  cursor: pointer;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: 1rem;
-  justify-content: flex-start;
-}
-.contact-card {
-  background: var(--bg-card, #fff);
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  border: 1px solid var(--border-card, #e5e7eb);
-  padding: 1rem 1.5rem;
-  display: flex;
-  align-items: center;
-  min-width: 220px;
-  max-width: 320px;
-  flex: 1 1 260px;
-  gap: 1rem;
-  transition: box-shadow 0.2s, transform 0.2s;
-}
-@media (max-width: 900px) {
-  .contact-card-list {
-    gap: 1rem;
-  }
-  .contact-card {
-    min-width: 160px;
-    max-width: 100%;
-    flex: 1 1 100%;
-  }
-}
-@media (max-width: 600px) {
-  .contact-card-list {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-  .contact-card {
-    min-width: 0;
-    max-width: 100%;
-    flex: 1 1 100%;
-  }
-}
-.contact-card:hover {
-  box-shadow: 0 4px 16px rgba(59,130,246,0.15);
-  transform: translateY(-2px) scale(1.03);
-}
-.contact-avatar {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--border-card, #e5e7eb);
-  background: #f3f4f6;
-}
-.contact-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  min-width: 0;
-}
-.contact-name {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-primary, #222);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 140px;
-}
-.contact-id {
-  font-size: 0.75rem;
-  color: var(--text-secondary, #888);
-}
-.contact-phone {
-  color: #2563eb;
-  font-weight: bold;
-  font-size: 0.95rem;
-  letter-spacing: 1px;
-}
-.contact-count {
-  font-size: 0.85rem;
-  color: #2563eb;
-  font-weight: 500;
-}
-.contact-call-list {
-  padding: 1rem 0;
-  max-height: none;
-  height: 100%;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-}
-.contact-detail-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  background: var(--bg-card, #fff);
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  border: 1px solid var(--border-card, #e5e7eb);
-  padding: 1rem 1.5rem;
-  min-width: 180px;
-  max-width: 320px;
-  flex: 1 1 150px;
-  flex-shrink: 0;
-}
-.call-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-}
-.call-table th, .call-table td {
-  border: 1px solid var(--border-card, #e5e7eb);
-  padding: 0.5rem 1rem;
-  text-align: center;
-}
-.call-table th {
-  background: var(--bg-card, #f9fafb);
-  font-weight: 600;
-}
+/* 通话记录相关样式已移到CallerRecords组件中 */
 
 /* 折叠面板样式 */
 .collapsible .section-header {
@@ -1142,7 +966,7 @@ function openThirdPartyApp() {
 }
 
 .collapsible .section-header + .section-content {
-  margin-top: 1rem;
+  margin-top: 0.5rem;
 }
 
 .collapsible .section-header:hover {
@@ -1230,7 +1054,7 @@ function openThirdPartyApp() {
 /* 日期范围过滤器样式 */
 .date-range-filter {
   margin-bottom: 1.5rem;
-  padding: 1rem;
+  padding: 0.5rem;
   background: var(--bg-primary);
   border-radius: 8px;
   border: 1px solid var(--border-card);

@@ -1449,20 +1449,29 @@ function fitTrackExtent() {
 
 
 .date-group {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid var(--border-card, #e5e7eb);
+  background: var(--bg-primary, #f9fafb);
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  border: 1px solid var(--border-card, #e5e7eb);
+  transition: background-color 0.2s ease;
+}
+
+.date-group:hover {
+  background: var(--bg-card, #ffffff);
 }
 
 .date-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 24px;
+  padding: 0.75rem;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
 .date-header:hover {
-  background: rgba(0, 0, 0, 0.02);
+  background: var(--bg-card, #ffffff);
 }
 
 .date-info {
@@ -1509,39 +1518,43 @@ function fitTrackExtent() {
 }
 
 .date-details {
-  background: rgba(0, 0, 0, 0.02);
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  background: var(--bg-card, #ffffff);
+  border-top: 1px solid var(--border-card, #e5e7eb);
 }
 
 .detail-table {
-  padding: 16px 24px;
+  padding: 1rem;
 }
 
 .table-header {
   display: grid;
   grid-template-columns: 1fr 2fr 2fr 80px;
-  gap: 16px;
-  padding: 12px 16px;
-  background: rgba(0, 0, 0, 0.05);
+  gap: 1rem;
+  padding: 0.75rem;
+  background: var(--bg-primary, #f9fafb);
   border-radius: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 0.5rem;
   font-weight: 600;
   font-size: 0.875rem;
   color: var(--text-primary, #1f2937);
+  border: 1px solid var(--border-card, #e5e7eb);
 }
 
 .table-row {
   display: grid;
   grid-template-columns: 1fr 2fr 2fr 80px;
-  gap: 16px;
-  padding: 12px 16px;
+  gap: 1rem;
+  padding: 0.75rem;
   border-radius: 8px;
   transition: background-color 0.2s ease;
   font-size: 0.875rem;
+  background: var(--bg-primary, #f9fafb);
+  border: 1px solid var(--border-card, #e5e7eb);
+  margin-bottom: 0.5rem;
 }
 
 .table-row:hover {
-  background: rgba(0, 0, 0, 0.02);
+  background: var(--bg-card, #ffffff);
 }
 
 .table-cell {
@@ -1555,18 +1568,20 @@ function fitTrackExtent() {
   height: 28px;
   border: none;
   border-radius: 6px;
-  background: rgba(37, 99, 235, 0.1);
+  background: var(--accent-secondary, rgba(37, 99, 235, 0.1));
   color: var(--accent-primary, #2563eb);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
+  border: 1px solid var(--border-card, #e5e7eb);
 }
 
 .focus-btn:hover {
-  background: rgba(37, 99, 235, 0.2);
-  transform: scale(1.1);
+  background: var(--accent-primary, #2563eb);
+  color: white;
+  transform: scale(1.05);
 }
 
 /* 数据列表面板样式 */
@@ -1577,25 +1592,57 @@ function fitTrackExtent() {
   border-radius: 12px;
   border: 1px solid var(--border-card, #e5e7eb);
   overflow: hidden;
+  margin-top: 1rem;
 }
 
 /* 暗黑主题下的文字颜色增强 */
 @media (prefers-color-scheme: dark) {
   .section-title {
-    color: #f9fafb !important;
+    color: var(--text-primary, #f9fafb) !important;
   }
   
   .date-text {
-    color: #f9fafb !important;
+    color: var(--text-primary, #f9fafb) !important;
   }
   
   .point-count {
-    color: #d1d5db !important;
+    color: var(--text-secondary, #d1d5db) !important;
   }
   
   .table-header {
-    color: #f9fafb !important;
-    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary, #f9fafb) !important;
+    background: var(--bg-card, rgba(255, 255, 255, 0.05));
+    border: 1px solid var(--border-card, rgba(255, 255, 255, 0.1));
+  }
+  
+  .table-row {
+    background: var(--bg-primary, rgba(255, 255, 255, 0.02));
+    border: 1px solid var(--border-card, rgba(255, 255, 255, 0.1));
+  }
+  
+  .table-header {
+    background: var(--bg-primary, rgba(255, 255, 255, 0.02));
+    border: 1px solid var(--border-card, rgba(255, 255, 255, 0.1));
+  }
+  
+  .date-group {
+    background: var(--bg-primary, rgba(255, 255, 255, 0.02));
+    border: 1px solid var(--border-card, rgba(255, 255, 255, 0.1));
+  }
+  
+  .date-details {
+    background: var(--bg-card, rgba(255, 255, 255, 0.05));
+    border-top: 1px solid var(--border-card, rgba(255, 255, 255, 0.1));
+  }
+  
+  .data-section {
+    background: var(--bg-card, rgba(255, 255, 255, 0.05));
+    border: 1px solid var(--border-card, rgba(255, 255, 255, 0.1));
+  }
+  
+  .data-header {
+    background: var(--bg-card, rgba(255, 255, 255, 0.05));
+    border-bottom: 1px solid var(--border-card, rgba(255, 255, 255, 0.1));
   }
   
   .table-cell {
@@ -1623,13 +1670,18 @@ function fitTrackExtent() {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 0 16px 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  margin-bottom: 16px;
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--border-card, #e5e7eb);
+  margin-bottom: 1rem;
+  background: var(--bg-card, #ffffff);
+  border-radius: 8px 8px 0 0;
 }
 
 .data-header .section-title {
   margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
 }
 
 .data-header .close-btn {
@@ -1655,7 +1707,7 @@ function fitTrackExtent() {
   flex: 1;
   overflow-y: auto;
   max-height: 300px;
-  padding-right: 8px;
+  padding: 0 0.5rem 0.5rem 0.5rem;
 }
 
 /* 数据模式下的表格样式优化 */

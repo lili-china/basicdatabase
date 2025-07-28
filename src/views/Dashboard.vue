@@ -197,7 +197,7 @@ import NavigationBar from '../components/NavigationBar.vue'
 // 当前session ID
 const currentSessionId = ref<string | null>(null)
 
-// 统计数据 - 这些值后期将从API获取
+// 统计数据 - 从API获取
 const personalCount = ref(0)
 const vehicleCount = ref(0)
 const enterpriseCount = ref(0)
@@ -205,13 +205,14 @@ const custom1Count = ref(0)
 const custom2Count = ref(0)
 const custom3Count = ref(0)
 
-// 目标数值
-const targetPersonalCount = 12502312312
-const targetVehicleCount = 856123123123
-const targetEnterpriseCount = 34212312312
-const targetCustom1Count = 0
-const targetCustom2Count = 0
-const targetCustom3Count = 0
+
+// 目标数值 - 将从API获取
+const targetPersonalCount = ref(0)
+const targetVehicleCount = ref(0)
+const targetEnterpriseCount = ref(0)
+const targetCustom1Count = ref(0)
+const targetCustom2Count = ref(0)
+const targetCustom3Count = ref(0)
 
 // 滚动状态
 const isScrolled = initScrollListener()
@@ -225,37 +226,37 @@ onMounted(() => {
     const batchAnimator = createBatchAnimator()
     
     // 添加所有数字动画
-    batchAnimator.addAnimator(0, targetPersonalCount, {
+    batchAnimator.addAnimator(0, targetPersonalCount.value, {
       duration: 2000,
       easing: Easing.easeOutQuart,
       onUpdate: (value) => personalCount.value = value
     })
     
-    batchAnimator.addAnimator(0, targetVehicleCount, {
+    batchAnimator.addAnimator(0, targetVehicleCount.value, {
       duration: 2000,
       easing: Easing.easeOutQuart,
       onUpdate: (value) => vehicleCount.value = value
     })
     
-    batchAnimator.addAnimator(0, targetEnterpriseCount, {
+    batchAnimator.addAnimator(0, targetEnterpriseCount.value, {
       duration: 2000,
       easing: Easing.easeOutQuart,
       onUpdate: (value) => enterpriseCount.value = value
     })
     
-    batchAnimator.addAnimator(0, targetCustom1Count, {
+    batchAnimator.addAnimator(0, targetCustom1Count.value, {
       duration: 2000,
       easing: Easing.easeOutQuart,
       onUpdate: (value) => custom1Count.value = value
     })
     
-    batchAnimator.addAnimator(0, targetCustom2Count, {
+    batchAnimator.addAnimator(0, targetCustom2Count.value, {
       duration: 2000,
       easing: Easing.easeOutQuart,
       onUpdate: (value) => custom2Count.value = value
     })
     
-    batchAnimator.addAnimator(0, targetCustom3Count, {
+    batchAnimator.addAnimator(0, targetCustom3Count.value, {
       duration: 2000,
       easing: Easing.easeOutQuart,
       onUpdate: (value) => custom3Count.value = value
