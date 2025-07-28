@@ -356,12 +356,12 @@ onUnmounted(() => {
   position: absolute;
   top: 50px;
   right: 10px;
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--bg-card);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: var(--shadow-card), 0 0 0 1px var(--border-card), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-card);
   z-index: 1000;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: visible;
@@ -381,37 +381,37 @@ onUnmounted(() => {
   height: 48px;
   border: none;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--bg-secondary);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   color: var(--text-primary);
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: var(--shadow-card-light), 0 0 0 1px var(--border-card), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-card);
   position: relative;
 }
 
 .control-btn:hover {
   transform: translateY(-3px);
-  background: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  background: var(--accent-secondary);
+  box-shadow: var(--shadow-card), 0 0 0 1px var(--accent-primary), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .layer-btn {
-  background: rgba(99, 102, 241, 0.2);
-  color: #6366f1;
+  background: var(--accent-secondary);
+  color: var(--accent-primary);
 }
 
 .layer-btn:hover {
-  background: rgba(99, 102, 241, 0.3);
-  color: white;
+  background: var(--accent-hover);
+  color: var(--accent-primary);
 }
 
 .layer-btn.active {
-  background: rgba(37, 99, 235, 0.3);
+  background: var(--accent-primary);
   color: white;
-  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  box-shadow: var(--shadow-card), 0 0 0 1px var(--accent-primary), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .location-marker {
@@ -420,7 +420,8 @@ onUnmounted(() => {
   /* margin-top: 2rem; */
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border-card);
 }
 
 .ol-zoom,
@@ -440,24 +441,24 @@ onUnmounted(() => {
 }
 
 .avatar-dialog {
-  background: rgba(255,255,255,0.18);
+  background: var(--bg-card);
   border-radius: 14px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+  box-shadow: var(--shadow-card);
   padding: 18px 24px 12px 24px;
   min-width: 220px;
   max-width: 80vw;
   position: relative;
   backdrop-filter: blur(18px) saturate(180%);
   -webkit-backdrop-filter: blur(18px) saturate(180%);
-  border: 1px solid rgba(255,255,255,0.25);
+  border: 1px solid var(--border-card);
   transition: all 0.2s;
 }
 
 .avatar-dialog.glass {
-  background: rgba(255,255,255,0.18);
+  background: var(--bg-card);
   backdrop-filter: blur(18px) saturate(180%);
   -webkit-backdrop-filter: blur(18px) saturate(180%);
-  border: 1px solid rgba(255,255,255,0.25);
+  border: 1px solid var(--border-card);
 }
 
 .avatar-dialog h4 {
@@ -465,6 +466,7 @@ onUnmounted(() => {
   font-size: 1rem;
   font-weight: 700;
   text-align: center;
+  color: var(--text-primary);
 }
 
 .avatar-dialog-row {
@@ -475,7 +477,7 @@ onUnmounted(() => {
 }
 
 .avatar-dialog-row .label {
-  color: #666;
+  color: var(--text-secondary);
   min-width: 54px;
   text-align: right;
 }
@@ -487,7 +489,7 @@ onUnmounted(() => {
   padding: 4px 18px;
   border: none;
   border-radius: 6px;
-  background: #2563eb;
+  background: var(--accent-primary);
   color: #fff;
   font-size: 0.95rem;
   cursor: pointer;
@@ -495,7 +497,7 @@ onUnmounted(() => {
 }
 
 .avatar-dialog-close:hover {
-  background: #1d4ed8;
+  background: var(--accent-primary-dark-2);
 }
 
 .moving-avatar {

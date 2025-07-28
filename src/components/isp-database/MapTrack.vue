@@ -18,6 +18,15 @@
         </svg>
       </button>
       
+      <!-- 图层切换按钮 -->
+      <button @click="toggleLayer" class="map-layer-toggle-btn" :class="{ active: currentLayer === 'satellite' }" :title="currentLayer === 'satellite' ? 'Switch to Map' : 'Switch to Satellite'">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+          <path d="M2 12h20" stroke="currentColor" stroke-width="2"/>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </button>
+      
       <!-- 数据列表按钮 -->
       <button @click="() => togglePanel(20)" class="data-toggle-btn" :class="{ active: showDataList }" :title="showDataList ? 'Hide Data List' : 'Show Data List'">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -37,15 +46,6 @@
           <!-- <h4 class="section-title">Track Controls</h4> -->
           <!-- 主要控制按钮 -->
           <div class="main-controls">
-            <!-- 图层切换按钮 -->
-            <button @click="toggleLayer" class="control-btn layer-btn" :class="{ active: currentLayer === 'satellite' }" title="Toggle Map Layer">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
-                <path d="M2 12h20" stroke="currentColor" stroke-width="2"/>
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke="currentColor" stroke-width="2"/>
-              </svg>
-            </button>
-            
             <!-- 播放/暂停按钮 -->
             <button @click="togglePlayPause" class="control-btn play-btn" :title="isPlaying ? 'Pause' : 'Play'">
               <svg v-if="!isPlaying" width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -456,7 +456,7 @@ const toggleLayer = () => {
       maxZoom: 18
     }))
     currentLayer.value = 'satellite'
-  } else {
+  } else if (currentLayer.value === 'satellite') {
     baseLayer.setSource(new XYZ({
       url: MAP_URL,
       maxZoom: 18
@@ -1065,12 +1065,10 @@ function fitTrackExtent() {
   position: relative;
 }
 
-
-
 .map-track {
   margin-top: 2rem;
   width: 100%;
-  height: 400px;
+  height: 500px;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
@@ -1081,20 +1079,21 @@ function fitTrackExtent() {
   position: absolute;
   top: 10px;
   right: 5px;
-  background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-radius: 20px;
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.1),
-    0 0 0 1px rgba(255, 255, 255, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.2);
   z-index: 1000;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: visible;
   min-width: 320px;
   width: 320px;
+}
+
+/* 主题适配样式 */
+.map-track-container .floating-control-panel {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-card) !important;
+  box-shadow: var(--shadow-card) !important;
 }
 
 /* 当显示数据列表时，增加面板宽度 */
@@ -1103,17 +1102,21 @@ function fitTrackExtent() {
   min-width: 480px;
 }
 
-.floating-control-panel.hidden {
+.map-track-container .floating-control-panel.hidden {
   transform: translateX(calc(100% - 80px));
-  opacity: 0.7;
-  background: rgba(255, 255, 255, 0.1);
+  opacity: 0.8;
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-card) !important;
 }
 
-.floating-control-panel.hidden:hover {
+.map-track-container .floating-control-panel.hidden:hover {
   opacity: 1;
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--bg-card) !important;
   transform: translateX(calc(100% - 90px));
+  border: 1px solid var(--border-card) !important;
 }
+
+
 
 .panel-toggle-btn {
   position: absolute;
@@ -1123,7 +1126,7 @@ function fitTrackExtent() {
   height: 40px;
   border: none;
   border-radius: 50%;
-  background: rgba(37, 99, 235, 0.2);
+  background: var(--accent-secondary);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   color: var(--accent-primary);
@@ -1133,33 +1136,34 @@ function fitTrackExtent() {
   justify-content: center;
   transition: all 0.3s ease;
   z-index: 1001;
-  box-shadow: 
-    0 4px 16px rgba(37, 99, 235, 0.2),
-    0 0 0 1px rgba(255, 255, 255, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: var(--shadow-card-light);
+  border: 1px solid var(--accent-primary);
 }
 
 /* 确保切换按钮在隐藏状态下仍然可见 */
 .floating-control-panel.hidden .panel-toggle-btn {
   right: 12px;
-  background: rgba(37, 99, 235, 0.3);
-  color: white;
-  box-shadow: 
-    0 4px 16px rgba(37, 99, 235, 0.4),
-    0 0 0 1px rgba(255, 255, 255, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  background: var(--accent-secondary);
+  color: var(--accent-primary);
+  box-shadow: var(--shadow-card-light);
+}
+
+/* 确保图层切换按钮在隐藏状态下仍然可见 */
+.floating-control-panel.hidden .map-layer-toggle-btn {
+  top: 60px;
+  right: 12px;
+  background: var(--accent-secondary);
+  color: var(--accent-primary);
+  box-shadow: var(--shadow-card-light);
 }
 
 /* 确保数据按钮在隐藏状态下仍然可见 */
 .floating-control-panel.hidden .data-toggle-btn {
+  top: 108px;
   right: 12px;
-  background: rgba(16, 185, 129, 0.3);
-  color: white;
-  box-shadow: 
-    0 4px 16px rgba(16, 185, 129, 0.4),
-    0 0 0 1px rgba(255, 255, 255, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  background: var(--accent-secondary);
+  color: var(--accent-primary);
+  box-shadow: var(--shadow-card-light);
 }
 
 /* 隐藏状态下的面板样式 */
@@ -1185,13 +1189,10 @@ function fitTrackExtent() {
 }
 
 .panel-toggle-btn:hover {
-  background: rgba(37, 99, 235, 0.3);
-  color: white;
+  background: var(--accent-hover);
+  color: var(--accent-primary);
   transform: scale(1.05);
-  box-shadow: 
-    0 6px 20px rgba(37, 99, 235, 0.3),
-    0 0 0 1px rgba(255, 255, 255, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  box-shadow: var(--shadow-card);
 }
 
 .control-panel-content {
@@ -1216,7 +1217,6 @@ function fitTrackExtent() {
   margin: 0 0 8px 0;
   font-size: 1rem;
   font-weight: 600;
-  color: var(--text-primary, #1f2937);
   text-align: center;
 }
 
@@ -1227,7 +1227,7 @@ function fitTrackExtent() {
   margin-bottom: 16px;
 }
 
-.control-btn {
+.floating-control-panel .control-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1235,36 +1235,27 @@ function fitTrackExtent() {
   height: 48px;
   border: none;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--accent-secondary);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   color: var(--text-primary);
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 
-    0 2px 8px rgba(0, 0, 0, 0.1),
-    0 0 0 1px rgba(255, 255, 255, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: var(--shadow-card-light);
+  border: 1px solid var(--border-card);
   position: relative;
 }
 
-.control-btn:hover {
+.floating-control-panel .control-btn:hover {
   transform: translateY(-3px);
-  background: rgba(255, 255, 255, 0.2);
-  box-shadow: 
-    0 6px 20px rgba(0, 0, 0, 0.15),
-    0 0 0 1px rgba(255, 255, 255, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  background: var(--accent-hover);
+  box-shadow: var(--shadow-card);
 }
 
-.control-btn.active {
-  background: rgba(37, 99, 235, 0.3);
+.floating-control-panel .control-btn.active {
+  background: var(--accent-primary);
   color: white;
-  box-shadow: 
-    0 4px 16px rgba(37, 99, 235, 0.3),
-    0 0 0 1px rgba(255, 255, 255, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  box-shadow: var(--shadow-card);
 }
 
 .control-btn::after {
@@ -1288,47 +1279,51 @@ function fitTrackExtent() {
   opacity: 1;
 }
 
-.play-btn {
-  background: rgba(34, 197, 94, 0.2);
-  color: #22c55e;
+.floating-control-panel .play-btn {
+  background: var(--accent-secondary);
+  color: var(--accent-primary);
+  border: 1px solid var(--accent-primary);
 }
 
-.play-btn:hover {
-  background: rgba(34, 197, 94, 0.3);
-  color: white;
+.floating-control-panel .play-btn:hover {
+  background: var(--accent-hover);
+  color: var(--accent-primary);
+  border: 1px solid var(--accent-primary);
 }
 
-.stop-btn {
-  background: rgba(239, 68, 68, 0.2);
-  color: #ef4444;
+.floating-control-panel .stop-btn {
+  background: var(--accent-secondary);
+  color: var(--accent-primary);
+  border: 1px solid var(--accent-primary);
 }
 
-.stop-btn:hover {
-  background: rgba(239, 68, 68, 0.3);
-  color: white;
+.floating-control-panel .stop-btn:hover {
+  background: var(--accent-hover);
+  color: var(--accent-primary);
+  border: 1px solid var(--accent-primary);
 }
 
-.layer-btn {
+.floating-control-panel .map-layer-toggle-btn {
   background: rgba(99, 102, 241, 0.2);
   color: #6366f1;
 }
 
-.layer-btn:hover {
+.floating-control-panel .map-layer-toggle-btn:hover {
   background: rgba(99, 102, 241, 0.3);
   color: white;
 }
 
-.mode-btn {
+.floating-control-panel .mode-btn {
   background: rgba(139, 92, 246, 0.2);
   color: #8b5cf6;
 }
 
-.mode-btn:hover {
+.floating-control-panel .mode-btn:hover {
   background: rgba(139, 92, 246, 0.3);
   color: white;
 }
 
-.mode-btn.active {
+.floating-control-panel .mode-btn.active {
   background: rgba(139, 92, 246, 0.4);
   color: white;
 }
@@ -1351,15 +1346,13 @@ function fitTrackExtent() {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--accent-secondary);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: 12px;
   padding: 10px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 
-    0 2px 8px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-card-light);
 }
 
 .speed-btn {
@@ -1367,7 +1360,7 @@ function fitTrackExtent() {
   height: 28px;
   border: none;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--bg-card);
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
   color: var(--text-primary);
@@ -1376,11 +1369,11 @@ function fitTrackExtent() {
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--border-card);
 }
 
 .speed-btn:hover:not(:disabled) {
-  background: rgba(37, 99, 235, 0.2);
+  background: var(--accent-hover);
   color: var(--accent-primary);
   transform: scale(1.1);
 }
@@ -1388,7 +1381,7 @@ function fitTrackExtent() {
 .speed-btn:disabled {
   opacity: 0.3;
   cursor: not-allowed;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--bg-tertiary);
 }
 
 .speed-text {
@@ -1403,34 +1396,30 @@ function fitTrackExtent() {
   display: flex;
   align-items: center;
   gap: 12px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--accent-secondary);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: 12px;
   padding: 10px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 
-    0 2px 8px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-card-light);
 }
 
 .progress-bar {
   flex: 1;
   height: 10px;
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--bg-tertiary);
   border-radius: 6px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid var(--border-card);
 }
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, rgba(37, 99, 235, 0.8), rgba(59, 130, 246, 0.8));
+  background: linear-gradient(90deg, var(--accent-primary), var(--accent-hover));
   border-radius: 6px;
   transition: width 0.3s ease;
-  box-shadow: 
-    0 0 12px rgba(37, 99, 235, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  box-shadow: var(--shadow-card-light);
 }
 
 .progress-text {
@@ -1442,23 +1431,23 @@ function fitTrackExtent() {
 }
 
 .progress-percent {
-  color: #f59e0b;
+  color: var(--accent-primary);
   margin-left: 6px;
   font-weight: bold;
 }
 
 
 .date-group {
-  border-bottom: 1px solid var(--border-card, #e5e7eb);
-  background: var(--bg-primary, #f9fafb);
+  border-bottom: 1px solid var(--border-card);
+  background: var(--bg-tertiary);
   border-radius: 8px;
   margin-bottom: 0.5rem;
-  border: 1px solid var(--border-card, #e5e7eb);
+  border: 1px solid var(--border-card);
   transition: background-color 0.2s ease;
 }
 
 .date-group:hover {
-  background: var(--bg-card, #ffffff);
+  background: var(--bg-card);
 }
 
 .date-header {
@@ -1471,7 +1460,7 @@ function fitTrackExtent() {
 }
 
 .date-header:hover {
-  background: var(--bg-card, #ffffff);
+  background: var(--bg-card);
 }
 
 .date-info {
@@ -1485,23 +1474,20 @@ function fitTrackExtent() {
 }
 
 .date-info:hover {
-  background: rgba(37, 99, 235, 0.05);
+  background: var(--accent-secondary);
 }
 
 .date-text {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--text-primary, #1f2937);
 }
 
 .point-count {
   font-size: 0.875rem;
-  color: var(--text-secondary, #6b7280);
 }
 
 .expand-icon {
   transition: transform 0.3s ease;
-  color: var(--text-secondary, #6b7280);
   cursor: pointer;
   padding: 4px;
   border-radius: 4px;
@@ -1509,17 +1495,18 @@ function fitTrackExtent() {
 }
 
 .expand-icon:hover {
-  background: rgba(0, 0, 0, 0.05);
-  color: var(--text-primary, #1f2937);
+  background: var(--accent-secondary);
 }
+
+/* 移除旧的暗色模式媒体查询，因为现在使用CSS变量自动适配 */
 
 .expand-icon.expanded {
   transform: rotate(90deg);
 }
 
 .date-details {
-  background: var(--bg-card, #ffffff);
-  border-top: 1px solid var(--border-card, #e5e7eb);
+  background: var(--bg-card);
+  border-top: 1px solid var(--border-card);
 }
 
 .detail-table {
@@ -1531,13 +1518,10 @@ function fitTrackExtent() {
   grid-template-columns: 1fr 2fr 2fr 80px;
   gap: 1rem;
   padding: 0.75rem;
-  background: var(--bg-primary, #f9fafb);
   border-radius: 8px;
   margin-bottom: 0.5rem;
   font-weight: 600;
   font-size: 0.875rem;
-  color: var(--text-primary, #1f2937);
-  border: 1px solid var(--border-card, #e5e7eb);
 }
 
 .table-row {
@@ -1548,19 +1532,12 @@ function fitTrackExtent() {
   border-radius: 8px;
   transition: background-color 0.2s ease;
   font-size: 0.875rem;
-  background: var(--bg-primary, #f9fafb);
-  border: 1px solid var(--border-card, #e5e7eb);
   margin-bottom: 0.5rem;
-}
-
-.table-row:hover {
-  background: var(--bg-card, #ffffff);
 }
 
 .table-cell {
   display: flex;
   align-items: center;
-  color: var(--text-primary, #1f2937);
 }
 
 .focus-btn {
@@ -1568,130 +1545,126 @@ function fitTrackExtent() {
   height: 28px;
   border: none;
   border-radius: 6px;
-  background: var(--accent-secondary, rgba(37, 99, 235, 0.1));
-  color: var(--accent-primary, #2563eb);
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
-  border: 1px solid var(--border-card, #e5e7eb);
+  border: 1px solid rgba(59, 130, 246, 0.2);
 }
 
 .focus-btn:hover {
-  background: var(--accent-primary, #2563eb);
-  color: white;
+  background: rgba(59, 130, 246, 0.2);
+  color: #1d4ed8;
   transform: scale(1.05);
 }
 
 /* 数据列表面板样式 */
-.data-section {
+.floating-control-panel .data-section {
   display: flex;
   flex-direction: column;
-  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
   overflow: hidden;
   margin-top: 1rem;
-  box-shadow: 
-    0 2px 8px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-card) !important;
+  box-shadow: var(--shadow-card) !important;
 }
 
-/* 暗黑主题下的文字颜色增强 */
-@media (prefers-color-scheme: dark) {
-  .section-title {
-    color: var(--text-primary, #f9fafb) !important;
-  }
-  
-  .date-text {
-    color: var(--text-primary, #f9fafb) !important;
-  }
-  
-  .point-count {
-    color: var(--text-secondary, #d1d5db) !important;
-  }
-  
-  .table-header {
-    color: var(--text-primary, #f9fafb) !important;
-    background: var(--bg-card, rgba(255, 255, 255, 0.05));
-    border: 1px solid var(--border-card, rgba(255, 255, 255, 0.1));
-  }
-  
-  .table-row {
-    background: var(--bg-primary, rgba(255, 255, 255, 0.02));
-    border: 1px solid var(--border-card, rgba(255, 255, 255, 0.1));
-  }
-  
-  .table-header {
-    background: var(--bg-primary, rgba(255, 255, 255, 0.02));
-    border: 1px solid var(--border-card, rgba(255, 255, 255, 0.1));
-  }
-  
-  .date-group {
-    background: var(--bg-primary, rgba(255, 255, 255, 0.02));
-    border: 1px solid var(--border-card, rgba(255, 255, 255, 0.1));
-  }
-  
-  .date-details {
-    background: var(--bg-card, rgba(255, 255, 255, 0.05));
-    border-top: 1px solid var(--border-card, rgba(255, 255, 255, 0.1));
-  }
-  
-  .data-section {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-  }
-  
-  .data-header {
-    background: rgba(255, 255, 255, 0.1);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  }
-  
-  .table-cell {
-    color: #f9fafb !important;
-  }
-  
-  .expand-icon {
-    color: #d1d5db !important;
-  }
-  
-  .expand-icon:hover {
-    color: #f9fafb !important;
-  }
-  
-  .focus-btn {
-    color: #60a5fa !important;
-  }
-  
-  .data-header .close-btn {
-    color: #f9fafb !important;
-  }
+/* 主题适配的面板样式 */
+.map-track-container .floating-control-panel .data-section {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-card) !important;
+  box-shadow: var(--shadow-card) !important;
 }
+
+/* 移除旧的暗色模式媒体查询，因为现在使用CSS变量自动适配 */
+
+/* 主题适配的文字颜色 */
+.floating-control-panel .section-title {
+  color: var(--text-primary) !important;
+}
+
+.floating-control-panel .date-text {
+  color: var(--text-primary) !important;
+}
+
+.floating-control-panel .point-count {
+  color: var(--text-secondary) !important;
+}
+
+.floating-control-panel .table-header {
+  color: var(--text-primary) !important;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-card);
+}
+
+.floating-control-panel .table-row {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-card);
+}
+
+.floating-control-panel .table-row:hover {
+  background: var(--bg-card);
+}
+
+.floating-control-panel .table-cell,
+.floating-control-panel .header-cell {
+  color: var(--text-primary) !important;
+}
+
+.floating-control-panel .expand-icon {
+  color: var(--text-secondary) !important;
+}
+
+.floating-control-panel .expand-icon:hover {
+  color: var(--text-primary) !important;
+}
+
+.floating-control-panel .focus-btn {
+  color: var(--accent-primary) !important;
+  background: var(--accent-secondary) !important;
+  border: 1px solid var(--accent-primary) !important;
+}
+
+.floating-control-panel .focus-btn:hover {
+  background: var(--accent-hover) !important;
+  color: var(--accent-primary) !important;
+}
+
+.floating-control-panel .data-header .section-title {
+  color: var(--text-primary) !important;
+}
+
+.floating-control-panel .data-header .close-btn {
+  color: var(--text-primary) !important;
+}
+
+/* 移除旧的暗色模式媒体查询，因为现在使用CSS变量自动适配 */
 
 .data-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid var(--border-card);
   margin-bottom: 1rem;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--bg-tertiary);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: 8px 8px 0 0;
-  box-shadow: 
-    0 2px 8px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  box-shadow: var(--shadow-card-light);
 }
 
 .data-header .section-title {
   margin: 0;
   font-size: 1.125rem;
   font-weight: 600;
-  color: var(--text-primary, #1f2937);
 }
 
 .data-header .close-btn {
@@ -1699,8 +1672,8 @@ function fitTrackExtent() {
   height: 24px;
   border: none;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.1);
-  color: var(--text-primary, #1f2937);
+  background: var(--accent-secondary);
+  color: var(--text-primary);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1709,7 +1682,7 @@ function fitTrackExtent() {
 }
 
 .data-header .close-btn:hover {
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--accent-hover);
   transform: scale(1.1);
 }
 
@@ -1731,19 +1704,55 @@ function fitTrackExtent() {
   padding: 8px 4px;
 }
 
-/* 数据切换按钮样式 */
-.data-toggle-btn {
+/* 图层切换按钮样式 */
+.map-layer-toggle-btn {
   position: absolute;
-  top: 70px;
+  top: 60px;
   right: 12px;
   width: 40px;
   height: 40px;
   border: none;
   border-radius: 50%;
-  background: rgba(16, 185, 129, 0.2);
+  background: var(--accent-secondary);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  color: #10b981;
+  color: var(--accent-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 1001;
+  box-shadow: var(--shadow-card-light);
+  border: 1px solid var(--accent-primary);
+}
+
+.map-layer-toggle-btn:hover {
+  background: var(--accent-hover);
+  color: var(--accent-primary);
+  transform: scale(1.05);
+  box-shadow: var(--shadow-card);
+}
+
+.map-layer-toggle-btn.active {
+  background: var(--accent-primary);
+  color: white;
+  box-shadow: var(--shadow-card);
+}
+
+/* 数据切换按钮样式 */
+.data-toggle-btn {
+  position: absolute;
+  top: 108px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: var(--accent-secondary);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--accent-primary);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1751,35 +1760,27 @@ function fitTrackExtent() {
   transition: all 0.3s ease;
   z-index: 1001;
   pointer-events: auto;
-  box-shadow: 
-    0 4px 16px rgba(16, 185, 129, 0.2),
-    0 0 0 1px rgba(255, 255, 255, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: var(--shadow-card-light);
+  border: 1px solid var(--accent-primary);
 }
 
 /* 数据模式下调整按钮位置 */
 .floating-control-panel.data-mode .data-toggle-btn {
+  top: 108px;
   right: 12px;
 }
 
 .data-toggle-btn:hover {
-  background: rgba(16, 185, 129, 0.3);
-  color: white;
+  background: var(--accent-hover);
+  color: var(--accent-primary);
   transform: scale(1.05);
-  box-shadow: 
-    0 6px 20px rgba(16, 185, 129, 0.3),
-    0 0 0 1px rgba(255, 255, 255, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  box-shadow: var(--shadow-card);
 }
 
 .data-toggle-btn.active {
-  background: rgba(16, 185, 129, 0.4);
+  background: var(--accent-primary);
   color: white;
-  box-shadow: 
-    0 4px 16px rgba(16, 185, 129, 0.4),
-    0 0 0 1px rgba(255, 255, 255, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  box-shadow: var(--shadow-card);
 }
 
 .ol-zoom,
@@ -1798,29 +1799,30 @@ function fitTrackExtent() {
   justify-content: center;
 }
 .avatar-dialog {
-  background: rgba(255,255,255,0.18);
+  background: var(--bg-card);
   border-radius: 14px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+  box-shadow: var(--shadow-card);
   padding: 18px 24px 12px 24px;
   min-width: 220px;
   max-width: 80vw;
   position: relative;
   backdrop-filter: blur(18px) saturate(180%);
   -webkit-backdrop-filter: blur(18px) saturate(180%);
-  border: 1px solid rgba(255,255,255,0.25);
+  border: 1px solid var(--border-card);
   transition: all 0.2s;
 }
 .avatar-dialog.glass {
-  background: rgba(255,255,255,0.18);
+  background: var(--bg-card);
   backdrop-filter: blur(18px) saturate(180%);
   -webkit-backdrop-filter: blur(18px) saturate(180%);
-  border: 1px solid rgba(255,255,255,0.25);
+  border: 1px solid var(--border-card);
 }
 .avatar-dialog h4 {
   margin: 0 0 10px 0;
   font-size: 1rem;
   font-weight: 700;
   text-align: center;
+  color: var(--text-primary);
 }
 .avatar-dialog-row {
   display: flex;
@@ -1829,7 +1831,7 @@ function fitTrackExtent() {
   margin-bottom: 6px;
 }
 .avatar-dialog-row .label {
-  color: #666;
+  color: var(--text-secondary);
   min-width: 54px;
   text-align: right;
 }
@@ -1840,27 +1842,27 @@ function fitTrackExtent() {
   padding: 4px 18px;
   border: none;
   border-radius: 6px;
-  background: #2563eb;
+  background: var(--accent-primary);
   color: #fff;
   font-size: 0.95rem;
   cursor: pointer;
   transition: background 0.2s;
 }
 .avatar-dialog-close:hover {
-  background: #1d4ed8;
+  background: var(--accent-primary-dark-2);
 }
 
 .avatar-float-info {
   min-width: 180px;
   max-width: 260px;
-  background: rgba(255,255,255,0.18);
+  background: var(--bg-card);
   border-radius: 12px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+  box-shadow: var(--shadow-card);
   padding: 14px 18px 10px 18px;
   position: absolute;
   backdrop-filter: blur(18px) saturate(180%);
   -webkit-backdrop-filter: blur(18px) saturate(180%);
-  border: 1px solid rgba(255,255,255,0.18);
+  border: 1px solid var(--border-card);
   transition: all 0.2s;
   pointer-events: auto;
 }
@@ -1869,6 +1871,7 @@ function fitTrackExtent() {
   font-size: 1rem;
   font-weight: 700;
   text-align: left;
+  color: var(--text-primary);
 }
 .avatar-float-info .avatar-dialog-row {
   display: flex;
@@ -1877,7 +1880,7 @@ function fitTrackExtent() {
   margin-bottom: 6px;
 }
 .avatar-float-info .avatar-dialog-row .label {
-  color: #666;
+  color: var(--text-secondary);
   min-width: 54px;
   text-align: right;
 }
@@ -1888,14 +1891,14 @@ function fitTrackExtent() {
   padding: 3px 14px;
   border: none;
   border-radius: 6px;
-  background: #2563eb;
+  background: var(--accent-primary);
   color: #fff;
   font-size: 0.95rem;
   cursor: pointer;
   transition: background 0.2s;
 }
 .avatar-float-info .avatar-dialog-close:hover {
-  background: #1d4ed8;
+  background: var(--accent-primary-dark-2);
 }
 
 .moving-avatar {

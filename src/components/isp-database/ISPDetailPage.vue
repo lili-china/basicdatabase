@@ -156,7 +156,7 @@
                   <span class="detail-value">{{ deviceInfo.imei }}</span>
                 </div>
                 <div class="detail-item">
-                  <span class="detail-label">Associated Phone:</span>
+                  <span class="detail-label">IMSI:</span>
                   <span class="detail-value">{{ deviceInfo.associatedPhone }}</span>
                 </div>
                 <div class="detail-item">
@@ -168,8 +168,13 @@
                   <span class="detail-value">{{ deviceInfo.manufacturer }}</span>
                 </div>
                 <div class="detail-item">
-                  <span class="detail-label">OS Version:</span>
-                  <span class="detail-value">{{ deviceInfo.osVersion }}</span>
+                  <span class="detail-label">OS:</span>
+                  <span class="detail-value" v-if="isAppleDevice">
+                    IOS
+                  </span>
+                  <span class="detail-value" v-else>
+                    Android
+                  </span>
                 </div>
                 <div class="detail-item">
                   <span class="detail-label">Registration Date:</span>
@@ -179,12 +184,12 @@
                   <span class="detail-label">Last Active:</span>
                   <span class="detail-value">{{ deviceInfo.lastActive }}</span>
                 </div>
-                <div class="detail-item">
+                <!-- <div class="detail-item">
                   <span class="detail-label">Status:</span>
                   <span class="detail-value">
                     <span class="status-tag" :class="deviceInfo.status">{{ deviceInfo.status }}</span>
                   </span>
-                </div>
+                </div> -->
               </div>
               
             </div>
@@ -289,7 +294,7 @@
                       <th>Data Usage</th>
                       <th>Usage Time</th>
                       <th>Last Used</th>
-                      <th>Status</th>
+                      <!-- <th>Status</th> -->
                     </tr>
                   </thead>
                   <tbody>
@@ -308,9 +313,9 @@
                       <td>{{ app.dataUsage }}</td>
                       <td>{{ app.usageTime }}</td>
                       <td>{{ app.lastUsed }}</td>
-                      <td>
+                      <!-- <td>
                         <span class="status-badge" :class="app.status">{{ app.status }}</span>
-                      </td>
+                      </td> -->
                     </tr>
                   </tbody>
                 </table>
@@ -413,17 +418,40 @@
               <div class="location-info">
               <div class="location-details">
                 <div class="detail-item">
-                  <span class="detail-label">Installation Address:</span>
-                  <span class="detail-value">{{ isp.address }}</span>
-                </div>
-                <div class="detail-item">
-                  <span class="detail-label">Service Area:</span>
-                  <span class="detail-value">{{ isp.location || 'Muscat, Oman' }}</span>
+                  <span class="detail-label">Landine Number / IP Address:</span>
+                  <span class="detail-value" >
+                    <span class="status-tag active">127.0.0.1
+                    </span>
+                    </span>
                 </div>
                 <div class="detail-item">
                   <span class="detail-label">Network Type:</span>
                   <span class="detail-value">Fixed Fiber</span>
                 </div>
+                <div class="detail-item">
+                  <span class="detail-label">Lat:</span>
+                  <span class="detail-value" >
+                    <span class="status-tag active">23.99
+                    </span>
+                    </span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Lon:</span>
+                  <span class="detail-value" >
+                    <span class="status-tag active">52.00
+                    </span>
+                    </span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label"> Address:</span>
+                  <span class="detail-value">{{ isp.address }}</span>
+                </div>
+            
+                <div class="detail-item">
+                  <span class="detail-label">Service Area:</span>
+                  <span class="detail-value">{{ isp.location || 'Muscat, Oman' }}</span>
+                </div>
+                
                 <div class="detail-item">
                   <span class="detail-label">Connection Status:</span>
                   <span class="detail-value">
@@ -606,15 +634,15 @@ const deviceInfo = ref({
   model: 'iPhone 15 Pro',
   manufacturer: 'Apple Inc.',
   osVersion: 'iOS 17.2.1',
-  registrationDate: '2024-01-15',
-  lastActive: '2024-06-15 18:30',
+  registrationDate: '2024-01-15 00:00:00',
+  lastActive: '2024-06-15 18:30:00',
   status: 'active'
 })
 
 
 // 判断是否为苹果设备
 const isAppleDevice = computed(() => {
-  return deviceInfo.value.manufacturer.toLowerCase().includes('apple')
+  return !deviceInfo.value.manufacturer.toLowerCase().includes('apple')
 })
 
 

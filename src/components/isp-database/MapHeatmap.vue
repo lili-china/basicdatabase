@@ -174,12 +174,12 @@ onUnmounted(() => {
   position: absolute;
   top: 10px;
   right: 5px;
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--bg-card);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: var(--shadow-card), 0 0 0 1px var(--border-card), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-card);
   z-index: 1000;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: visible;
@@ -199,37 +199,37 @@ onUnmounted(() => {
   height: 48px;
   border: none;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--bg-secondary);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   color: var(--text-primary);
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: var(--shadow-card-light), 0 0 0 1px var(--border-card), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-card);
   position: relative;
 }
 
 .control-btn:hover {
   transform: translateY(-3px);
-  background: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  background: var(--accent-secondary);
+  box-shadow: var(--shadow-card), 0 0 0 1px var(--accent-primary), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .layer-btn {
-  background: rgba(99, 102, 241, 0.2);
-  color: #6366f1;
+  background: var(--accent-secondary);
+  color: var(--accent-primary);
 }
 
 .layer-btn:hover {
-  background: rgba(99, 102, 241, 0.3);
-  color: white;
+  background: var(--accent-hover);
+  color: var(--accent-primary);
 }
 
 .layer-btn.active {
-  background: rgba(37, 99, 235, 0.3);
+  background: var(--accent-primary);
   color: white;
-  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  box-shadow: var(--shadow-card), 0 0 0 1px var(--accent-primary), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .map-heatmap {
@@ -238,7 +238,8 @@ onUnmounted(() => {
   margin-top: 2rem;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border-card);
 }
 
 .ol-zoom,
