@@ -1216,7 +1216,7 @@ function fitTrackExtent() {
   margin: 0 0 8px 0;
   font-size: 1rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-primary, #1f2937);
   text-align: center;
 }
 
@@ -1482,17 +1482,17 @@ function fitTrackExtent() {
 .date-text {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-primary, #1f2937);
 }
 
 .point-count {
   font-size: 0.875rem;
-  color: var(--text-secondary);
+  color: var(--text-secondary, #6b7280);
 }
 
 .expand-icon {
   transition: transform 0.3s ease;
-  color: var(--text-secondary);
+  color: var(--text-secondary, #6b7280);
   cursor: pointer;
   padding: 4px;
   border-radius: 4px;
@@ -1501,7 +1501,7 @@ function fitTrackExtent() {
 
 .expand-icon:hover {
   background: rgba(0, 0, 0, 0.05);
-  color: var(--text-primary);
+  color: var(--text-primary, #1f2937);
 }
 
 .expand-icon.expanded {
@@ -1527,7 +1527,7 @@ function fitTrackExtent() {
   margin-bottom: 8px;
   font-weight: 600;
   font-size: 0.875rem;
-  color: var(--text-primary);
+  color: var(--text-primary, #1f2937);
 }
 
 .table-row {
@@ -1547,7 +1547,7 @@ function fitTrackExtent() {
 .table-cell {
   display: flex;
   align-items: center;
-  color: var(--text-primary);
+  color: var(--text-primary, #1f2937);
 }
 
 .focus-btn {
@@ -1556,7 +1556,7 @@ function fitTrackExtent() {
   border: none;
   border-radius: 6px;
   background: rgba(37, 99, 235, 0.1);
-  color: var(--accent-primary);
+  color: var(--accent-primary, #2563eb);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1573,7 +1573,50 @@ function fitTrackExtent() {
 .data-section {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  background: var(--bg-card, #ffffff);
+  border-radius: 12px;
+  border: 1px solid var(--border-card, #e5e7eb);
+  overflow: hidden;
+}
+
+/* 暗黑主题下的文字颜色增强 */
+@media (prefers-color-scheme: dark) {
+  .section-title {
+    color: #f9fafb !important;
+  }
+  
+  .date-text {
+    color: #f9fafb !important;
+  }
+  
+  .point-count {
+    color: #d1d5db !important;
+  }
+  
+  .table-header {
+    color: #f9fafb !important;
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+  .table-cell {
+    color: #f9fafb !important;
+  }
+  
+  .expand-icon {
+    color: #d1d5db !important;
+  }
+  
+  .expand-icon:hover {
+    color: #f9fafb !important;
+  }
+  
+  .focus-btn {
+    color: #60a5fa !important;
+  }
+  
+  .data-header .close-btn {
+    color: #f9fafb !important;
+  }
 }
 
 .data-header {
@@ -1595,7 +1638,7 @@ function fitTrackExtent() {
   border: none;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.1);
-  color: var(--text-primary);
+  color: var(--text-primary, #1f2937);
   cursor: pointer;
   display: flex;
   align-items: center;

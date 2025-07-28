@@ -130,7 +130,6 @@
                 :key="item.id"
                       class="file-card"
                 @click="handleItemClick(item)"
-                @contextmenu="showContextMenu($event, item)"
               >
                                             <div class="file-icon">
                         <svg v-if="item.type === 'folder'" viewBox="0 0 24 24" fill="none">
@@ -173,13 +172,11 @@
                 :data="currentItems" 
                 class="file-table" 
                 @row-click="handleItemClick" 
-                @row-contextmenu="showContextMenu" 
-                @contextmenu="showContextMenu"
-                :row-class-name="getRowClassName"
+                height="70vh"
               >
                 <el-table-column prop="name" label="Name" min-width="200">
                   <template #default="{ row }">
-                    <div class="name-content" @contextmenu="showContextMenu($event, row)">
+                    <div class="name-content">
                       <svg v-if="row.type === 'folder'" viewBox="0 0 24 24" fill="none">
                         <path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-5l-2-2H5a2 2 0 0 0-2 2z" stroke="currentColor" stroke-width="2"/>
                       </svg>
@@ -198,82 +195,208 @@
                 </el-table-column>
                 <el-table-column label="Type" min-width="120">
                   <template #default="{ row }">
-                    <div @contextmenu="showContextMenu($event, row)">{{ getFileType(row) }}</div>
+                    <div>{{ getFileType(row) }}</div>
                   </template>
                 </el-table-column>
-                <el-table-column label="Modified" min-width="120">
+                <el-table-column label="Modified" min-width="120" sortable>
                   <template #default="{ row }">
-                    <div @contextmenu="showContextMenu($event, row)">{{ formatDate(row.modified) }}</div>
+                    <div>{{ formatDate(row.modified) }}</div>
                   </template>
                 </el-table-column>
                 <el-table-column label="Owner" min-width="100">
                   <template #default="{ row }">
-                    <div @contextmenu="showContextMenu($event, row)">{{ row.owner || 'Admin' }}</div>
+                    <div>{{ row.owner || 'Admin' }}</div>
+                  </template>
+                </el-table-column>
+                <el-table-column label="Actions" min-width="150" fixed="right">
+                  <template #default="{ row }">
+                    <div class="action-buttons">
+                      <button class="action-btn-small" @click.stop="openItemFromTable(row)" title="Open">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M13.8 12H3" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                      </button>
+                      <button class="action-btn-small" @click.stop="renameItemFromTable(row)" title="Rename">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2"/>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                      </button>
+                      <button v-if="row.type === 'folder'" class="action-btn-small" @click.stop="toggleLockFromTable(row)" :title="row.locked ? 'Unlock' : 'Lock'">
+                        <svg v-if="row.locked" viewBox="0 0 24 24" fill="none">
+                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+                          <circle cx="12" cy="16" r="1" stroke="currentColor" stroke-width="2"/>
+                          <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        <svg v-else viewBox="0 0 24 24" fill="none">
+                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+                          <circle cx="12" cy="16" r="1" stroke="currentColor" stroke-width="2"/>
+                          <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" stroke-width="2"/>
+                          <path d="M12 11V7a3 3 0 0 0-6 0v4" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                      </button>
+                      <button class="action-btn-small danger" @click.stop="deleteItemFromTable(row)" title="Delete">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                          <polyline points="3,6 5,6 21,6" stroke="currentColor" stroke-width="2"/>
+                          <path d="M19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                      </button>
+                    </div>
                   </template>
                 </el-table-column>
               </el-table>
             </div>
           </div>
 
-          <!-- 右键菜单 -->
-          <div v-if="contextMenu.show" class="context-menu" :style="contextMenuStyle">
-            <div @click="openItem" class="context-item">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M13.8 12H3" stroke="currentColor" stroke-width="2"/>
-              </svg>
-              Open
-            </div>
-            <div @click="renameItem" class="context-item">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2"/>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2"/>
-              </svg>
-              Rename
-            </div>
-            <div v-if="contextMenu.item && contextMenu.item.type === 'folder'" @click="toggleLock" class="context-item">
-              <svg v-if="contextMenu.item.locked" viewBox="0 0 24 24" fill="none">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
-                <circle cx="12" cy="16" r="1" stroke="currentColor" stroke-width="2"/>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" stroke-width="2"/>
-              </svg>
-              <svg v-else viewBox="0 0 24 24" fill="none">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
-                <circle cx="12" cy="16" r="1" stroke="currentColor" stroke-width="2"/>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" stroke-width="2"/>
-                <path d="M12 11V7a3 3 0 0 0-6 0v4" stroke="currentColor" stroke-width="2"/>
-              </svg>
-              {{ contextMenu.item.locked ? 'Unlock' : 'Lock' }}
-            </div>
-            <div @click="deleteItem" class="context-item danger">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <polyline points="3,6 5,6 21,6" stroke="currentColor" stroke-width="2"/>
-                <path d="M19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2" stroke="currentColor" stroke-width="2"/>
-              </svg>
-              Delete
-            </div>
-          </div>
 
-          <!-- 背景遮罩 -->
-          <div v-if="contextMenu.show" class="context-overlay" @click="hideContextMenu"></div>
               </div>
             </div>
         </div>
       </div>
     </WaveBackground>
+    
+    <!-- Element Plus 对话框组件 -->
+    
+    <!-- 输入对话框 -->
+    <el-dialog
+      v-model="inputDialogVisible"
+      :title="inputDialogTitle"
+      width="400px"
+      :close-on-click-modal="false"
+      @close="inputDialogCallback?.(null)"
+    >
+      <el-input
+        v-model="inputDialogValue"
+        :placeholder="inputDialogPlaceholder"
+        @keyup.enter="handleInputConfirm"
+        @keyup.escape="handleInputCancel"
+        ref="inputDialogRef"
+      />
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="handleInputCancel">Cancel</el-button>
+          <el-button type="primary" @click="handleInputConfirm">Confirm</el-button>
+        </span>
+      </template>
+    </el-dialog>
+    
+    <!-- 确认对话框 -->
+    <el-dialog
+      v-model="confirmDialogVisible"
+      :title="confirmDialogTitle"
+      width="400px"
+      :close-on-click-modal="false"
+      @close="confirmDialogCallback?.(false)"
+    >
+      <span>{{ confirmDialogMessage }}</span>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="handleConfirmCancel">Cancel</el-button>
+          <el-button type="primary" @click="handleConfirmConfirm">Confirm</el-button>
+        </span>
+      </template>
+    </el-dialog>
+    
+    <!-- 密码对话框 -->
+    <el-dialog
+      v-model="passwordDialogVisible"
+      :title="passwordDialogTitle"
+      width="400px"
+      :close-on-click-modal="false"
+      @close="passwordDialogCallback?.(null)"
+    >
+      <el-input
+        v-model="passwordDialogValue"
+        type="password"
+        placeholder="Enter password"
+        @keyup.enter="handlePasswordConfirm"
+        @keyup.escape="handlePasswordCancel"
+        ref="passwordDialogRef"
+      />
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="handlePasswordCancel">Cancel</el-button>
+          <el-button type="primary" @click="handlePasswordConfirm">Confirm</el-button>
+        </span>
+      </template>
+    </el-dialog>
+    
+    <!-- 上传文件对话框 -->
+    <el-dialog
+      v-model="uploadDialogVisible"
+      title="Upload Files"
+      width="500px"
+      :close-on-click-modal="false"
+    >
+      <el-upload
+        ref="uploadRef"
+        class="upload-demo"
+        drag
+        multiple
+        :auto-upload="false"
+        :on-success="handleUploadSuccess"
+        :on-error="handleUploadError"
+        :before-upload="handleUploadBefore"
+        :on-remove="handleUploadRemove"
+        :file-list="[]"
+        action="#"
+        :http-request="() => {}"
+      >
+        <el-icon class="el-icon--upload"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="2"/>
+        </svg></el-icon>
+        <div class="el-upload__text">
+          Drop files here or <em>click to upload</em>
+        </div>
+        <template #tip>
+          <div class="el-upload__tip">
+            Files smaller than 50MB are allowed
+          </div>
+        </template>
+      </el-upload>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="uploadDialogVisible = false">Cancel</el-button>
+          <el-button type="primary" @click="handleUploadSubmit">Upload</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { getSessionIdFromUrl, validateCurrentSession } from '@/utils/sessionValidator'
 import WaveBackground from '../components/WaveBackground.vue'
 import { currentTheme, toggleTheme } from '@/utils/themeManager'
+import { ElMessageBox, ElMessage } from 'element-plus'
 
 // 当前session ID
 const currentSessionId = ref<string | null>(null)
 
 // 波浪动画控制
 const wavePaused = ref(false)
+
+// 对话框相关
+const inputDialogVisible = ref(false)
+const inputDialogTitle = ref('')
+const inputDialogPlaceholder = ref('')
+const inputDialogValue = ref('')
+const inputDialogCallback = ref<((value: string | null) => void) | null>(null)
+
+const confirmDialogVisible = ref(false)
+const confirmDialogTitle = ref('')
+const confirmDialogMessage = ref('')
+const confirmDialogCallback = ref<((result: boolean) => void) | null>(null)
+
+const passwordDialogVisible = ref(false)
+const passwordDialogTitle = ref('')
+const passwordDialogValue = ref('')
+const passwordDialogCallback = ref<((password: string | null) => void) | null>(null)
+
+// 上传相关
+const uploadDialogVisible = ref(false)
+const uploadRef = ref()
 function toggleWave() {
   wavePaused.value = !wavePaused.value
   // 触发波浪动画控制事件
@@ -357,22 +480,7 @@ const currentItems = ref([
   }
 ])
 
-// 右键菜单
-const contextMenu = ref({
-  show: false,
-  x: 0,
-  y: 0,
-  item: null as any
-})
 
-// 选中的行
-const selectedRow = ref<any>(null)
-
-// 计算样式
-const contextMenuStyle = computed(() => ({
-  left: contextMenu.value.x + 'px',
-  top: contextMenu.value.y + 'px'
-}))
 
 // 格式化文件类型
 function getFileType(item: any): string {
@@ -458,155 +566,14 @@ function handleItemClick(item: any) {
   }
 }
 
-// 获取行类名
-function getRowClassName({ row }: { row: any }) {
-  return selectedRow.value && selectedRow.value.id === row.id ? 'selected-row' : ''
-}
-
-// 显示右键菜单
-function showContextMenu(event: any, item: any) {
-  event.preventDefault()
-  // 设置选中的行
-  selectedRow.value = item
-  contextMenu.value.show = true
-  contextMenu.value.x = event.clientX
-  contextMenu.value.y = event.clientY
-  contextMenu.value.item = item
-}
-
-// 隐藏右键菜单
-function hideContextMenu() {
-  contextMenu.value.show = false
-  // 清除选中状态
-  selectedRow.value = null
-}
 
 // 显示输入对话框
 function showInputDialog(title: string, placeholder: string, callback: (value: string | null) => void) {
-  // 创建输入对话框
-  const dialog = document.createElement('div')
-  dialog.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10000;
-  `
-  
-  const dialogContent = document.createElement('div')
-  dialogContent.style.cssText = `
-    background: var(--bg-card);
-    border: 1px solid var(--border-card);
-    border-radius: 12px;
-    padding: 2rem;
-    min-width: 300px;
-    box-shadow: var(--shadow-dialog);
-    backdrop-filter: blur(20px);
-  `
-  
-  const titleElement = document.createElement('h3')
-  titleElement.textContent = title
-  titleElement.style.cssText = `
-    margin: 0 0 1rem 0;
-    color: var(--text-primary);
-    font-size: 1.1rem;
-    font-weight: 600;
-  `
-  
-  const input = document.createElement('input')
-  input.type = 'text'
-  input.placeholder = placeholder
-  input.style.cssText = `
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid var(--border-card);
-    border-radius: 6px;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    font-size: 0.875rem;
-    margin-bottom: 1rem;
-    outline: none;
-  `
-  
-  const buttonContainer = document.createElement('div')
-  buttonContainer.style.cssText = `
-    display: flex;
-    gap: 0.5rem;
-    justify-content: flex-end;
-  `
-  
-  const cancelBtn = document.createElement('button')
-  cancelBtn.textContent = 'Cancel'
-  cancelBtn.style.cssText = `
-    padding: 0.5rem 1rem;
-    border: 1px solid var(--border-card);
-    border-radius: 6px;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    cursor: pointer;
-    font-size: 0.875rem;
-  `
-  
-  const confirmBtn = document.createElement('button')
-  confirmBtn.textContent = 'Confirm'
-  confirmBtn.style.cssText = `
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 6px;
-    background: var(--accent-primary);
-    color: white;
-    cursor: pointer;
-    font-size: 0.875rem;
-    font-weight: 600;
-  `
-  
-  // 事件处理
-  const handleConfirm = () => {
-    const value = input.value.trim()
-    if (value) {
-      callback(value)
-    }
-    document.body.removeChild(dialog)
-  }
-  
-  const handleCancel = () => {
-    callback(null)
-    document.body.removeChild(dialog)
-  }
-  
-  const handleKeyPress = (e: KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleConfirm()
-    } else if (e.key === 'Escape') {
-      handleCancel()
-    }
-  }
-  
-  // 添加事件监听
-  confirmBtn.addEventListener('click', handleConfirm)
-  cancelBtn.addEventListener('click', handleCancel)
-  input.addEventListener('keypress', handleKeyPress)
-  
-  // 组装对话框
-  buttonContainer.appendChild(cancelBtn)
-  buttonContainer.appendChild(confirmBtn)
-  dialogContent.appendChild(titleElement)
-  dialogContent.appendChild(input)
-  dialogContent.appendChild(buttonContainer)
-  dialog.appendChild(dialogContent)
-  
-  // 显示对话框
-  document.body.appendChild(dialog)
-  
-  // 自动聚焦到输入框
-  setTimeout(() => {
-    input.focus()
-  }, 100)
+  inputDialogTitle.value = title
+  inputDialogPlaceholder.value = placeholder
+  inputDialogValue.value = ''
+  inputDialogCallback.value = callback
+  inputDialogVisible.value = true
 }
 
 // 创建文件夹
@@ -631,351 +598,193 @@ function createFolder() {
 
 // 上传文件
 function uploadFile() {
-  console.log('Upload file with sessionId:', currentSessionId.value)
+  uploadDialogVisible.value = true
 }
 
-// 打开项目
-function openItem() {
-  if (contextMenu.value.item) {
-    // 检查是否是锁定的文件夹
-    if (contextMenu.value.item.type === 'folder' && contextMenu.value.item.locked) {
-      showPasswordDialog('Open', contextMenu.value.item.name, (password) => {
-        if (password !== null) {
-          // 验证密码
-          if (password === '123456') {
-            handleItemClick(contextMenu.value.item)
-            console.log('Opening locked folder via context menu with sessionId:', currentSessionId.value)
-          } else {
-            // 密码错误
-            showDialog('Access Denied', 'Incorrect password! Cannot open locked folder.')
-            console.log(`Failed to open locked folder "${contextMenu.value.item.name}" via context menu - incorrect password`)
-          }
-        }
-      })
-    } else {
-      // 非锁定文件夹或文件直接打开
-      handleItemClick(contextMenu.value.item)
-    }
-  }
-  hideContextMenu()
-}
 
-// 重命名项目
-function renameItem() {
-  if (contextMenu.value.item) {
-    showInputDialog('Rename Item', 'Enter new name:', (newName) => {
-      if (newName) {
-        contextMenu.value.item.name = newName
-      }
-    })
-  }
-  hideContextMenu()
-}
-
-// 删除项目
-function deleteItem() {
-  if (contextMenu.value.item) {
-    showDialog('Confirm Deletion', `Are you sure you want to delete "${contextMenu.value.item.name}"?`, 'confirm', (result) => {
-      if (result) {
-        const index = currentItems.value.findIndex(item => item.id === contextMenu.value.item.id)
-        if (index > -1) {
-          currentItems.value.splice(index, 1)
-        }
-      }
-    })
-  }
-  hideContextMenu()
-}
 
 // 显示通用对话框
 function showDialog(title: string, message: string, type: 'alert' | 'confirm' = 'alert', callback?: (result: boolean) => void) {
-  // 创建对话框
-  const dialog = document.createElement('div')
-  dialog.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10000;
-  `
-  
-  const dialogContent = document.createElement('div')
-  dialogContent.style.cssText = `
-    background: var(--bg-card);
-    border: 1px solid var(--border-card);
-    border-radius: 12px;
-    padding: 2rem;
-    min-width: 300px;
-    max-width: 400px;
-    box-shadow: var(--shadow-dialog);
-    backdrop-filter: blur(20px);
-  `
-  
-  const titleElement = document.createElement('h3')
-  titleElement.textContent = title
-  titleElement.style.cssText = `
-    margin: 0 0 1rem 0;
-    color: var(--text-primary);
-    font-size: 1.1rem;
-    font-weight: 600;
-  `
-  
-  const messageElement = document.createElement('p')
-  messageElement.textContent = message
-  messageElement.style.cssText = `
-    margin: 0 0 1.5rem 0;
-    color: var(--text-secondary);
-    font-size: 0.875rem;
-    line-height: 1.5;
-  `
-  
-  const buttonContainer = document.createElement('div')
-  buttonContainer.style.cssText = `
-    display: flex;
-    gap: 0.5rem;
-    justify-content: flex-end;
-  `
-  
-  const cancelBtn = document.createElement('button')
-  cancelBtn.textContent = type === 'confirm' ? 'Cancel' : 'OK'
-  cancelBtn.style.cssText = `
-    padding: 0.5rem 1rem;
-    border: 1px solid var(--border-card);
-    border-radius: 6px;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    cursor: pointer;
-    font-size: 0.875rem;
-  `
-  
-  let confirmBtn: HTMLButtonElement | null = null
-  
-  if (type === 'confirm') {
-    confirmBtn = document.createElement('button')
-    confirmBtn.textContent = 'Confirm'
-    confirmBtn.style.cssText = `
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 6px;
-      background: var(--accent-primary);
-      color: white;
-      cursor: pointer;
-      font-size: 0.875rem;
-      font-weight: 600;
-    `
+  if (type === 'alert') {
+    ElMessage.info(message)
+    if (callback) callback(true)
+  } else {
+    confirmDialogTitle.value = title
+    confirmDialogMessage.value = message
+    confirmDialogCallback.value = callback || (() => {})
+    confirmDialogVisible.value = true
   }
-  
-  // 事件处理
-  const handleConfirm = () => {
-    if (callback) {
-      callback(true)
-    }
-    document.body.removeChild(dialog)
-  }
-  
-  const handleCancel = () => {
-    if (callback) {
-      callback(false)
-    }
-    document.body.removeChild(dialog)
-  }
-  
-  const handleKeyPress = (e: KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleConfirm()
-    } else if (e.key === 'Escape') {
-      handleCancel()
-    }
-  }
-  
-  // 添加事件监听
-  cancelBtn.addEventListener('click', type === 'confirm' ? handleCancel : handleConfirm)
-  if (confirmBtn) {
-    confirmBtn.addEventListener('click', handleConfirm)
-  }
-  dialog.addEventListener('keypress', handleKeyPress)
-  
-  // 组装对话框
-  buttonContainer.appendChild(cancelBtn)
-  if (confirmBtn) {
-    buttonContainer.appendChild(confirmBtn)
-  }
-  dialogContent.appendChild(titleElement)
-  dialogContent.appendChild(messageElement)
-  dialogContent.appendChild(buttonContainer)
-  dialog.appendChild(dialogContent)
-  
-  // 显示对话框
-  document.body.appendChild(dialog)
-  
-  // 自动聚焦到按钮
-  setTimeout(() => {
-    cancelBtn.focus()
-  }, 100)
 }
 
 // 显示密码输入对话框
 function showPasswordDialog(action: string, itemName: string, callback: (password: string | null) => void) {
-  // 创建密码输入对话框
-  const dialog = document.createElement('div')
-  dialog.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10000;
-  `
-  
-  const dialogContent = document.createElement('div')
-  dialogContent.style.cssText = `
-    background: var(--bg-card);
-    border: 1px solid var(--border-card);
-    border-radius: 12px;
-    padding: 2rem;
-    min-width: 300px;
-    box-shadow: var(--shadow-dialog);
-    backdrop-filter: blur(20px);
-  `
-  
-  const title = document.createElement('h3')
-  title.textContent = `${action} "${itemName}"`
-  title.style.cssText = `
-    margin: 0 0 1rem 0;
-    color: var(--text-primary);
-    font-size: 1.1rem;
-    font-weight: 600;
-  `
-  
-  const passwordInput = document.createElement('input')
-  passwordInput.type = 'password'
-  passwordInput.placeholder = 'Enter password'
-  passwordInput.style.cssText = `
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid var(--border-card);
-    border-radius: 6px;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    font-size: 0.875rem;
-    margin-bottom: 1rem;
-    outline: none;
-  `
-  
-  const buttonContainer = document.createElement('div')
-  buttonContainer.style.cssText = `
-    display: flex;
-    gap: 0.5rem;
-    justify-content: flex-end;
-  `
-  
-  const cancelBtn = document.createElement('button')
-  cancelBtn.textContent = 'Cancel'
-  cancelBtn.style.cssText = `
-    padding: 0.5rem 1rem;
-    border: 1px solid var(--border-card);
-    border-radius: 6px;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    cursor: pointer;
-    font-size: 0.875rem;
-  `
-  
-  const confirmBtn = document.createElement('button')
-  confirmBtn.textContent = 'Confirm'
-  confirmBtn.style.cssText = `
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 6px;
-    background: var(--accent-primary);
-    color: white;
-    cursor: pointer;
-    font-size: 0.875rem;
-    font-weight: 600;
-  `
-  
-  // 事件处理
-  const handleConfirm = () => {
-    const password = passwordInput.value
-    if (password.trim()) {
-      callback(password)
-    }
-    document.body.removeChild(dialog)
-  }
-  
-  const handleCancel = () => {
-    callback(null)
-    document.body.removeChild(dialog)
-  }
-  
-  const handleKeyPress = (e: KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleConfirm()
-    } else if (e.key === 'Escape') {
-      handleCancel()
-    }
-  }
-  
-  // 添加事件监听
-  confirmBtn.addEventListener('click', handleConfirm)
-  cancelBtn.addEventListener('click', handleCancel)
-  passwordInput.addEventListener('keypress', handleKeyPress)
-  
-  // 组装对话框
-  buttonContainer.appendChild(cancelBtn)
-  buttonContainer.appendChild(confirmBtn)
-  dialogContent.appendChild(title)
-  dialogContent.appendChild(passwordInput)
-  dialogContent.appendChild(buttonContainer)
-  dialog.appendChild(dialogContent)
-  
-  // 显示对话框
-  document.body.appendChild(dialog)
-  
-  // 自动聚焦到密码输入框
-  setTimeout(() => {
-    passwordInput.focus()
-  }, 100)
+  passwordDialogTitle.value = `${action} "${itemName}"`
+  passwordDialogValue.value = ''
+  passwordDialogCallback.value = callback
+  passwordDialogVisible.value = true
 }
 
-// 锁定/解锁项目
-function toggleLock() {
-  if (contextMenu.value.item) {
-    const action = contextMenu.value.item.locked ? 'unlock' : 'lock'
-    
-    showPasswordDialog(action, contextMenu.value.item.name, (password) => {
+
+
+// 从表格打开项目
+function openItemFromTable(item: any) {
+  // 检查是否是锁定的文件夹
+  if (item.type === 'folder' && item.locked) {
+    showPasswordDialog('Open', item.name, (password) => {
       if (password !== null) {
-        // 这里可以添加实际的密码验证逻辑
-        // 目前使用简单的密码验证（比如密码是 "123456"）
+        // 验证密码
         if (password === '123456') {
-          contextMenu.value.item.locked = !contextMenu.value.item.locked
-          console.log(`Successfully ${action}ed item "${contextMenu.value.item.name}" with sessionId:`, currentSessionId.value)
+          handleItemClick(item)
+          console.log('Opening locked folder via table with sessionId:', currentSessionId.value)
         } else {
-          // 密码错误提示
-          showDialog('Access Denied', 'Incorrect password!')
-          console.log(`Failed to ${action} item "${contextMenu.value.item.name}" - incorrect password`)
+          // 密码错误
+          showDialog('Access Denied', 'Incorrect password! Cannot open locked folder.')
+          console.log(`Failed to open locked folder "${item.name}" via table - incorrect password`)
         }
       }
     })
+  } else {
+    // 非锁定文件夹或文件直接打开
+    handleItemClick(item)
   }
-  hideContextMenu()
 }
 
-// 点击外部隐藏右键菜单
-function handleClickOutside(event: MouseEvent) {
-  if (contextMenu.value.show) {
-    hideContextMenu()
+// 从表格重命名项目
+function renameItemFromTable(item: any) {
+  showInputDialog('Rename Item', 'Enter new name:', (newName) => {
+    if (newName) {
+      item.name = newName
+    }
+  })
+}
+
+// 从表格锁定/解锁项目
+function toggleLockFromTable(item: any) {
+  const action = item.locked ? 'unlock' : 'lock'
+  
+  showPasswordDialog(action, item.name, (password) => {
+    if (password !== null) {
+      // 这里可以添加实际的密码验证逻辑
+      // 目前使用简单的密码验证（比如密码是 "123456"）
+      if (password === '123456') {
+        item.locked = !item.locked
+        console.log(`Successfully ${action}ed item "${item.name}" via table with sessionId:`, currentSessionId.value)
+      } else {
+        // 密码错误提示
+        showDialog('Access Denied', 'Incorrect password!')
+        console.log(`Failed to ${action} item "${item.name}" via table - incorrect password`)
+      }
+    }
+  })
+}
+
+// 从表格删除项目
+function deleteItemFromTable(item: any) {
+  showDialog('Confirm Deletion', `Are you sure you want to delete "${item.name}"?`, 'confirm', (result) => {
+    if (result) {
+      const index = currentItems.value.findIndex(currentItem => currentItem.id === item.id)
+      if (index > -1) {
+        currentItems.value.splice(index, 1)
+      }
+    }
+  })
+}
+
+// 对话框处理函数
+function handleInputConfirm() {
+  if (inputDialogValue.value.trim()) {
+    inputDialogCallback.value?.(inputDialogValue.value.trim())
+  }
+  inputDialogVisible.value = false
+}
+
+function handleInputCancel() {
+  inputDialogCallback.value?.(null)
+  inputDialogVisible.value = false
+}
+
+function handleConfirmConfirm() {
+  confirmDialogCallback.value?.(true)
+  confirmDialogVisible.value = false
+}
+
+function handleConfirmCancel() {
+  confirmDialogCallback.value?.(false)
+  confirmDialogVisible.value = false
+}
+
+function handlePasswordConfirm() {
+  if (passwordDialogValue.value.trim()) {
+    passwordDialogCallback.value?.(passwordDialogValue.value.trim())
+  }
+  passwordDialogVisible.value = false
+}
+
+function handlePasswordCancel() {
+  passwordDialogCallback.value?.(null)
+  passwordDialogVisible.value = false
+}
+
+// 上传处理函数
+function handleUploadSuccess(response: any, file: any) {
+  console.log('File uploaded successfully:', file.name, 'with sessionId:', currentSessionId.value)
+  ElMessage.success(`File "${file.name}" uploaded successfully`)
+  
+  // 添加新文件到列表
+  const newFile = {
+    id: Date.now().toString(),
+    name: file.name,
+    type: 'file',
+    size: file.size,
+    modified: new Date(),
+    path: `/documents/${file.name}`,
+    locked: false,
+    owner: 'Admin'
+  }
+  currentItems.value.unshift(newFile)
+}
+
+function handleUploadError(error: any, file: any) {
+  console.error('Upload failed:', error)
+  ElMessage.error(`Failed to upload "${file.name}"`)
+}
+
+function handleUploadBefore(file: any) {
+  // 检查文件大小（限制为50MB）
+  const isLt50M = file.size / 1024 / 1024 < 50
+  if (!isLt50M) {
+    ElMessage.error('File size must be smaller than 50MB!')
+    return false
+  }
+  return true
+}
+
+function handleUploadRemove(file: any) {
+  console.log('File removed from upload:', file.name)
+}
+
+function handleUploadSubmit() {
+  if (uploadRef.value) {
+    const fileList = uploadRef.value.uploadFiles
+    if (fileList.length === 0) {
+      ElMessage.warning('Please select files to upload')
+      return
+    }
+    
+    // 模拟上传过程
+    fileList.forEach((file: any) => {
+      // 模拟上传延迟
+      setTimeout(() => {
+        handleUploadSuccess({}, file.raw)
+      }, Math.random() * 1000 + 500)
+    })
+    
+    uploadDialogVisible.value = false
+    ElMessage.success(`Uploading ${fileList.length} file(s)...`)
   }
 }
+
+
 
 // 验证session
 const validateSession = async () => {
@@ -1010,12 +819,6 @@ onMounted(async () => {
   if (!isValid) {
     return
   }
-  
-  document.addEventListener('click', handleClickOutside)
-})
-
-onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside)
 })
 </script>
 
@@ -1023,9 +826,9 @@ onUnmounted(() => {
 .content-area {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1rem;
   margin: 0 auto;
-  padding: 0 3vw;
+  padding: 0 0.5vw;
   width: 100%;
   max-width: 1400px;
 }
@@ -1362,14 +1165,7 @@ onUnmounted(() => {
   height: 14px;
 }
 
-/* 选中行样式 */
-.selected-row {
-  background: var(--accent-secondary) !important;
-}
 
-.selected-row td {
-  background: var(--accent-secondary) !important;
-}
 
 .file-details {
   flex: 1;
@@ -1423,6 +1219,56 @@ onUnmounted(() => {
   color: white;
 }
 
+/* 表格操作按钮 */
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.action-btn-small {
+  width: 25px;
+  height: 25px;
+  border: none;
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  border: 1px solid var(--border-card);
+  position: relative;
+  z-index: 2;
+}
+
+.action-btn-small:hover {
+  background: var(--accent-secondary);
+  color: var(--accent-primary);
+  border-color: var(--accent-primary);
+  transform: scale(1.05);
+  z-index: 3;
+}
+
+.action-btn-small.danger {
+  color: #ef4444;
+  border-color: #ef4444;
+}
+
+.action-btn-small.danger:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.action-btn-small svg {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
 /* 列表视图 */
 .list-view {
   height: 100%;
@@ -1442,13 +1288,13 @@ onUnmounted(() => {
   background: var(--bg-card);
   color: var(--text-primary);
   font-weight: 600;
-  padding: 1rem;
+  padding: 2rem 2rem;
   text-align: left;
   border-bottom: 1px solid var(--border-card);
 }
 
 .file-table td {
-  padding: 1rem;
+  padding: 2rem 2rem;
   border-bottom: 1px solid var(--border-card);
   color: var(--text-primary);
 }
@@ -1489,6 +1335,15 @@ onUnmounted(() => {
   background: var(--accent-secondary);
 }
 
+/* 使用深度选择器覆盖Element Plus表格hover样式 */
+:deep(.file-table .el-table__body tr:hover) {
+  background-color: var(--accent-secondary) !important;
+}
+
+:deep(.file-table .el-table__body tr:hover td) {
+  background-color: var(--accent-secondary) !important;
+}
+
 .file-row::before {
   content: '';
   position: absolute;
@@ -1526,59 +1381,7 @@ onUnmounted(() => {
   height: 20px;
 }
 
-/* 右键菜单 */
-.context-menu {
-  position: fixed;
-  z-index: 1000;
-  background: var(--bg-card);
-  border: 1px solid var(--border-card);
-  border-radius: 8px;
-  box-shadow: var(--shadow-dialog);
-  padding: 0.5rem;
-  min-width: 180px;
-  backdrop-filter: blur(10px);
-}
 
-.context-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  cursor: pointer;
-  border-radius: 6px;
-  color: var(--text-primary);
-  transition: all 0.2s ease;
-  font-weight: 500;
-}
-
-.context-item:hover {
-  background: var(--accent-secondary);
-  color: var(--accent-primary);
-}
-
-.context-item svg {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-}
-
-.context-item.danger {
-  color: #ef4444;
-}
-
-.context-item.danger:hover {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
-}
-
-.context-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 999;
-}
 
 /* 控制按钮样式 */
 .floating-id-trigger-group-vertical {
@@ -1638,6 +1441,80 @@ onUnmounted(() => {
 
 .left-wave-btn {
   margin-left: 0;
+}
+
+/* 上传组件样式 */
+.upload-demo {
+  width: 100%;
+}
+
+.el-upload__text {
+  margin-top: 10px;
+  color: var(--text-secondary);
+}
+
+.el-upload__text em {
+  color: var(--accent-primary);
+  font-style: normal;
+}
+
+.el-upload__tip {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin-top: 8px;
+}
+
+/* 深度选择器覆盖Element Plus上传组件样式 */
+:deep(.el-upload--text) {
+  border: 2px dashed var(--border-card);
+  border-radius: 6px;
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+}
+
+:deep(.el-upload--text:hover) {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+:deep(.el-upload--text.is-drag) {
+  border-color: var(--accent-primary);
+  background: var(--accent-secondary);
+  color: var(--accent-primary);
+}
+
+:deep(.el-upload__text) {
+  color: var(--text-secondary);
+}
+
+:deep(.el-upload__text em) {
+  color: var(--accent-primary);
+}
+
+:deep(.el-upload__tip) {
+  color: var(--text-secondary);
+}
+
+:deep(.el-upload__input) {
+  color: var(--text-primary);
+}
+
+:deep(.el-upload-dragger) {
+  background: var(--bg-primary);
+  border: 2px dashed var(--border-card);
+  border-radius: 6px;
+  color: var(--text-secondary);
+}
+
+:deep(.el-upload-dragger:hover) {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+:deep(.el-upload-dragger.is-dragover) {
+  border-color: var(--accent-primary);
+  background: var(--accent-secondary);
+  color: var(--accent-primary);
 }
 
 /* 响应式设计 */
