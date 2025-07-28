@@ -126,7 +126,7 @@ import FamilyMembersTable from './FamilyMembersTable.vue'
 import PhoneRecordsTable from './PhoneRecordsTable.vue'
 import BroadbandRecordsTable from './BroadbandRecordsTable.vue'
 import VehicleRecordsTable from './VehicleRecordsTable.vue'
-import InvestmentsTable from '../user-detail/InvestmentsTable.vue'
+import InvestmentsTable from './InvestmentsTable.vue'
 
 // 用户数据（静态2个用户，头像、id、基础信息等）
 const usersAll = [
