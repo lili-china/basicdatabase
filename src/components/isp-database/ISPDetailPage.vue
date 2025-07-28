@@ -2,8 +2,8 @@
   <div class="isp-detail-page">
     <template v-if="isp">
       <div class="isp-detail-content isp-detail-page-content">
-        <div class="isp-detail-header">
-          <span @click="goBack" class="breadcrumb-back">
+        <div class="isp-detail-header" :class="{ 'centered': hideBackButton }">
+          <span v-if="!hideBackButton" @click="goBack" class="breadcrumb-back">
             <svg class="breadcrumb-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </span>
           <span v-if="isp && isp.phoneNum" class="breadcrumb-phone themed">{{ isp.phoneNum }}</span>
@@ -193,7 +193,7 @@
         <!-- 非Awasr运营商显示通话记录 -->
         <div v-if="!isAwasrOperator" class="detail-section collapsible">
           <div class="section-header" @click="toggleSection('caller')">
-            <h4>Caller & Called (Top 20)</h4>
+            <h4>Caller & Called</h4>
             <svg class="collapse-icon" :class="{ 'collapsed': !expandedSections.caller }" width="20" height="20" viewBox="0 0 24 24" fill="none">
               <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -484,6 +484,10 @@ const props = defineProps({
   contacts: {
     type: Array as () => Contact[],
     default: () => []
+  },
+  hideBackButton: {
+    type: Boolean,
+    default: false
   }
 })
 const emit = defineEmits(['back'])
@@ -838,6 +842,10 @@ function openThirdPartyApp() {
   gap: 0.5em;
 }
 
+.isp-detail-header.centered {
+  justify-content: center;
+}
+
 
 .breadcrumb-back {
   display: flex;
@@ -966,7 +974,7 @@ function openThirdPartyApp() {
 }
 
 .collapsible .section-header + .section-content {
-  margin-top: 0.5rem;
+  margin-top: 1rem;
 }
 
 .collapsible .section-header:hover {

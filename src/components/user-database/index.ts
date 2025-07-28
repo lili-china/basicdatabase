@@ -1,0 +1,7 @@
+export { default as UserDetailPage } from './UserDetailPage.vue'
+export { default as IdentityRecordsTable } from './IdentityRecordsTable.vue'
+export { default as FamilyMembersTable } from './FamilyMembersTable.vue'
+export { default as PhoneRecordsTable } from './PhoneRecordsTable.vue'
+export { default as BroadbandRecordsTable } from './BroadbandRecordsTable.vue'
+export { default as VehicleRecordsTable } from './VehicleRecordsTable.vue'
+export { default as BasicInfoSection } from './BasicInfoSection.vue' 

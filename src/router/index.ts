@@ -66,6 +66,16 @@ const router = createRouter({
       component: () => import('@/components/isp-database/ISPDetailPage.vue')
     },
     {
+      path: '/isp-detail-wrapper/:id',
+      name: 'isp-detail-wrapper',
+      component: () => import('@/components/isp-database/ISPDetailPageWrapper.vue')
+    },
+    {
+      path: '/isp-detail-wrapper/search',
+      name: 'isp-detail-search',
+      component: () => import('@/components/isp-database/ISPDetailPageWrapper.vue')
+    },
+    {
       path: '/analytics',
       name: 'Analytics',
       component: Analytics
@@ -118,7 +128,7 @@ const router = createRouter({
     {
       path: '/user-profile/:id',
       name: 'UserProfilePage',
-      component: () => import('../views/UserDetailPage.vue')
+      component: () => import('@/components/user-database/UserDetailPage.vue')
     },
     {
       path: '/file-manager',

@@ -1588,11 +1588,16 @@ function fitTrackExtent() {
 .data-section {
   display: flex;
   flex-direction: column;
-  background: var(--bg-card, #ffffff);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-radius: 12px;
-  border: 1px solid var(--border-card, #e5e7eb);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   overflow: hidden;
   margin-top: 1rem;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 /* 暗黑主题下的文字颜色增强 */
@@ -1636,13 +1641,13 @@ function fitTrackExtent() {
   }
   
   .data-section {
-    background: var(--bg-card, rgba(255, 255, 255, 0.05));
-    border: 1px solid var(--border-card, rgba(255, 255, 255, 0.1));
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
   
   .data-header {
-    background: var(--bg-card, rgba(255, 255, 255, 0.05));
-    border-bottom: 1px solid var(--border-card, rgba(255, 255, 255, 0.1));
+    background: rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   }
   
   .table-cell {
@@ -1671,10 +1676,15 @@ function fitTrackExtent() {
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem;
-  border-bottom: 1px solid var(--border-card, #e5e7eb);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   margin-bottom: 1rem;
-  background: var(--bg-card, #ffffff);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-radius: 8px 8px 0 0;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .data-header .section-title {

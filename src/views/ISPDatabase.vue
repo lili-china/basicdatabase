@@ -570,6 +570,8 @@ function handleRowClick(isp: any) {
     viewLoadingId.value = null
   }, 400)
 }
+
+
 </script>
 
 <style scoped>
@@ -625,6 +627,8 @@ function handleRowClick(isp: any) {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+
 
 .isp-header {
   display: flex;
