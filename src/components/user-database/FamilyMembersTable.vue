@@ -55,7 +55,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import RelationGraph from '@/components/RelationGraph.vue'
+import RelationGraph from './RelationGraph.vue'
 
 interface FamilyMember {
   id: string

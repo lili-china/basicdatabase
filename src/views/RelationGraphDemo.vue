@@ -44,7 +44,7 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
-import RelationGraph from '@/components/RelationGraph.vue'
+import RelationGraph from '@/components/user-database/RelationGraph.vue'
 
 const graphRef = ref()
 const graphData = reactive({
