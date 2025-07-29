@@ -135,6 +135,16 @@ const router = createRouter({
       name: 'FileManager',
       component: FileManager
     },
+    {
+      path: '/vehicle-detail/:id',
+      name: 'VehicleDetail',
+      component: () => import('@/components/vehicle-database/VehicleDetailPageWrapper.vue')
+    },
+    {
+      path: '/vehicle-detail-wrapper/search',
+      name: 'vehicle-detail-search',
+      component: () => import('@/components/vehicle-database/VehicleDetailPageWrapper.vue')
+    },
 
   ]
 })

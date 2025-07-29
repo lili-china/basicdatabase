@@ -141,11 +141,7 @@
           />
         </div>
         
-        <!-- 车辆详情对话框 -->
-        <VehicleDetailDialog
-          v-model="dialogVisible"
-          :vehicle="selectedVehicle"
-        />
+
       </div>
     </WaveBackground>
   </div>
@@ -153,15 +149,15 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { getSessionIdFromUrl } from '@/utils/sessionValidator'
 import { initScrollListener } from '@/utils/scrollManager'
 import WaveBackground from '../components/WaveBackground.vue'
 import NavigationBar from '../components/NavigationBar.vue'
-import VehicleDetailDialog from '../components/VehicleDetailDialog.vue'
 import { generateMockVehicles } from '../utils/mockData'
 
 const route = useRoute()
+const router = useRouter()
 
 // 当前session ID
 const currentSessionId = ref<string | null>(null)
@@ -178,9 +174,7 @@ const pageQuery = ref({
 const currentPage = ref(1)
 const itemsPerPage = 12
 
-// 对话框相关状态
-const dialogVisible = ref(false)
-const selectedVehicle = ref<any>(null)
+
 
 // 使用mock数据
 const allVehicles = ref(generateMockVehicles())
@@ -248,8 +242,8 @@ const handleCurrentChange = (page: number) => {
 
 // 显示车辆详情
 const showVehicleDetail = (vehicle: any) => {
-  selectedVehicle.value = vehicle
-  dialogVisible.value = true
+  // 导航到车辆详情页面
+  router.push(`/vehicle-detail/${vehicle.id}`)
 }
 
 // 组件挂载时获取session ID
