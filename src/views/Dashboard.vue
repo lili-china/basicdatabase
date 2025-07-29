@@ -250,13 +250,13 @@ onMounted(() => {
       onUpdate: (value) => custom1Count.value = value
     })
     
-    batchAnimator.addAnimator(0, targetCustom2Count.value, {
+    batchAnimator.addAnimator(0, targetCustom2Count, {
       duration: 2000,
       easing: Easing.easeOutQuart,
       onUpdate: (value) => custom2Count.value = value
     })
     
-    batchAnimator.addAnimator(0, targetCustom3Count.value, {
+    batchAnimator.addAnimator(0, targetCustom3Count, {
       duration: 2000,
       easing: Easing.easeOutQuart,
       onUpdate: (value) => custom3Count.value = value

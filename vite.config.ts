@@ -16,6 +16,8 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 3001
     },
+    // 生产环境基础路径
+    base: mode === 'production' ? '/basicdatabase/' : '/',
     // 自定义环境变量文件
     envDir: '.',
     envPrefix: 'VITE_'
