@@ -368,4 +368,47 @@ export const removeUrlParam = (name: string): void => {
   const url = new URL(window.location.href)
   url.searchParams.delete(name)
   window.history.replaceState({}, '', url.toString())
+}
+
+/**
+ * 导航到用户详情页面（新标签页打开）
+ * @param userId 用户ID
+ * @param from 来源页面标识
+ */
+export const navigateToUserDetail = (
+  userId: string, 
+  from: string = 'unknown'
+): void => {
+  const baseUrl = window.location.origin
+  const sessionId = sessionStorage.getItem('sessionId') || ''
+  const url = `${baseUrl}/user-profile/${userId}?sessionId=${encodeURIComponent(sessionId)}&from=${encodeURIComponent(from)}`
+  
+  // 在当前浏览器中打开新标签页
+  const link = document.createElement('a')
+  link.href = url
+  link.target = '_blank'
+  link.rel = 'noopener noreferrer'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+}
+
+/**
+ * 导航到用户详情页面（使用window.open打开）
+ * @param userId 用户ID
+ * @param from 来源页面标识
+ * @param windowFeatures 窗口特性，默认为 'width=1200,height=800,scrollbars=yes,resizable=yes'
+ */
+export const navigateToUserDetailWithWindow = (
+  userId: string, 
+  from: string = 'unknown',
+  windowFeatures: string = 'width=1200,height=800,scrollbars=yes,resizable=yes'
+): void => {
+  const baseUrl = window.location.origin
+  const sessionId = sessionStorage.getItem('sessionId') || ''
+  const url = `${baseUrl}/user-profile/${userId}?sessionId=${encodeURIComponent(sessionId)}&from=${encodeURIComponent(from)}`
+  
+  // 使用window.open打开新窗口
+  const windowName = `userDetail_${userId}_${Date.now()}`
+  window.open(url, windowName, windowFeatures)
 } 

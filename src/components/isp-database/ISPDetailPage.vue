@@ -286,39 +286,45 @@
               
               <!-- 应用流量详情表格 -->
               <div class="app-traffic-table">
-                <!-- <h5>App Traffic Details</h5> -->
-                <table class="traffic-table">
-                  <thead>
-                    <tr>
-                      <th>App Name</th>
-                      <th>Data Usage</th>
-                      <th>Usage Time</th>
-                      <th>Last Used</th>
-                      <!-- <th>Status</th> -->
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="app in mobileApps" :key="app.name">
-                      <td>
-                        <div class="app-info">
-                          <img 
-                            :src="app.icon" 
-                            :alt="app.name" 
-                            class="app-icon" 
-                            :title="`${app.name}\nUpload: ${app.uploadTraffic} MB\nDownload: ${app.downloadTraffic} MB`"
-                          />
-                          <span>{{ app.name }}</span>
-                        </div>
-                      </td>
-                      <td>{{ app.dataUsage }}</td>
-                      <td>{{ app.usageTime }}</td>
-                      <td>{{ app.lastUsed }}</td>
-                      <!-- <td>
-                        <span class="status-badge" :class="app.status">{{ app.status }}</span>
-                      </td> -->
-                    </tr>
-                  </tbody>
-                </table>
+                <el-table 
+                  :data="paginatedMobileApps" 
+                  style="width: 100%"
+                  :header-cell-style="{ background: 'var(--bg-primary)', color: 'var(--text-secondary)', fontWeight: '600' }"
+                  :cell-style="{ color: 'var(--text-primary)' }"
+                  stripe
+                  border
+                >
+                  <el-table-column prop="name" label="App Name" min-width="200">
+                    <template #default="scope">
+                      <div class="app-info">
+                        <img 
+                          :src="scope.row.icon" 
+                          :alt="scope.row.name" 
+                          class="app-icon" 
+                          :title="`${scope.row.name}\nUpload: ${scope.row.uploadTraffic} MB\nDownload: ${scope.row.downloadTraffic} MB`"
+                        />
+                        <span>{{ scope.row.name }}</span>
+                      </div>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="dataUsage" label="Data Usage" width="120" />
+                  <el-table-column prop="usageTime" label="Usage Time" width="120" />
+                  <el-table-column prop="lastUsed" label="Last Used" width="180" />
+                </el-table>
+                
+                <!-- 分页组件 -->
+                <div class="pagination-container">
+                  <el-pagination
+                    v-model:current-page="currentPage"
+                    v-model:page-size="pageSize"
+                    :page-sizes="[5, 10, 20, 50]"
+                    :total="mobileApps.length"
+                    layout="total, sizes, prev, pager, next, jumper"
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    background
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -622,8 +628,79 @@ const mobileApps = ref([
     status: 'inactive',
     uploadTraffic: 67,
     downloadTraffic: 167
+  },
+  {
+    name: 'Twitter',
+    icon: 'https://cdn-icons-png.flaticon.com/512/3256/3256013.png',
+    dataUsage: '123 MB',
+    usageTime: '0.5 hrs',
+    lastUsed: '2024-06-15 09:15',
+    status: 'active',
+    uploadTraffic: 45,
+    downloadTraffic: 78
+  },
+  {
+    name: 'LinkedIn',
+    icon: 'https://cdn-icons-png.flaticon.com/512/174/174857.png',
+    dataUsage: '89 MB',
+    usageTime: '0.3 hrs',
+    lastUsed: '2024-06-15 08:45',
+    status: 'active',
+    uploadTraffic: 23,
+    downloadTraffic: 66
+  },
+  {
+    name: 'Snapchat',
+    icon: 'https://cdn-icons-png.flaticon.com/512/2111/2111463.png',
+    dataUsage: '345 MB',
+    usageTime: '1.2 hrs',
+    lastUsed: '2024-06-15 17:30',
+    status: 'active',
+    uploadTraffic: 78,
+    downloadTraffic: 267
+  },
+  {
+    name: 'Telegram',
+    icon: 'https://cdn-icons-png.flaticon.com/512/2111/2111646.png',
+    dataUsage: '234 MB',
+    usageTime: '1.5 hrs',
+    lastUsed: '2024-06-15 15:20',
+    status: 'active',
+    uploadTraffic: 56,
+    downloadTraffic: 178
+  },
+  {
+    name: 'Discord',
+    icon: 'https://cdn-icons-png.flaticon.com/512/3670/3670157.png',
+    dataUsage: '178 MB',
+    usageTime: '0.8 hrs',
+    lastUsed: '2024-06-15 13:10',
+    status: 'active',
+    uploadTraffic: 34,
+    downloadTraffic: 144
   }
 ])
+
+// 分页相关变量
+const currentPage = ref(1)
+const pageSize = ref(5)
+
+// 计算分页后的数据
+const paginatedMobileApps = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value
+  const end = start + pageSize.value
+  return mobileApps.value.slice(start, end)
+})
+
+// 分页处理函数
+function handleSizeChange(newSize: number) {
+  pageSize.value = newSize
+  currentPage.value = 1 // 重置到第一页
+}
+
+function handleCurrentChange(newPage: number) {
+  currentPage.value = newPage
+}
 
 
 
@@ -794,6 +871,9 @@ function queryTrack() {
 function filterMobileTrafficData() {
   console.log('Filtering mobile traffic data with search:', mobileTrafficSearch.value, 'and time range:', mobileTrafficTimeRange.value)
   
+  // 重置分页到第一页
+  currentPage.value = 1
+  
   // 启动loading状态
   loadingStates.value.mobileTraffic = true
   
@@ -806,6 +886,9 @@ function filterMobileTrafficData() {
 
 function queryMobileTraffic() {
   console.log('Querying mobile traffic data with search:', mobileTrafficSearch.value, 'and time range:', mobileTrafficTimeRange.value)
+  
+  // 重置分页到第一页
+  currentPage.value = 1
   
   // 启动loading状态
   loadingStates.value.mobileTraffic = true
@@ -1193,40 +1276,16 @@ function openThirdPartyApp() {
   margin-top: 1.5rem;
 }
 
-.app-traffic-table h5 {
-  padding: 1.5rem 1.5rem 1rem 1.5rem;
-  margin: 0;
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  border-bottom: 1px solid var(--border-card);
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5rem;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border-card);
 }
 
-.traffic-table {
-  width: 100%;
-  border-collapse: collapse;
-}
 
-.traffic-table th {
-  padding: 1rem 1.5rem;
-  text-align: left;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  background: var(--bg-primary);
-  border-bottom: 1px solid var(--border-card);
-}
-
-.traffic-table td {
-  padding: 1rem 1.5rem;
-  font-size: 0.875rem;
-  color: var(--text-primary);
-  border-bottom: 1px solid var(--border-card);
-}
-
-.traffic-table tr:hover {
-  background: var(--bg-primary);
-}
 
 .app-info {
   display: flex;

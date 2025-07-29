@@ -7,7 +7,40 @@
       </svg>
     </div>
     <div class="section-content" :class="{ 'collapsed': !expanded }">
-      <el-table :data="broadbandRegList" border stripe class="broadband-table">
+      
+      <!-- 搜索区域 -->
+      <div class="search-section">
+        <div class="search-row">
+          <div class="search-item">
+            <label class="search-label">Operator</label>
+            <el-select v-model="searchForm.operator" placeholder="Select operator" clearable style="width: 100%">
+              <el-option label="Bell" value="Bell" />
+              <el-option label="Rogers" value="Rogers" />
+              <el-option label="Telus" value="Telus" />
+              <el-option label="Shaw" value="Shaw" />
+              <el-option label="Other" value="Other" />
+            </el-select>
+          </div>
+          <div class="search-item">
+            <label class="search-label">Status</label>
+            <el-select v-model="searchForm.status" placeholder="Select status" clearable style="width: 100%">
+              <el-option label="Active" value="Active" />
+              <el-option label="Inactive" value="Inactive" />
+              <el-option label="Suspended" value="Suspended" />
+            </el-select>
+          </div>
+          <div class="search-item">
+            <label class="search-label">Address</label>
+            <el-input v-model="searchForm.address" placeholder="Enter address keywords" clearable />
+          </div>
+          <div class="search-actions">
+            <el-button type="primary" @click="handleSearch" :icon="Search">Query</el-button>
+            <el-button @click="handleReset" :icon="Refresh">Reset</el-button>
+          </div>
+        </div>
+      </div>
+
+      <el-table :data="filteredBroadbandRecords" border stripe class="broadband-table">
         <el-table-column prop="account" label="Account" />
         <el-table-column prop="regDate" label="Reg Date" />
         <el-table-column prop="address" label="Address" />
@@ -18,7 +51,7 @@
       <el-pagination
         v-model:current-page="currentPage"
         :page-size="pageSize"
-        :total="broadbandRegListAll.length"
+        :total="filteredBroadbandRecords.length"
         layout="total, prev, pager, next"
         style="margin-top: 10px;" />
     </div>
@@ -27,6 +60,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { Search, Refresh } from '@element-plus/icons-vue'
 
 interface BroadbandRecord {
   account: string
@@ -51,17 +85,54 @@ const expanded = ref(true)
 const currentPage = ref(1)
 const pageSize = 3
 
-const broadbandRegListAll = computed(() => props.broadbandRecords)
-const broadbandRegList = computed(() => 
-  broadbandRegListAll.value.slice(
-    (currentPage.value - 1) * pageSize, 
-    currentPage.value * pageSize
-  )
-)
+// 搜索表单
+const searchForm = ref({
+  operator: '',
+  status: '',
+  address: ''
+})
+
+// 过滤后的宽带记录
+const filteredBroadbandRecords = computed(() => {
+  let filtered = props.broadbandRecords
+
+  if (searchForm.value.operator) {
+    filtered = filtered.filter(record => 
+      record.operator.toLowerCase().includes(searchForm.value.operator.toLowerCase())
+    )
+  }
+
+  if (searchForm.value.status) {
+    filtered = filtered.filter(record => 
+      record.status.toLowerCase().includes(searchForm.value.status.toLowerCase())
+    )
+  }
+
+  if (searchForm.value.address) {
+    filtered = filtered.filter(record => 
+      record.address.toLowerCase().includes(searchForm.value.address.toLowerCase())
+    )
+  }
+
+  return filtered
+})
 
 function toggleSection() {
   expanded.value = !expanded.value
   emit('toggleSection')
+}
+
+function handleSearch() {
+  currentPage.value = 1
+}
+
+function handleReset() {
+  searchForm.value = {
+    operator: '',
+    status: '',
+    address: ''
+  }
+  currentPage.value = 1
 }
 </script>
 
@@ -133,6 +204,40 @@ function toggleSection() {
   margin-bottom: 0;
 }
 
+.search-section {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: var(--bg-primary);
+  border-radius: 8px;
+  border: 1px solid var(--border-card);
+}
+
+.search-row {
+  display: flex;
+  gap: 1rem;
+  align-items: end;
+  flex-wrap: wrap;
+}
+
+.search-item {
+  flex: 1;
+  min-width: 150px;
+}
+
+.search-label {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.search-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
 .broadband-table {
   width: 100%;
   border-collapse: collapse;
@@ -159,5 +264,20 @@ function toggleSection() {
 
 .broadband-table td {
   color: var(--text-primary, #222);
+}
+
+@media (max-width: 768px) {
+  .search-row {
+    flex-direction: column;
+  }
+  
+  .search-item {
+    min-width: 100%;
+  }
+  
+  .search-actions {
+    width: 100%;
+    justify-content: center;
+  }
 }
 </style> 

@@ -4,9 +4,11 @@
       <div class="vehicle-detail-content vehicle-detail-page-content">
         <div class="vehicle-detail-header" :class="{ 'centered': hideBackButton }">
           <span v-if="!hideBackButton" @click="goBack" class="breadcrumb-back">
-            <svg class="breadcrumb-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg class="breadcrumb-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+              <path d="M15 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </span>
-          <span v-if="vehicle && vehicle.plateNumber" class="breadcrumb-plate themed">{{ vehicle.plateNumber }}</span>
         </div>
         
         <!-- Basic Vehicle Information -->
@@ -67,6 +69,18 @@
         <!-- Registration Information -->
         <div class="detail-section">
           <h4>Registration Information</h4>
+          <div class="registration-header" v-if="vehicle.registrationType === 'personal'">
+            <div class="owner-avatar-container">
+              <img v-if="vehicle.ownerPhoto" :src="vehicle.ownerPhoto" :alt="vehicle.ownerName + ' avatar'" class="owner-avatar" />
+              <div v-else class="owner-avatar-placeholder">
+                <span class="owner-initial">{{ getInitials(vehicle.ownerName) }}</span>
+              </div>
+            </div>
+            <div class="owner-info">
+              <h5 class="owner-name">{{ vehicle.ownerName }}</h5>
+              <p class="owner-type">Personal Owner</p>
+            </div>
+          </div>
           <div class="detail-grid">
             <div class="detail-item">
               <span class="detail-label">Registration Type:</span>
@@ -114,6 +128,38 @@
         <!-- Vehicle Change Records -->
         <div class="detail-section">
           <h4>Vehicle Change Records</h4>
+          
+          <!-- Search and Filter Controls -->
+          <div class="search-filter-controls">
+            <div class="filter-group">
+              <label class="filter-label">Status Filter:</label>
+              <el-select v-model="statusFilter" placeholder="Select Status" class="filter-select">
+                <el-option label="All" value="all" />
+                <el-option label="Active" value="active" />
+                <el-option label="Expired" value="expired" />
+              </el-select>
+            </div>
+            
+            <div class="search-group">
+              <el-input
+                v-model="searchQuery"
+                placeholder="Search ID/Passport No/GCC No/Name"
+                class="search-input"
+                clearable
+              >
+                <template #prefix>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </template>
+              </el-input>
+            </div>
+            
+            <el-button type="primary" @click="handleQuery" class="query-button">
+              Query
+            </el-button>
+          </div>
+          
           <div class="change-records-container">
             <el-table 
               :data="paginatedChangeRecords" 
@@ -122,12 +168,32 @@
               :cell-style="{ color: 'var(--text-primary)' }"
               fit
             >
-              <el-table-column prop="date" label="Date" min-width="120" />
+              <el-table-column prop="recordId" label="ID" min-width="80">
+                <template #default="scope">
+                  <span class="clickable-link" @click="navigateToUserDetail(scope.row.recordId, 'vehicle-detail')">
+                    {{ scope.row.recordId }}
+                  </span>
+                </template>
+              </el-table-column>
+              <el-table-column label="Avatar" min-width="60">
+                <template #default="scope">
+                  <div class="table-avatar-container">
+                    <img v-if="scope.row.changedByPhoto" :src="scope.row.changedByPhoto" :alt="scope.row.changedBy + ' avatar'" class="table-avatar" />
+                    <div v-else class="table-avatar-placeholder">
+                      <span class="table-avatar-initial">{{ getInitials(scope.row.changedBy) }}</span>
+                    </div>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column prop="documentType" label="Document Type" min-width="120" />
+              <el-table-column prop="changedBy" label="Name" min-width="120">
+                <template #default="scope">
+                  <span class="clickable-link" @click="navigateToUserDetail(scope.row.recordId, 'vehicle-detail')">
+                    {{ scope.row.changedBy }}
+                  </span>
+                </template>
+              </el-table-column>
               <el-table-column prop="changeType" label="Change Type" min-width="150" />
-              <el-table-column prop="description" label="Description" min-width="200" show-overflow-tooltip />
-              <el-table-column prop="previousValue" label="Previous Value" min-width="150" show-overflow-tooltip />
-              <el-table-column prop="newValue" label="New Value" min-width="150" show-overflow-tooltip />
-              <el-table-column prop="changedBy" label="Changed By" min-width="120" />
               <el-table-column prop="status" label="Status" min-width="100">
                 <template #default="scope">
                   <el-tag 
@@ -138,6 +204,8 @@
                   </el-tag>
                 </template>
               </el-table-column>
+              <el-table-column prop="registrationStartDate" label="Registration Start" min-width="140" />
+              <el-table-column prop="expiryDate" label="Expiry Date" min-width="120" />
             </el-table>
             
             <!-- Pagination -->
@@ -162,7 +230,11 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { getBrandLogo } from '@/utils/vehicleUtils'
+import { navigateToUserDetail } from '@/utils/commonUtils'
+
+const router = useRouter()
 
 interface Vehicle {
   id: string
@@ -176,6 +248,7 @@ interface Vehicle {
   ownerName: string
   ownerPhone: string
   ownerId: string
+  ownerPhoto?: string
   registrationType: string
   registrationDate: string
   expiryDate: string
@@ -189,13 +262,15 @@ interface Vehicle {
 
 interface ChangeRecord {
   id: number
-  date: string
-  changeType: string
-  description: string
-  previousValue: string
-  newValue: string
+  recordId: string
+  documentType: string
   changedBy: string
+  changedByPhoto?: string
+  changeType: string
   status: string
+  registrationStartDate: string
+  expiryDate: string
+  isExpired?: boolean
 }
 
 interface Props {
@@ -212,7 +287,7 @@ const emit = defineEmits<{
 // Mock vehicle data
 const mockVehicle = computed(() => ({
   id: 'VEH001',
-  plateNumber: '京A12345',
+  plateNumber: 'BEI-A12345',
   brand: 'BMW',
   model: 'X5',
   year: '2022',
@@ -222,6 +297,7 @@ const mockVehicle = computed(() => ({
   ownerName: 'John Smith',
   ownerPhone: '13800138000',
   ownerId: 'ID123456789',
+  ownerPhoto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
   registrationType: 'personal',
   registrationDate: '2022-03-15',
   expiryDate: '2025-03-15',
@@ -236,87 +312,107 @@ const mockVehicle = computed(() => ({
 // Use mock data instead of props vehicle
 const vehicle = computed(() => mockVehicle.value)
 
+// Search and filter variables
+const statusFilter = ref('all')
+const searchQuery = ref('')
+
 // Change records data
 const changeRecords = ref<ChangeRecord[]>([
   {
     id: 1,
-    date: '2024-06-15',
+    recordId: 'REC001',
+    documentType: 'Passport',
+    changedBy: 'John Smith',
+    changedByPhoto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face',
     changeType: 'Owner Transfer',
-    description: 'Vehicle ownership transferred from previous owner',
-    previousValue: 'Previous Owner',
-    newValue: 'John Smith',
-    changedBy: 'System Admin',
-    status: 'completed'
+    status: 'completed',
+    registrationStartDate: '2024-06-15',
+    expiryDate: '2027-06-15',
+    isExpired: false
   },
   {
     id: 2,
-    date: '2024-05-20',
+    recordId: 'REC002',
+    documentType: 'ID Card',
+    changedBy: 'Sarah Johnson',
+    changedByPhoto: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face',
     changeType: 'Registration Update',
-    description: 'Updated registration information',
-    previousValue: 'Old Registration',
-    newValue: 'New Registration',
-    changedBy: 'Registration Office',
-    status: 'completed'
+    status: 'completed',
+    registrationStartDate: '2024-05-20',
+    expiryDate: '2026-05-20',
+    isExpired: false
   },
   {
     id: 3,
-    date: '2024-04-10',
+    recordId: 'REC003',
+    documentType: 'GCC ID',
+    changedBy: 'Michael Brown',
+    changedByPhoto: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&crop=face',
     changeType: 'Insurance Update',
-    description: 'Insurance policy renewed',
-    previousValue: 'Expired Insurance',
-    newValue: 'Active Insurance',
-    changedBy: 'Insurance Agent',
-    status: 'completed'
+    status: 'completed',
+    registrationStartDate: '2024-04-10',
+    expiryDate: '2025-04-10',
+    isExpired: false
   },
   {
     id: 4,
-    date: '2024-03-25',
+    recordId: 'REC004',
+    documentType: 'Passport',
+    changedBy: 'Emily Davis',
+    changedByPhoto: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=40&h=40&fit=crop&crop=face',
     changeType: 'Maintenance Record',
-    description: 'Regular maintenance completed',
-    previousValue: '15,000 km',
-    newValue: '15,500 km',
-    changedBy: 'Service Center',
-    status: 'completed'
+    status: 'completed',
+    registrationStartDate: '2024-03-25',
+    expiryDate: '2026-03-25',
+    isExpired: false
   },
   {
     id: 5,
-    date: '2024-02-15',
+    recordId: 'REC005',
+    documentType: 'ID Card',
+    changedBy: 'David Wilson',
+    changedByPhoto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face',
     changeType: 'Color Change',
-    description: 'Vehicle color changed',
-    previousValue: 'Black',
-    newValue: 'White',
-    changedBy: 'Owner',
-    status: 'completed'
+    status: 'completed',
+    registrationStartDate: '2024-02-15',
+    expiryDate: '2025-02-15',
+    isExpired: false
   },
   {
     id: 6,
-    date: '2024-01-30',
+    recordId: 'REC006',
+    documentType: 'GCC ID',
+    changedBy: 'Lisa Anderson',
+    changedByPhoto: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face',
     changeType: 'Plate Number',
-    description: 'Plate number updated',
-    previousValue: '京A12344',
-    newValue: '京A12345',
-    changedBy: 'Traffic Police',
-    status: 'completed'
+    status: 'completed',
+    registrationStartDate: '2024-01-30',
+    expiryDate: '2027-01-30',
+    isExpired: false
   },
   {
     id: 7,
-    date: '2023-12-20',
+    recordId: 'REC007',
+    documentType: 'Passport',
+    changedBy: 'Robert Taylor',
+    changedByPhoto: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&crop=face',
     changeType: 'Registration Type',
-    description: 'Registration type changed from company to personal',
-    previousValue: 'Company',
-    newValue: 'Personal',
-    changedBy: 'Registration Office',
-    status: 'completed'
+    status: 'completed',
+    registrationStartDate: '2023-12-20',
+    expiryDate: '2024-12-20',
+    isExpired: true
   },
   {
     id: 8,
-    date: '2023-11-15',
+    recordId: 'REC008',
+    documentType: 'ID Card',
+    changedBy: 'Jennifer Lee',
+    changedByPhoto: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=40&h=40&fit=crop&crop=face',
     changeType: 'Engine Update',
-    description: 'Engine replacement',
-    previousValue: 'Old Engine',
-    newValue: 'New Engine',
-    changedBy: 'Service Center',
-    status: 'completed'
+    status: 'completed',
+    registrationStartDate: '2023-11-15',
+    expiryDate: '2024-11-15',
+    isExpired: true
   }
 ])
 
@@ -352,6 +448,23 @@ function isExpired(date: string): boolean {
   const expiryDate = new Date(date)
   const today = new Date()
   return expiryDate < today
+}
+
+function getInitials(name: string): string {
+  if (!name) return ''
+  return name
+    .split(' ')
+    .map(word => word.charAt(0))
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
+}
+
+function handleQuery() {
+  // Reset pagination to first page
+  currentPage.value = 1
+  // Add actual query logic here
+  console.log('Query conditions:', { statusFilter: statusFilter.value, searchQuery: searchQuery.value })
 }
 </script>
 
@@ -439,6 +552,70 @@ function isExpired(date: string): boolean {
   border-bottom: 2px solid var(--accent-secondary);
 }
 
+.registration-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  border: 1px solid var(--border-primary);
+}
+
+.owner-avatar-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--bg-primary);
+  border: 2px solid var(--accent-secondary);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.owner-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.owner-avatar-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  border-radius: 50%;
+}
+
+.owner-initial {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: white;
+}
+
+.owner-info {
+  flex: 1;
+}
+
+.owner-name {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem 0;
+}
+
+.owner-type {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+  font-weight: 500;
+}
+
 .vehicle-detail-avatar-row {
   display: flex;
   justify-content: center;
@@ -450,8 +627,8 @@ function isExpired(date: string): boolean {
   align-items: center;
   justify-content: center;
   width: 120px;
-  height: 80px;
-  border-radius: 12px;
+  height: 120px;
+  border-radius: 50%;
   background: var(--bg-tertiary);
   border: 3px solid var(--accent-secondary);
   box-shadow: var(--shadow-card);
@@ -471,7 +648,7 @@ function isExpired(date: string): boolean {
   width: 100%;
   height: 100%;
   background: var(--bg-tertiary);
-  border-radius: 12px;
+  border-radius: 50%;
   border: 3px solid var(--accent-secondary);
   box-shadow: var(--shadow-card);
 }
@@ -544,6 +721,49 @@ function isExpired(date: string): boolean {
   color: #a855f7;
 }
 
+/* Search and Filter Controls */
+.search-filter-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  border: 1px solid var(--border-primary);
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.filter-select {
+  min-width: 120px;
+}
+
+.search-group {
+  flex: 1;
+  min-width: 200px;
+}
+
+.search-input {
+  width: 100%;
+}
+
+.query-button {
+  white-space: nowrap;
+}
+
 /* Change Records Table */
 .change-records-container {
   width: 100%;
@@ -556,6 +776,54 @@ function isExpired(date: string): boolean {
 
 .change-records-container .el-table__body-wrapper {
   overflow-x: auto;
+}
+
+/* Table Avatar Styles */
+.table-avatar-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.table-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.table-avatar-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  border-radius: 50%;
+}
+
+.table-avatar-initial {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+}
+
+.clickable-link {
+  color: var(--accent-primary);
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.clickable-link:hover {
+  color: var(--accent-secondary);
+  text-decoration: underline;
+  transform: scale(1.05);
 }
 
 .pagination-wrapper {
@@ -580,6 +848,19 @@ function isExpired(date: string): boolean {
     grid-template-columns: 1fr;
   }
   
+  .search-filter-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-group {
+    justify-content: space-between;
+  }
+  
+  .search-group {
+    min-width: auto;
+  }
+  
   .pagination-wrapper {
     padding: 0.75rem;
   }
@@ -592,7 +873,7 @@ function isExpired(date: string): boolean {
   
   .brand-logo-container {
     width: 100px;
-    height: 67px;
+    height: 100px;
   }
   
   .pagination-wrapper {

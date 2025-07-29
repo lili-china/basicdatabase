@@ -2,44 +2,51 @@
   <div class="investment-content">
     
     <!-- 搜索条件区域 -->
-    <!-- <div class="search-section">
-      <el-row :gutter="16">
-        <el-col :span="8">
+    <div class="search-section">
+      <div class="search-row">
+        <div class="search-item">
+          <label class="search-label">Company Name</label>
           <el-input
             v-model="searchForm.companyName"
-            placeholder="Company Name"
+            placeholder="Enter company name"
             clearable
-            @input="handleSearch"
           />
-        </el-col>
-        <el-col :span="8">
+        </div>
+        <div class="search-item">
+          <label class="search-label">Industry</label>
+          <el-select
+            v-model="searchForm.industry"
+            placeholder="Select industry"
+            clearable
+            style="width: 100%"
+          >
+            <el-option label="Technology" value="Technology" />
+            <el-option label="Healthcare" value="Healthcare" />
+            <el-option label="Renewable Energy" value="Renewable Energy" />
+            <el-option label="Finance" value="Finance" />
+            <el-option label="Manufacturing" value="Manufacturing" />
+            <el-option label="Other" value="Other" />
+          </el-select>
+        </div>
+        <div class="search-item">
+          <label class="search-label">Status</label>
           <el-select
             v-model="searchForm.status"
-            placeholder="Status"
+            placeholder="Select status"
             clearable
-            @change="handleSearch"
             style="width: 100%"
           >
             <el-option label="Active" value="Active" />
             <el-option label="Pending" value="Pending" />
             <el-option label="Closed" value="Closed" />
           </el-select>
-        </el-col>
-        <el-col :span="8">
-          <el-date-picker
-            v-model="searchForm.dateRange"
-            type="daterange"
-            range-separator="To"
-            start-placeholder="Start Date"
-            end-placeholder="End Date"
-            format="YYYY-MM-DD"
-            value-format="YYYY-MM-DD"
-            @change="handleSearch"
-            style="width: 100%"
-          />
-        </el-col>
-      </el-row>
-    </div> -->
+        </div>
+        <div class="search-actions">
+          <el-button type="primary" @click="handleSearch" :icon="Search">Query</el-button>
+          <el-button @click="handleReset" :icon="Refresh">Reset</el-button>
+        </div>
+      </div>
+    </div>
 
     <div class="table-container">
       <el-table 
@@ -134,7 +141,7 @@
       </div>
       
       <!-- 分页组件 -->
-      <!-- <div class="pagination-container">
+      <div class="pagination-container">
         <el-pagination
           v-model:current-page="currentPage"
           v-model:page-size="pageSize"
@@ -144,13 +151,14 @@
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
         />
-      </div> -->
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, reactive, onMounted, nextTick } from 'vue'
+import { Search, Refresh } from '@element-plus/icons-vue'
 import * as echarts from 'echarts'
 
 interface Investor {
@@ -183,8 +191,8 @@ const props = defineProps<Props>()
 // 搜索表单
 const searchForm = reactive({
   companyName: '',
-  status: '',
-  dateRange: [] as string[]
+  industry: '',
+  status: ''
 })
 
 // 分页状态
@@ -349,6 +357,12 @@ const filteredCompanies = computed(() => {
     )
   }
 
+  if (searchForm.industry) {
+    filtered = filtered.filter(company => 
+      company.industry.toLowerCase().includes(searchForm.industry.toLowerCase())
+    )
+  }
+
   if (searchForm.status) {
     filtered = filtered.filter(company => company.status === searchForm.status)
   }
@@ -368,10 +382,6 @@ const getStatusType = (status: string) => {
       return 'info'
   }
 }
-
-
-
-
 
 // 生成饼状图配置
 const getPieChartOption = (company: Company) => {
@@ -463,6 +473,14 @@ const handleSearch = () => {
   currentPage.value = 1
 }
 
+// 重置搜索
+const handleReset = () => {
+  searchForm.companyName = ''
+  searchForm.industry = ''
+  searchForm.status = ''
+  currentPage.value = 1
+}
+
 // 分页处理
 const handleSizeChange = (size: number) => {
   pageSize.value = size
@@ -484,7 +502,33 @@ const handleCurrentChange = (page: number) => {
   padding: 1rem;
   background: var(--bg-primary);
   border-radius: 8px;
-  border: 1px solid var(--border-primary);
+  border: 1px solid var(--border-card);
+}
+
+.search-row {
+  display: flex;
+  gap: 1rem;
+  align-items: end;
+  flex-wrap: wrap;
+}
+
+.search-item {
+  flex: 1;
+  min-width: 150px;
+}
+
+.search-label {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.search-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .table-container {
@@ -602,16 +646,25 @@ const handleCurrentChange = (page: number) => {
 }
 
 @media (max-width: 768px) {
+  .search-row {
+    flex-direction: column;
+  }
+  
+  .search-item {
+    min-width: 100%;
+  }
+  
+  .search-actions {
+    width: 100%;
+    justify-content: center;
+  }
+  
   .info-section {
     padding: 1rem;
   }
   
   .table-container {
     font-size: 0.875rem;
-  }
-  
-  .search-section .el-col {
-    margin-bottom: 0.5rem;
   }
   
   .detail-summary {

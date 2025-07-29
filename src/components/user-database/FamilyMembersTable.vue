@@ -21,7 +21,37 @@
         </el-button>
       </div>
       <RelationGraph v-if="showFamilyGraph" :data="familyGraphData" style="margin-bottom:16px;" />
-      <el-table :data="familyList" border stripe class="family-table">
+      
+      <!-- 搜索区域 -->
+      <div class="search-section">
+        <div class="search-row">
+          <div class="search-item">
+            <label class="search-label">Relation Type</label>
+            <el-select v-model="searchForm.relation" placeholder="Select relation type" clearable style="width: 100%">
+              <el-option label="Father" value="Father" />
+              <el-option label="Mother" value="Mother" />
+              <el-option label="Brother" value="Brother" />
+              <el-option label="Sister" value="Sister" />
+              <el-option label="Spouse" value="Spouse" />
+              <el-option label="Child" value="Child" />
+            </el-select>
+          </div>
+          <div class="search-item">
+            <label class="search-label">Name</label>
+            <el-input v-model="searchForm.name" placeholder="Enter name" clearable />
+          </div>
+          <div class="search-item">
+            <label class="search-label">Nationality</label>
+            <el-input v-model="searchForm.nationality" placeholder="Enter nationality" clearable />
+          </div>
+          <div class="search-actions">
+            <el-button type="primary" @click="handleSearch" :icon="Search">Query</el-button>
+            <el-button @click="handleReset" :icon="Refresh">Reset</el-button>
+          </div>
+        </div>
+      </div>
+
+      <el-table :data="filteredFamilyList" border stripe class="family-table">
         <el-table-column label="Avatar">
           <template #default="scope">
             <img :src="scope.row.avatar" style="width:36px;height:36px;border-radius:50%;object-fit:cover;" />
@@ -46,7 +76,7 @@
       <el-pagination
         v-model:current-page="currentPage"
         :page-size="pageSize"
-        :total="familyListAll.length"
+        :total="filteredFamilyList.length"
         layout="total, prev, pager, next"
         style="margin-top: 10px;" />
     </div>
@@ -55,6 +85,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { Search, Refresh } from '@element-plus/icons-vue'
 import RelationGraph from './RelationGraph.vue'
 
 interface FamilyMember {
@@ -88,13 +119,39 @@ const showFamilySelect = ref(true)
 const selectedFamily = ref<string | null>(null)
 const showFamilyGraph = ref(false)
 
+// 搜索表单
+const searchForm = ref({
+  relation: '',
+  name: '',
+  nationality: ''
+})
+
 const familyListAll = computed(() => props.familyMembers)
-const familyList = computed(() => 
-  familyListAll.value.slice(
-    (currentPage.value - 1) * pageSize, 
-    currentPage.value * pageSize
-  )
-)
+
+// 过滤后的家庭成员列表
+const filteredFamilyList = computed(() => {
+  let filtered = familyListAll.value
+
+  if (searchForm.value.relation) {
+    filtered = filtered.filter(member => 
+      member.relation.toLowerCase().includes(searchForm.value.relation.toLowerCase())
+    )
+  }
+
+  if (searchForm.value.name) {
+    filtered = filtered.filter(member => 
+      member.name.toLowerCase().includes(searchForm.value.name.toLowerCase())
+    )
+  }
+
+  if (searchForm.value.nationality) {
+    filtered = filtered.filter(member => 
+      member.nationality.toLowerCase().includes(searchForm.value.nationality.toLowerCase())
+    )
+  }
+
+  return filtered
+})
 
 const selectedFamilyAvatar = computed(() => {
   if (!selectedFamily.value) return null
@@ -128,6 +185,19 @@ function toggleFamilySelect() {
 
 function toggleFamilyGraph() {
   showFamilyGraph.value = !showFamilyGraph.value
+}
+
+function handleSearch() {
+  currentPage.value = 1
+}
+
+function handleReset() {
+  searchForm.value = {
+    relation: '',
+    name: '',
+    nationality: ''
+  }
+  currentPage.value = 1
 }
 
 function handleIdClick(id: string, event: MouseEvent) {
@@ -203,6 +273,40 @@ function handleIdClick(id: string, event: MouseEvent) {
   margin-bottom: 0;
 }
 
+.search-section {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: var(--bg-primary);
+  border-radius: 8px;
+  border: 1px solid var(--border-card);
+}
+
+.search-row {
+  display: flex;
+  gap: 1rem;
+  align-items: end;
+  flex-wrap: wrap;
+}
+
+.search-item {
+  flex: 1;
+  min-width: 150px;
+}
+
+.search-label {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.search-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
 .family-table {
   width: 100%;
   border-collapse: collapse;
@@ -229,5 +333,20 @@ function handleIdClick(id: string, event: MouseEvent) {
 
 .family-table td {
   color: var(--text-primary, #222);
+}
+
+@media (max-width: 768px) {
+  .search-row {
+    flex-direction: column;
+  }
+  
+  .search-item {
+    min-width: 100%;
+  }
+  
+  .search-actions {
+    width: 100%;
+    justify-content: center;
+  }
 }
 </style> 

@@ -7,7 +7,41 @@
       </svg>
     </div>
     <div class="section-content" :class="{ 'collapsed': !expanded }">
-      <el-table :data="vehicleList" border stripe class="vehicle-table">
+      
+      <!-- 搜索区域 -->
+      <div class="search-section">
+        <div class="search-row">
+          <div class="search-item">
+            <label class="search-label">Vehicle Type</label>
+            <el-select v-model="searchForm.type" placeholder="Select vehicle type" clearable style="width: 100%">
+              <el-option label="Sedan" value="Sedan" />
+              <el-option label="SUV" value="SUV" />
+              <el-option label="Truck" value="Truck" />
+              <el-option label="Van" value="Van" />
+              <el-option label="Motorcycle" value="Motorcycle" />
+              <el-option label="Other" value="Other" />
+            </el-select>
+          </div>
+          <div class="search-item">
+            <label class="search-label">Status</label>
+            <el-select v-model="searchForm.status" placeholder="Select status" clearable style="width: 100%">
+              <el-option label="Active" value="Active" />
+              <el-option label="Inactive" value="Inactive" />
+              <el-option label="Suspended" value="Suspended" />
+            </el-select>
+          </div>
+          <div class="search-item">
+            <label class="search-label">Owner</label>
+            <el-input v-model="searchForm.owner" placeholder="Enter owner name" clearable />
+          </div>
+          <div class="search-actions">
+            <el-button type="primary" @click="handleSearch" :icon="Search">Query</el-button>
+            <el-button @click="handleReset" :icon="Refresh">Reset</el-button>
+          </div>
+        </div>
+      </div>
+
+      <el-table :data="filteredVehicleRecords" border stripe class="vehicle-table">
         <el-table-column prop="plate" label="Plate" />
         <el-table-column prop="type" label="Type" />
         <el-table-column prop="regDate" label="Reg Date" />
@@ -18,7 +52,7 @@
       <el-pagination
         v-model:current-page="currentPage"
         :page-size="pageSize"
-        :total="vehicleListAll.length"
+        :total="filteredVehicleRecords.length"
         layout="total, prev, pager, next"
         style="margin-top: 10px;" />
     </div>
@@ -27,6 +61,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { Search, Refresh } from '@element-plus/icons-vue'
 
 interface VehicleRecord {
   plate: string
@@ -51,17 +86,54 @@ const expanded = ref(true)
 const currentPage = ref(1)
 const pageSize = 3
 
-const vehicleListAll = computed(() => props.vehicleRecords)
-const vehicleList = computed(() => 
-  vehicleListAll.value.slice(
-    (currentPage.value - 1) * pageSize, 
-    currentPage.value * pageSize
-  )
-)
+// 搜索表单
+const searchForm = ref({
+  type: '',
+  status: '',
+  owner: ''
+})
+
+// 过滤后的车辆记录
+const filteredVehicleRecords = computed(() => {
+  let filtered = props.vehicleRecords
+
+  if (searchForm.value.type) {
+    filtered = filtered.filter(record => 
+      record.type.toLowerCase().includes(searchForm.value.type.toLowerCase())
+    )
+  }
+
+  if (searchForm.value.status) {
+    filtered = filtered.filter(record => 
+      record.status.toLowerCase().includes(searchForm.value.status.toLowerCase())
+    )
+  }
+
+  if (searchForm.value.owner) {
+    filtered = filtered.filter(record => 
+      record.owner.toLowerCase().includes(searchForm.value.owner.toLowerCase())
+    )
+  }
+
+  return filtered
+})
 
 function toggleSection() {
   expanded.value = !expanded.value
   emit('toggleSection')
+}
+
+function handleSearch() {
+  currentPage.value = 1
+}
+
+function handleReset() {
+  searchForm.value = {
+    type: '',
+    status: '',
+    owner: ''
+  }
+  currentPage.value = 1
 }
 </script>
 
@@ -133,6 +205,40 @@ function toggleSection() {
   margin-bottom: 0;
 }
 
+.search-section {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: var(--bg-primary);
+  border-radius: 8px;
+  border: 1px solid var(--border-card);
+}
+
+.search-row {
+  display: flex;
+  gap: 1rem;
+  align-items: end;
+  flex-wrap: wrap;
+}
+
+.search-item {
+  flex: 1;
+  min-width: 150px;
+}
+
+.search-label {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.search-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
 .vehicle-table {
   width: 100%;
   border-collapse: collapse;
@@ -159,5 +265,20 @@ function toggleSection() {
 
 .vehicle-table td {
   color: var(--text-primary, #222);
+}
+
+@media (max-width: 768px) {
+  .search-row {
+    flex-direction: column;
+  }
+  
+  .search-item {
+    min-width: 100%;
+  }
+  
+  .search-actions {
+    width: 100%;
+    justify-content: center;
+  }
 }
 </style> 
