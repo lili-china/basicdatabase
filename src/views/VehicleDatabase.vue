@@ -242,8 +242,8 @@ const handleCurrentChange = (page: number) => {
 
 // 显示车辆详情
 const showVehicleDetail = (vehicle: any) => {
-  // 导航到车辆详情页面
-  router.push(`/vehicle-detail/${vehicle.id}`)
+  // 在新标签页中打开车辆详情页面
+  window.open(`/vehicle-detail/${vehicle.id}`, '_blank')
 }
 
 // 组件挂载时获取session ID
@@ -257,7 +257,7 @@ onMounted(() => {
 .vehicle-icon {
   width: 80px;
   height: 80px;
-  border-radius: 12px;
+  border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
   border: 3px solid rgba(59, 130, 246, 0.3);
