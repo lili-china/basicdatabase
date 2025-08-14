@@ -16,6 +16,7 @@ import ApiTest from '../views/ApiTest.vue'
 import LocationPage from '../views/LocationPage.vue'
 import MapLayerDemo from '../views/MapLayerDemo.vue'
 import FileManager from '../views/FileManager.vue'
+import MapHeatmapView from '../views/MapHeatmapView.vue'
 
 
 const router = createRouter({
@@ -144,6 +145,11 @@ const router = createRouter({
       path: '/vehicle-detail-wrapper/search',
       name: 'vehicle-detail-search',
       component: () => import('@/components/vehicle-database/VehicleDetailPageWrapper.vue')
+    },
+    {
+      path: '/map-heatmap',
+      name: 'MapHeatmap',
+      component: MapHeatmapView
     },
 
   ]

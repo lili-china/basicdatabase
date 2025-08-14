@@ -259,6 +259,11 @@ const moreMenuItems = ref([
     path: '/api-test',
     label: 'API Test',
     icon: 'ApiTestIcon'
+  },
+  {
+    path: '/map-heatmap',
+    label: 'Map Heatmap',
+    icon: 'MapHeatmapIcon'
   }
 ])
 
@@ -275,6 +280,14 @@ const iconComponents = {
     h('path', { d: 'M12 2L2 7L12 12L22 7L12 2Z', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
     h('path', { d: 'M2 17L12 22L22 17', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
     h('path', { d: 'M2 12L12 17L22 12', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' })
+  ]),
+  MapHeatmapIcon: () => h('svg', { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none' }, [
+    h('path', { d: 'M3 3L21 3L21 21L3 21L3 3Z', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
+    h('circle', { cx: '8', cy: '8', r: '2', fill: 'currentColor', opacity: '0.8' }),
+    h('circle', { cx: '16', cy: '8', r: '1.5', fill: 'currentColor', opacity: '0.6' }),
+    h('circle', { cx: '12', cy: '12', r: '2.5', fill: 'currentColor', opacity: '0.9' }),
+    h('circle', { cx: '6', cy: '16', r: '1', fill: 'currentColor', opacity: '0.4' }),
+    h('circle', { cx: '18', cy: '16', r: '2', fill: 'currentColor', opacity: '0.7' })
   ])
 }
 
