@@ -27,6 +27,16 @@
         </svg>
       </button>
       
+      <!-- 全屏按钮 -->
+      <button @click="toggleFullscreen" class="fullscreen-toggle-btn" :title="isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'">
+        <svg v-if="!isFullscreen" width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      
       <!-- 控制面板内容 -->
       <div class="control-panel-content">
         <!-- 播放控制面板 -->
@@ -133,6 +143,11 @@ const props = defineProps({
   trackPoints: {
     type: Array,
     default: () => []
+  },
+  // 保持向后兼容，同时支持新的数据格式
+  points: {
+    type: Array,
+    default: () => []
   }
 })
 
@@ -154,6 +169,7 @@ const movingPointGlowAlpha = ref(0.25)
 let movingPointGlowGrowing = true
 let movingPointBlinkTimer: number | null = null
 const currentLayer = ref('osm')
+const isFullscreen = ref(false)
 const playbackSpeed = ref(0.5)
 const isPanelHidden = ref(false)
 const avatarUrl = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'
@@ -438,6 +454,30 @@ const togglePanel = () => {
   isPanelHidden.value = !isPanelHidden.value
 }
 
+const toggleFullscreen = () => {
+  if (!mapContainer.value) return
+  
+  if (!isFullscreen.value) {
+    // 进入全屏
+    if (mapContainer.value.requestFullscreen) {
+      mapContainer.value.requestFullscreen()
+    } else if ((mapContainer.value as any).webkitRequestFullscreen) {
+      (mapContainer.value as any).webkitRequestFullscreen()
+    } else if ((mapContainer.value as any).msRequestFullscreen) {
+      (mapContainer.value as any).msRequestFullscreen()
+    }
+  } else {
+    // 退出全屏
+    if (document.exitFullscreen) {
+      document.exitFullscreen()
+    } else if ((document as any).webkitExitFullscreen) {
+      (document as any).webkitExitFullscreen()
+    } else if ((document as any).msExitFullscreen) {
+      (document as any).msExitFullscreen()
+    }
+  }
+}
+
 // 当前显示的轨迹点 - 地图渲染和动画的数据源
 const currentTrackPoints = ref<any[]>([])
 
@@ -445,11 +485,16 @@ const currentTrackPoints = ref<any[]>([])
  * 处理传入的轨迹数据
  * 
  * 功能说明：
- * - 将传入的props.trackPoints转换为组件内部使用的格式
+ * - 支持多种数据格式：props.trackPoints 或 props.points
+ * - 将传入的数据转换为组件内部使用的格式
  * - 设置默认的timestamp和location字段
+ * - 保持与 isp-database MapTrack 相同的数据结构
  */
 function processTrackData() {
-  if (!props.trackPoints || props.trackPoints.length === 0) {
+  // 优先使用 trackPoints，如果没有则使用 points
+  const dataPoints = props.trackPoints?.length > 0 ? props.trackPoints : props.points || []
+  
+  if (!dataPoints || dataPoints.length === 0) {
     // 如果没有数据，使用默认数据
     const base = [57.5, 21.5]
     const defaultData = Array.from({ length: 3 }, (_, i) => ({
@@ -463,14 +508,15 @@ function processTrackData() {
     return
   }
 
-  // 处理传入的数据
-  const processedData = props.trackPoints.map((point: any, index: number) => ({
+  // 处理传入的数据 - 支持多种格式
+  const processedData = dataPoints.map((point: any, index: number) => ({
     lon: point.lon,
     lat: point.lat,
     timestamp: point.timestamp || new Date(Date.now() - index * 3600000),
     location: point.location || `Point ${index + 1}`,
     weight: point.weight || 1,
-    ...point // 保留其他字段
+    // 保留其他字段，包括 id, name, nationality, phone 等
+    ...point
   }))
 
   currentTrackPoints.value = processedData
@@ -495,6 +541,27 @@ onMounted(() => {
   }, 60)
   nextTick(() => {
     renderMap()
+  })
+  
+  // 监听全屏状态变化
+  const handleFullscreenChange = () => {
+    isFullscreen.value = !!(document.fullscreenElement || (document as any).webkitFullscreenElement || (document as any).msFullscreenElement)
+    setTimeout(() => {
+      if (map) {
+        map.updateSize()
+      }
+    }, 100)
+  }
+  
+  document.addEventListener('fullscreenchange', handleFullscreenChange)
+  document.addEventListener('webkitfullscreenchange', handleFullscreenChange)
+  document.addEventListener('msfullscreenchange', handleFullscreenChange)
+  
+  // 清理事件监听器
+  onUnmounted(() => {
+    document.removeEventListener('fullscreenchange', handleFullscreenChange)
+    document.removeEventListener('webkitfullscreenchange', handleFullscreenChange)
+    document.removeEventListener('msfullscreenchange', handleFullscreenChange)
   })
 })
 
@@ -722,6 +789,13 @@ const renderMap = () => {
         duration: 1000
       })
     }
+    
+    // 确保地图正确渲染
+    setTimeout(() => {
+      if (map) {
+        map.updateSize()
+      }
+    }, 100)
   }
   map.on('singleclick', (evt: any) => {
     if (map) {
@@ -747,7 +821,7 @@ const renderMap = () => {
   })
 }
 
-watch(() => props.trackPoints, () => {
+watch(() => [props.trackPoints, props.points], () => {
   stopAnimation()
   processTrackData()
   if (map) {
@@ -816,9 +890,8 @@ function fitTrackExtent() {
 }
 
 .map-track {
-  margin-top: 2rem;
   width: 100%;
-  height: 500px;
+  height: 550px;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
@@ -1209,6 +1282,43 @@ function fitTrackExtent() {
 }
 
 .map-layer-toggle-btn.active {
+  background: var(--accent-primary);
+  color: white;
+  box-shadow: var(--shadow-card);
+}
+
+/* 全屏切换按钮样式 */
+.fullscreen-toggle-btn {
+  position: absolute;
+  top: 108px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: var(--accent-secondary);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--accent-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 1001;
+  pointer-events: auto;
+  box-shadow: var(--shadow-card-light);
+  border: 1px solid var(--accent-primary);
+}
+
+.fullscreen-toggle-btn:hover {
+  background: var(--accent-hover);
+  color: var(--accent-primary);
+  transform: scale(1.05);
+  box-shadow: var(--shadow-card);
+}
+
+.fullscreen-toggle-btn.active {
   background: var(--accent-primary);
   color: white;
   box-shadow: var(--shadow-card);

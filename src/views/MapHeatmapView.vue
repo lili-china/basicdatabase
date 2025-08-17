@@ -47,48 +47,20 @@
                      class="filter-input"
                    />
                  </div>
-
-                                   <!-- Action Buttons -->
                   <div class="filter-group">
                     <label class="filter-label">Actions</label>
                     <div class="filter-actions">
                       <el-button type="primary" @click="updateHeatmap" class="search-btn">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="search-icon">
-                          <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
                         Search
                       </el-button>
                       <el-button @click="resetFilters" class="reset-btn">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="reset-icon">
-                          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                          <path d="M3 3v5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
                         Reset
                       </el-button>
                       <el-button @click="toggleDisplayMode" class="mode-btn" :class="{ active: displayMode === 'track' }">
-                        <svg v-if="displayMode === 'heatmap'" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                          <path d="M3 3L21 3L21 21L3 21L3 3Z" stroke="currentColor" stroke-width="2"/>
-                          <path d="M9 9L15 9" stroke="currentColor" stroke-width="2"/>
-                          <path d="M9 13L15 13" stroke="currentColor" stroke-width="2"/>
-                          <path d="M9 17L15 17" stroke="currentColor" stroke-width="2"/>
-                        </svg>
-                        <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none">
-                          <path d="M2 12L8 6L14 12L22 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                          <circle cx="8" cy="6" r="2" fill="currentColor"/>
-                          <circle cx="14" cy="12" r="2" fill="currentColor"/>
-                          <circle cx="22" cy="6" r="2" fill="currentColor"/>
-                        </svg>
-                        {{ displayMode === 'heatmap' ? 'Track Mode' : 'Heatmap Mode' }}
+                        {{ displayMode === 'heatmap' ? 'Heatmap' : 'Track' }}
                       </el-button>
                       <el-button @click="toggleDataPanel" class="data-btn" :class="{ active: isDataPanelVisible }">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2"/>
-                          <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2"/>
-                          <line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" stroke-width="2"/>
-                          <line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" stroke-width="2"/>
-                          <polyline points="10,9 9,9 8,9" stroke="currentColor" stroke-width="2"/>
-                        </svg>
-                        Data Panel
+                        Data Panel 
                       </el-button>
                     </div>
                   </div>
@@ -121,36 +93,103 @@
        </div>
        
                <div class="data-panel-content">
-                     <div class="data-section">
-             <h4>Search Statistics</h4>
-             <div class="data-item">
-               <span class="data-label">Total Points:</span>
-               <span class="data-value">{{ samplePoints.length }}</span>
-             </div>
-                           <div class="data-item">
-                <span class="data-label">Displayed Points:</span>
-                <span class="data-value" :class="{ 'all-points': !selectedGroup && !selectedPoint }">
-                  {{ filteredDataPoints.length }}
-                  <span v-if="!selectedGroup && !selectedPoint" class="all-points-indicator">(All Points)</span>
-                </span>
+                                           <div class="data-section">
+              <h4>Search Statistics</h4>
+              <div class="data-item">
+                <span class="data-label">Total Points:</span>
+                <span class="data-value">{{ samplePoints.length }}</span>
               </div>
-                           <div class="data-item">
-                <span class="data-label">Selected Group:</span>
-                <span class="data-value">{{ selectedGroup ? formatDate(selectedGroup) : 'All Groups (Showing All Points)' }}</span>
+                            <div class="data-item">
+                 <span class="data-label">Displayed Points:</span>
+                 <span class="data-value" :class="{ 'all-points': !selectedGroup && !selectedPoint }">
+                   {{ filteredDataPoints.length }}
+                   <span v-if="!selectedGroup && !selectedPoint" class="all-points-indicator">(All Points)</span>
+                 </span>
+               </div>
+                            <div class="data-item">
+                 <span class="data-label">Selected Group:</span>
+                 <span class="data-value">{{ selectedGroup ? formatDate(selectedGroup) : 'All Groups (Showing All Points)' }}</span>
+               </div>
+               <div class="data-item">
+                 <span class="data-label">Selected Point:</span>
+                 <span class="data-value">{{ selectedPoint ? `Lat: ${selectedPoint.lat.toFixed(4)}, Lon: ${selectedPoint.lon.toFixed(4)}` : 'None (Showing All Points)' }}</span>
+               </div>
+              <div class="data-item">
+                <span class="data-label">Phone Number:</span>
+                <span class="data-value">{{ phoneNumber || 'Not specified' }}</span>
               </div>
               <div class="data-item">
-                <span class="data-label">Selected Point:</span>
-                <span class="data-value">{{ selectedPoint ? `Lat: ${selectedPoint.lat.toFixed(4)}, Lon: ${selectedPoint.lon.toFixed(4)}` : 'None (Showing All Points)' }}</span>
+                <span class="data-label">Time Range:</span>
+                <span class="data-value">{{ dateRange.length > 0 ? `${dateRange[0]} to ${dateRange[1]}` : 'Not specified' }}</span>
               </div>
-             <div class="data-item">
-               <span class="data-label">Phone Number:</span>
-               <span class="data-value">{{ phoneNumber || 'Not specified' }}</span>
+            </div>
+            
+                         <!-- User Information Section -->
+             <div class="data-section">
+               <h4>User Information</h4>
+               <div v-if="searchedUser" class="user-info-card">
+                                   <div class="user-profile">
+                    <div class="user-avatar">
+                      <img 
+                        :src="`/public/assets/icons/isp/${getUserAvatar(searchedUser.name)}.svg`" 
+                        :alt="searchedUser.name"
+                        class="avatar-image"
+                        @error="handleAvatarError"
+                      />
+                      <div class="avatar-circle hidden">
+                        {{ searchedUser.name.charAt(0).toUpperCase() }}
+                      </div>
+                    </div>
+                   <div class="user-details">
+                     <div class="user-name">{{ searchedUser.name }}</div>
+                     <div class="user-id">ID: {{ searchedUser.id }}</div>
+                     <div class="user-nationality">{{ searchedUser.nationality }}</div>
+                   </div>
+                 </div>
+                 
+                 <!-- Phone Numbers Dropdown -->
+                 <div class="phone-section">
+                   <div class="phone-dropdown">
+                     <button 
+                       class="phone-toggle"
+                       @click="togglePhoneDropdown(searchedUser.id)"
+                       :class="{ 'active': expandedPhones.includes(searchedUser.id) }"
+                     >
+                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                       </svg>
+                       <span class="phone-count">{{ getPhoneNumbers(searchedUser).length }} Phone(s)</span>
+                       <svg 
+                         class="dropdown-arrow" 
+                         :class="{ 'expanded': expandedPhones.includes(searchedUser.id) }"
+                         width="12" 
+                         height="12" 
+                         viewBox="0 0 24 24" 
+                         fill="none"
+                       >
+                         <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                       </svg>
+                     </button>
+                     <div class="phone-list" :class="{ 'expanded': expandedPhones.includes(searchedUser.id) }">
+                       <div 
+                         v-for="(phone, phoneIndex) in getPhoneNumbers(searchedUser)" 
+                         :key="phoneIndex"
+                         class="phone-item"
+                         @click="selectPhone(phone)"
+                       >
+                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                           <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                         </svg>
+                         <span class="phone-number">{{ phone }}</span>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+               <div v-else class="no-user-selected">
+                 <span class="data-value">Search for a user to see information</span>
+               </div>
              </div>
-             <div class="data-item">
-               <span class="data-label">Time Range:</span>
-               <span class="data-value">{{ dateRange.length > 0 ? `${dateRange[0]} to ${dateRange[1]}` : 'Not specified' }}</span>
-             </div>
-           </div>
           
                      <div class="data-section">
              <h4>Map Settings</h4>
@@ -170,81 +209,92 @@
                </div>
            </div>
          
-                   <div class="data-section">
-            <h4>Data Points by Day</h4>
-                         <div class="data-groups-list">
-               <div v-for="(group, date) in groupedDataPoints" :key="date" class="data-group" :class="{ 'selected': selectedGroup === date }">
-                 <div class="group-header">
-                   <div class="group-info" @click="selectGroup(date)">
-                     <span class="group-date">{{ formatDate(date) }}</span>
-                     <span class="group-count">{{ group.length }} points</span>
-                   </div>
-                   <div class="group-actions">
-                     <button 
-                       class="select-btn" 
-                       :class="{ 'active': selectedGroup === date }"
-                       @click="selectGroup(date)"
-                       title="Show this group on map"
+                                        <div class="data-section">
+             <h4>Data Points by Day</h4>
+                          <div class="data-groups-list">
+                <div v-for="(group, date) in groupedDataPoints" :key="date" class="data-group" :class="{ 'selected': selectedGroup === date }">
+                  <div class="group-header">
+                    <div class="group-info" @click="selectGroup(date)">
+                      <span class="group-date">{{ formatDate(date) }}</span>
+                      <span class="group-count">{{ group.length }} points</span>
+                    </div>
+                    <div class="group-actions">
+                      <button 
+                        class="select-btn" 
+                        :class="{ 'active': selectedGroup === date }"
+                        @click="selectGroup(date)"
+                        title="Show this group on map"
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                          <path d="M21 10C21 17 12 23 12 23S3 17 3 10C3 7.61305 3.94821 5.32387 5.63604 3.63604C7.32387 1.94821 9.61305 1 12 1C14.3869 1 16.6761 1.94821 18.364 3.63604C20.0518 5.32387 21 7.61305 21 10Z" stroke="currentColor" stroke-width="2"/>
+                          <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                      </button>
+                      <button 
+                        class="expand-btn"
+                        @click="toggleGroup(date)"
+                        title="Expand/collapse details"
+                      >
+                        <svg 
+                          class="expand-icon" 
+                          :class="{ 'expanded': expandedGroups.includes(date) }"
+                          width="16" 
+                          height="16" 
+                          viewBox="0 0 24 24" 
+                          fill="none"
+                        >
+                          <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                                  <div class="group-content" :class="{ 'expanded': expandedGroups.includes(date) }">
+                                         <div 
+                       v-for="(point, index) in group" 
+                       :key="index" 
+                       class="data-point-item"
+                       :class="{ 'selected': selectedPoint === point }"
+                       @click="selectPoint(point)"
                      >
-                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                         <path d="M21 10C21 17 12 23 12 23S3 17 3 10C3 7.61305 3.94821 5.32387 5.63604 3.63604C7.32387 1.94821 9.61305 1 12 1C14.3869 1 16.6761 1.94821 18.364 3.63604C20.0518 5.32387 21 7.61305 21 10Z" stroke="currentColor" stroke-width="2"/>
-                         <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/>
-                       </svg>
-                     </button>
-                     <button 
-                       class="expand-btn"
-                       @click="toggleGroup(date)"
-                       title="Expand/collapse details"
-                     >
-                       <svg 
-                         class="expand-icon" 
-                         :class="{ 'expanded': expandedGroups.includes(date) }"
-                         width="16" 
-                         height="16" 
-                         viewBox="0 0 24 24" 
-                         fill="none"
-                       >
-                         <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                       </svg>
-                     </button>
-                   </div>
-                 </div>
-                                 <div class="group-content" :class="{ 'expanded': expandedGroups.includes(date) }">
-                   <div 
-                     v-for="(point, index) in group" 
-                     :key="index" 
-                     class="data-point-item"
-                     :class="{ 'selected': selectedPoint === point }"
-                     @click="selectPoint(point)"
-                   >
-                     <div class="point-coordinates">
-                       <span class="coord-label">Lat:</span>
-                       <span class="coord-value">{{ point.lat.toFixed(4) }}</span>
-                       <span class="coord-label">Lon:</span>
-                       <span class="coord-value">{{ point.lon.toFixed(4) }}</span>
+                       <!-- Point Coordinates and Info -->
+                       <div class="point-coordinates">
+                         <span class="coord-label">Lat:</span>
+                         <span class="coord-value">{{ point.lat.toFixed(4) }}</span>
+                         <span class="coord-label">Lon:</span>
+                         <span class="coord-value">{{ point.lon.toFixed(4) }}</span>
+                       </div>
+                       <div class="point-info">
+                         <div class="point-weight">
+                           <span class="weight-label">Weight:</span>
+                           <span class="weight-value">{{ point.weight }}</span>
+                         </div>
+                         <div class="point-location">
+                           <span class="location-label">Location:</span>
+                           <span class="location-value">{{ point.location }}</span>
+                         </div>
+                         <div class="point-user">
+                           <span class="user-label">User:</span>
+                           <span class="user-value">{{ point.name }} ({{ point.nationality }})</span>
+                         </div>
+                       </div>
+                       <div class="point-actions">
+                         <button 
+                           class="point-select-btn" 
+                           :class="{ 'active': selectedPoint === point }"
+                           @click.stop="selectPoint(point)"
+                           title="Show this point on map"
+                         >
+                           <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                             <path d="M21 10C21 17 12 23 12 23S3 17 3 10C3 7.61305 3.94821 5.32387 5.63604 3.63604C7.32387 1.94821 9.61305 1 12 1C14.3869 1 16.6761 1.94821 18.364 3.63604C20.0518 5.32387 21 7.61305 21 10Z" stroke="currentColor" stroke-width="2"/>
+                             <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/>
+                           </svg>
+                         </button>
+                       </div>
                      </div>
-                     <div class="point-weight">
-                       <span class="weight-label">Weight:</span>
-                       <span class="weight-value">{{ point.weight }}</span>
-                     </div>
-                     <div class="point-actions">
-                       <button 
-                         class="point-select-btn" 
-                         :class="{ 'active': selectedPoint === point }"
-                         @click.stop="selectPoint(point)"
-                         title="Show this point on map"
-                       >
-                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                           <path d="M21 10C21 17 12 23 12 23S3 17 3 10C3 7.61305 3.94821 5.32387 5.63604 3.63604C7.32387 1.94821 9.61305 1 12 1C14.3869 1 16.6761 1.94821 18.364 3.63604C20.0518 5.32387 21 7.61305 21 10Z" stroke="currentColor" stroke-width="2"/>
-                           <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/>
-                         </svg>
-                       </button>
-                     </div>
-                   </div>
-                 </div>
-              </div>
-            </div>
-          </div>
+                  </div>
+               </div>
+             </div>
+           </div>
        </div>
      </div>
    </div>
@@ -266,17 +316,17 @@ const isDataPanelVisible = ref(false)
 // Display mode state
 const displayMode = ref<'heatmap' | 'track'>('heatmap')
 
-// Animation state - 现在由MapTrack组件处理
 
-// Sample data - can be modified as needed
+
+// Sample data
 const samplePoints = ref([
-  { lon: 57.5, lat: 21.5, weight: 1, date: '2024-01-15' },
-  { lon: 58.0, lat: 21.0, weight: 2, date: '2024-01-15' },
-  { lon: 57.0, lat: 22.0, weight: 1.5, date: '2024-01-16' },
-  { lon: 58.5, lat: 21.8, weight: 3, date: '2024-01-16' },
-  { lon: 56.8, lat: 21.2, weight: 1.8, date: '2024-01-17' },
-  { lon: 57.2, lat: 21.6, weight: 2.2, date: '2024-01-17' },
-  { lon: 58.2, lat: 21.3, weight: 1.3, date: '2024-01-18' }
+  { lon: 57.5, lat: 21.5, weight: 1, timestamp: new Date('2024-01-15'), location: 'Location 1', id: '1', name: 'User 1', nationality: 'Omani', phone: '+968 1234 5678', phones: ['+968 1234 5678', '+968 1234 5679', '+968 1234 5680'] },
+  { lon: 58.0, lat: 21.0, weight: 2, timestamp: new Date('2024-01-15'), location: 'Location 2', id: '2', name: 'User 2', nationality: 'Omani', phone: '+968 2345 6789', phones: ['+968 2345 6789', '+968 2345 6790'] },
+  { lon: 57.0, lat: 22.0, weight: 1.5, timestamp: new Date('2024-01-16'), location: 'Location 3', id: '3', name: 'User 3', nationality: 'Omani', phone: '+968 3456 7890', phones: ['+968 3456 7890', '+968 3456 7891', '+968 3456 7892', '+968 3456 7893'] },
+  { lon: 58.5, lat: 21.8, weight: 3, timestamp: new Date('2024-01-16'), location: 'Location 4', id: '4', name: 'User 4', nationality: 'Omani', phone: '+968 4567 8901', phones: ['+968 4567 8901'] },
+  { lon: 56.8, lat: 21.2, weight: 1.8, timestamp: new Date('2024-01-17'), location: 'Location 5', id: '5', name: 'User 5', nationality: 'Omani', phone: '+968 5678 9012', phones: ['+968 5678 9012', '+968 5678 9013'] },
+  { lon: 57.2, lat: 21.6, weight: 2.2, timestamp: new Date('2024-01-17'), location: 'Location 6', id: '6', name: 'User 6', nationality: 'Omani', phone: '+968 6789 0123', phones: ['+968 6789 0123', '+968 6789 0124', '+968 6789 0125'] },
+  { lon: 58.2, lat: 21.3, weight: 1.3, timestamp: new Date('2024-01-18'), location: 'Location 7', id: '7', name: 'User 7', nationality: 'Omani', phone: '+968 7890 1234', phones: ['+968 7890 1234', '+968 7890 1235'] }
 ])
 
 // Group management
@@ -284,11 +334,23 @@ const expandedGroups = ref<string[]>([])
 const selectedGroup = ref<string | null>(null)
 const selectedPoint = ref<any>(null)
 
+// Phone dropdown management
+const expandedPhones = ref<string[]>([])
+
+// Searched user information
+const searchedUser = ref<any>({
+  id: '1',
+  name: 'Ahmed Al-Mansouri',
+  nationality: 'Omani',
+  phone: '+968 1234 5678',
+  phones: ['+968 1234 5678', '+968 1234 5679', '+968 1234 5680', '+968 1234 5681']
+})
+
 // Computed property to group data points by date
 const groupedDataPoints = computed(() => {
   const groups: Record<string, any[]> = {}
   samplePoints.value.forEach(point => {
-    const date = point.date || 'Unknown'
+    const date = point.timestamp ? point.timestamp.toISOString().split('T')[0] : 'Unknown'
     if (!groups[date]) {
       groups[date] = []
     }
@@ -303,26 +365,35 @@ const filteredDataPoints = computed(() => {
     return [selectedPoint.value]
   }
   if (selectedGroup.value) {
-    return samplePoints.value.filter(point => point.date === selectedGroup.value)
+    return samplePoints.value.filter(point => {
+      const pointDate = point.timestamp ? point.timestamp.toISOString().split('T')[0] : 'Unknown'
+      return pointDate === selectedGroup.value
+    })
   }
   return samplePoints.value
 })
 
 // Filter methods
 const updateHeatmap = () => {
-  // Update heatmap data based on filter conditions
   console.log('Update heatmap:', {
     phoneNumber: phoneNumber.value,
     dateRange: dateRange.value
   })
   
-  // Here you can regenerate data points based on filter conditions
-  // The map components will automatically update when filteredDataPoints changes
+  if (phoneNumber.value) {
+    const foundUser = samplePoints.value.find(point => 
+      point.phones?.includes(phoneNumber.value) || point.phone === phoneNumber.value
+    )
+    searchedUser.value = foundUser || null
+  } else {
+    searchedUser.value = null
+  }
 }
 
 const resetFilters = () => {
   phoneNumber.value = ''
   dateRange.value = []
+  // searchedUser.value = null
 }
 
 const toggleDataPanel = () => {
@@ -345,33 +416,25 @@ const toggleGroup = (date: string) => {
 
 const selectGroup = (date: string) => {
   if (selectedGroup.value === date) {
-    // If clicking the same group, deselect it and show all points
     selectedGroup.value = null
     console.log('Deselected group - showing all points')
   } else {
-    // Select the new group
     selectedGroup.value = date
     console.log('Selected group:', date)
   }
-  // Clear point selection when selecting group
   selectedPoint.value = null
-  // The map components will automatically update when filteredDataPoints changes
 }
 
 const selectPoint = (point: any) => {
   console.log('selectPoint called with:', point)
   if (selectedPoint.value === point) {
-    // If clicking the same point, deselect it and show all points
     selectedPoint.value = null
     console.log('Deselected point - showing all points')
   } else {
-    // Select the new point
     selectedPoint.value = point
     console.log('Selected point:', point)
   }
-  // Clear group selection when selecting point
   selectedGroup.value = null
-  // The map components will automatically update when filteredDataPoints changes
 }
 
 const formatDate = (dateString: string) => {
@@ -385,12 +448,50 @@ const formatDate = (dateString: string) => {
   })
 }
 
+// Phone dropdown methods
+const togglePhoneDropdown = (userId: string) => {
+  const index = expandedPhones.value.indexOf(userId)
+  if (index > -1) {
+    expandedPhones.value.splice(index, 1)
+  } else {
+    expandedPhones.value.push(userId)
+  }
+}
+
+const getPhoneNumbers = (point: any) => {
+  return point.phones || [point.phone]
+}
+
+const selectPhone = (phone: string) => {
+  console.log('Selected phone:', phone)
+}
+
+// Avatar methods
+const getUserAvatar = (userName: string) => {
+  const avatarMap: Record<string, string> = {
+    'Ahmed Al-Mansouri': 'omantel',
+    'User 1': 'omantel',
+    'User 2': 'ooredoo',
+    'User 3': 'vodafone',
+    'User 4': 'awasr',
+    'User 5': 'friendi',
+    'User 6': 'omantel',
+    'User 7': 'ooredoo'
+  }
+  return avatarMap[userName] || 'omantel'
+}
+
+const handleAvatarError = (event: Event) => {
+  const target = event.target as HTMLImageElement
+  target.style.display = 'none'
+  target.nextElementSibling?.classList.remove('hidden')
+}
+
 onMounted(async () => {
   await nextTick()
   console.log('MapHeatmapView mounted')
 })
 
-// Clean up resources when component unmounts
 onUnmounted(() => {
   console.log('MapHeatmapView unmounted')
 })
@@ -462,51 +563,11 @@ onUnmounted(() => {
   flex-wrap: wrap;
 }
 
-.filter-section {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  min-width: 200px;
-}
-
 .filter-label {
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--text-primary);
   margin-bottom: 0.25rem;
-}
-
-.region-filters {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.region-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-card);
-  border-radius: 8px;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.region-btn:hover {
-  background: var(--accent-secondary);
-  color: var(--accent-primary);
-  border-color: var(--accent-primary);
-}
-
-.region-btn.active {
-  background: var(--accent-primary);
-  color: white;
-  border-color: var(--accent-primary);
 }
 
 .filter-group {
@@ -559,9 +620,32 @@ onUnmounted(() => {
   border-color: var(--accent-primary);
 }
 
-.search-icon, .reset-icon {
-  width: 16px;
-  height: 16px;
+/* Mode button styles */
+.mode-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-card);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.mode-btn:hover {
+  background: var(--accent-secondary);
+  color: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+
+.mode-btn.active {
+  background: var(--accent-primary);
+  color: white;
+  border-color: var(--accent-primary);
 }
 
 /* Map section styles */
@@ -572,14 +656,34 @@ onUnmounted(() => {
   border-radius: 16px;
   padding: 1.5rem;
   box-shadow: var(--shadow-card);
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+}
+
+.map-section :deep(.map-heatmap-container),
+.map-section :deep(.map-track-container) {
+  flex: 1;
+  min-height: 550px;
+  width: 100%;
+  position: relative;
+}
+
+.map-section :deep(.map-heatmap),
+.map-section :deep(.map-track) {
+  width: 100% !important;
+  height: 550px !important;
+  margin-top: 0 !important;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 /* Data panel styles */
 .data-panel {
   position: fixed;
   top: 0;
-  right: -400px;
-  width: 400px;
+  right: -500px;
+  width: 500px;
   height: 100vh;
   background: var(--bg-card);
   backdrop-filter: blur(20px);
@@ -840,13 +944,20 @@ onUnmounted(() => {
   font-family: monospace;
 }
 
-.point-weight {
+.point-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.point-weight, .point-location, .point-user {
   display: flex;
   gap: 0.5rem;
   align-items: center;
 }
 
-.weight-label {
+.weight-label, .location-label, .user-label {
   font-size: 0.75rem;
   color: var(--text-secondary);
   font-weight: 500;
@@ -856,6 +967,12 @@ onUnmounted(() => {
   font-size: 0.875rem;
   color: var(--accent-primary);
   font-weight: 600;
+}
+
+.location-value, .user-value {
+  font-size: 0.75rem;
+  color: var(--text-primary);
+  font-weight: 500;
 }
 
 .point-actions {
@@ -893,6 +1010,187 @@ onUnmounted(() => {
   border-color: var(--accent-primary);
 }
 
+/* User profile styles */
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  padding: 0.5rem;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+}
+
+.user-avatar {
+  flex-shrink: 0;
+  position: relative;
+}
+
+.avatar-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border-card);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.hidden {
+  display: none;
+}
+
+.user-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.user-id {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin-bottom: 0.125rem;
+}
+
+.user-nationality {
+  font-size: 0.75rem;
+  color: var(--accent-secondary);
+  font-weight: 500;
+}
+
+/* Phone section styles */
+.phone-section {
+  margin-bottom: 0.75rem;
+}
+
+.phone-dropdown {
+  position: relative;
+}
+
+.phone-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.phone-toggle:hover {
+  background: var(--bg-secondary);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+.phone-toggle.active {
+  background: var(--accent-secondary);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+.phone-count {
+  flex: 1;
+  text-align: left;
+}
+
+.dropdown-arrow {
+  color: var(--text-secondary);
+  transition: transform 0.2s ease;
+}
+
+.dropdown-arrow.expanded {
+  transform: rotate(180deg);
+}
+
+.phone-list {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+  margin-top: -1px;
+}
+
+.phone-list.expanded {
+  max-height: 200px;
+}
+
+.phone-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid var(--border-secondary);
+  color: var(--text-secondary);
+}
+
+.phone-item:last-child {
+  border-bottom: none;
+}
+
+.phone-item:hover {
+  background: var(--bg-secondary);
+  color: var(--accent-primary);
+}
+
+.phone-number {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* User info card styles */
+.user-info-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-card);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 0.5rem;
+}
+
+.no-user-selected {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-card);
+  border-radius: 12px;
+  margin-top: 0.5rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .content-area {
@@ -908,13 +1206,8 @@ onUnmounted(() => {
     gap: 1rem;
   }
   
-  .filter-section,
   .filter-group {
     min-width: 100%;
-  }
-  
-  .region-filters {
-    justify-content: center;
   }
   
   .search-section,
@@ -922,9 +1215,40 @@ onUnmounted(() => {
     padding: 1rem;
   }
   
+  .map-section {
+    min-height: 500px;
+  }
+  
+  .map-section :deep(.map-heatmap-container),
+  .map-section :deep(.map-track-container) {
+    min-height: 450px;
+  }
+  
+  .map-section :deep(.map-heatmap),
+  .map-section :deep(.map-track) {
+    min-height: 450px !important;
+  }
+  
   .data-panel {
     width: 100%;
     right: -100%;
+  }
+}
+
+/* 大屏幕优化 */
+@media (min-width: 1200px) {
+  .map-section {
+    min-height: 700px;
+  }
+  
+  .map-section :deep(.map-heatmap-container),
+  .map-section :deep(.map-track-container) {
+    min-height: 650px;
+  }
+  
+  .map-section :deep(.map-heatmap),
+  .map-section :deep(.map-track) {
+    min-height: 650px !important;
   }
 }
 </style> 
