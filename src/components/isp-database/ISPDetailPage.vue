@@ -219,6 +219,28 @@
             </div>
           </div>
         </div>
+
+        <!-- 非Awasr运营商显示短信信息 -->
+        <div v-if="!isAwasrOperator" class="detail-section collapsible">
+          <div class="section-header" @click="toggleSection('sms')">
+            <h4>SMS Messages</h4>
+            <svg class="collapse-icon" :class="{ 'collapsed': !expandedSections.sms }" width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="section-content" :class="{ 'collapsed': !expandedSections.sms }">
+            <!-- Loading状态 -->
+            <div v-if="loadingStates.sms" class="section-loading">
+              <div class="loading-spinner"></div>
+              <div class="loading-text">Loading SMS data...</div>
+            </div>
+            
+            <!-- 内容区域 -->
+            <div v-else>
+              <SmsMessages />
+            </div>
+          </div>
+        </div>
         <!-- 非Awasr运营商显示移动应用流量使用情况 -->
         <div v-if="!isAwasrOperator" class="detail-section collapsible">
           <div class="section-header" @click="toggleSection('mobileTraffic')">
@@ -487,6 +509,7 @@ import MapHeatmap from '@/components/isp-database/MapHeatmap.vue'
 import MapTrack from '@/components/isp-database/MapTrack.vue'
 import LocationMarker from '@/components/isp-database/LocationMarker.vue'
 import CallerRecords from '@/components/isp-database/CallerRecords.vue'
+import SmsMessages from '@/components/isp-database/SmsMessages.vue'
 
 //第三方引用 需要添加查询手机号的接口
 onMounted(() => {
@@ -681,6 +704,8 @@ const mobileApps = ref([
   }
 ])
 
+
+
 // 分页相关变量
 const currentPage = ref(1)
 const pageSize = ref(5)
@@ -730,7 +755,8 @@ const expandedSections = ref({
   track: false,
   location: true,
   mobileTraffic: false,
-  deviceInfo: true
+  deviceInfo: true,
+  sms: false
 })
 
 // Loading状态管理
@@ -740,7 +766,8 @@ const loadingStates = ref({
   track: false,
   location: false,
   mobileTraffic: false,
-  deviceInfo: false
+  deviceInfo: false,
+  sms: false
 })
 
 // 固网位置信息
@@ -915,6 +942,8 @@ function openThirdPartyApp() {
     window.open('https://www.google.com', '_blank')
   }, 1000)
 }
+
+
 
 
 </script>
@@ -1510,6 +1539,8 @@ function openThirdPartyApp() {
     transform: translateY(0);
   }
 }
+
+
 
 
 </style> 
