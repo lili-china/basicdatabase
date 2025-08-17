@@ -272,10 +272,6 @@
                            <span class="location-label">Location:</span>
                            <span class="location-value">{{ point.location }}</span>
                          </div>
-                         <div class="point-user">
-                           <span class="user-label">User:</span>
-                           <span class="user-value">{{ point.name }} ({{ point.nationality }})</span>
-                         </div>
                        </div>
                        <div class="point-actions">
                          <button 
@@ -951,13 +947,13 @@ onUnmounted(() => {
   margin-bottom: 0.5rem;
 }
 
-.point-weight, .point-location, .point-user {
+.point-weight, .point-location {
   display: flex;
   gap: 0.5rem;
   align-items: center;
 }
 
-.weight-label, .location-label, .user-label {
+.weight-label, .location-label {
   font-size: 0.75rem;
   color: var(--text-secondary);
   font-weight: 500;
@@ -969,7 +965,7 @@ onUnmounted(() => {
   font-weight: 600;
 }
 
-.location-value, .user-value {
+.location-value {
   font-size: 0.75rem;
   color: var(--text-primary);
   font-weight: 500;
